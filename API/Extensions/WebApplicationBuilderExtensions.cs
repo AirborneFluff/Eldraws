@@ -1,0 +1,57 @@
+﻿using API.Data;
+using API.Entities;
+using API.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace API.Extensions;
+
+public static class WebApplicationBuilderExtensions
+{
+    public static void ConfigureServices(this WebApplicationBuilder builder)
+    {
+        builder.AddCustomServices();
+        builder.AddDataContext();
+        builder.AddIdentityServices();
+        builder.Services.AddControllers();
+    }
+
+    private static void AddDataContext(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddDbContext<DataContext>(options => {
+            var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connStr);
+        });
+    }
+
+    private static void AddIdentityServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddIdentityCore<AppUser>()
+            .AddRoles<IdentityRole>()
+            .AddRoleManager<RoleManager<IdentityRole>>()
+            .AddSignInManager<SignInManager<AppUser>>()
+            .AddRoleValidator<RoleValidator<IdentityRole>>()
+            .AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromHours(600);
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+                options.SlidingExpiration = true;
+            });
+
+        builder.Services.AddScoped<UserManager<AppUser>>();
+        builder.Services.AddScoped<SignInManager<AppUser>>();
+    }
+
+    private static void AddCustomServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<DiscordAuthenticationHelper>();
+    }
+}
