@@ -19,5 +19,24 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseSpaStaticFiles();
+}
+
+app.UseSpa(spa =>
+{
+    spa.Options.SourcePath = "./client";
+
+    if (app.Environment.IsDevelopment())
+    {
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:5173/");
+    }
+    else
+    {
+        spa.Options.SourcePath = "./client/dist";
+    }
+});
+
 app.MapControllers();
 app.Run();
