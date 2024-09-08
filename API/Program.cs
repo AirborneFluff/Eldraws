@@ -24,7 +24,7 @@ if (!app.Environment.IsDevelopment())
     app.UseSpaStaticFiles();
 }
 
-app.UseSpa(spa =>
+/*app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "./client";
 
@@ -36,7 +36,7 @@ app.UseSpa(spa =>
     {
         spa.Options.SourcePath = "./client/dist";
     }
-});
+});*/
 
 app.MapControllers();
 app.Run();

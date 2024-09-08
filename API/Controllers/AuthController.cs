@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Security.Claims;
+using API.Data.DTOs;
 using API.Entities;
 using API.Helpers;
 using Microsoft.AspNetCore.Authentication;
@@ -10,8 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticationHelper discordAuth) : BaseApiController
+public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticationHelper discordAuth, IConfiguration config) : BaseApiController
 {
+    private readonly string _redirectUrl = config.GetValue<string>("Client:HostUrl") ?? throw new InvalidOperationException();
+    
     [HttpGet("signin-discord")]
     public async Task<IActionResult> DiscordCallback(string code)
     {
@@ -25,7 +28,7 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         if (userExists != null)
         {
             await HttpSignin(user);
-            return Ok();
+            return Redirect(_redirectUrl + "app");
         }
 
         var result = await userManager.CreateAsync(user);
@@ -36,14 +39,27 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         }
 
         await HttpSignin(user);
+        return Redirect(_redirectUrl + "app");
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok();
     }
 
-    [HttpGet("test")]
+    [HttpGet("getUser")]
     [Authorize]
-    public async Task<IActionResult> LoginTest()
+    public async Task<IActionResult> GetUser()
     {
-        return Ok(User.Claims.FirstOrDefault()!.Value);
+        var user = new UserDto()
+        {
+            Email = User.Claims.Single(claim => claim.Type == ClaimTypes.Email).Value,
+            UserName = User.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value
+        };
+        
+        return Ok(user);
     }
 
     private Task HttpSignin(AppUser user)
