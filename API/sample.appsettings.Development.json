@@ -1,0 +1,18 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection" : "Server=localhost\\SQLEXPRESS;Database=<db-name>;Trusted_Connection=True;Encrypt=False;"
+  },
+  "Discord": {
+    "ClientId": "<client-id>",
+    "ClientSecret": "<client-secret>",
+    "RedirectUri": "https://localhost:5001/api/auth/signin-discord"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information",
+      "Microsoft.AspNetCore.Authentication": "Debug"
+    }
+  }
+}
