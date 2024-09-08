@@ -55,8 +55,9 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
     {
         var user = new UserDto()
         {
+            Id = User.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
             Email = User.Claims.Single(claim => claim.Type == ClaimTypes.Email).Value,
-            UserName = User.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value
+            UserName = User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value
         };
         
         return Ok(user);
@@ -66,8 +67,9 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
     {
         var claims = new Collection<Claim>()
         {
+            new (ClaimTypes.NameIdentifier, user.Id),
             new (ClaimTypes.Email, user.Email!),
-            new (ClaimTypes.NameIdentifier, user.UserName!),
+            new (ClaimTypes.Name, user.UserName!),
         };
         
         var claimsIdentity = new ClaimsIdentity(

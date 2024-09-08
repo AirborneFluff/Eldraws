@@ -36,9 +36,11 @@ export function AppLayout() {
         </Menu>
       </Header>
       <Content className='p-1'>
-        <Breadcrumb className='px-8 py-4' items={breadcrumbItems} />
-        <div className='rounded-sm p-8 bg-gray-100'>
-          <Outlet />
+        <div className='container'>
+          <Breadcrumb className='px-8 py-4' items={breadcrumbItems} />
+          <div className='rounded-sm p-8 bg-gray-100'>
+            <Outlet />
+          </div>
         </div>
       </Content>
     </Layout>

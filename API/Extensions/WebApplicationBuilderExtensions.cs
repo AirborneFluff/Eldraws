@@ -52,6 +52,8 @@ public static class WebApplicationBuilderExtensions
 
     private static void AddCustomServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<UnitOfWork>();
         builder.Services.AddScoped<DiscordAuthenticationHelper>();
+        builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
     }
 }
