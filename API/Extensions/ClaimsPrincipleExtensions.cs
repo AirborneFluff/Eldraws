@@ -8,4 +8,9 @@ public static class ClaimsPrincipleExtensions
     {
         return user.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
     }
+
+    public static string GetUserEmail(this ClaimsPrincipal user)
+    {
+        return user.Claims.Single(claim => claim.Type == ClaimTypes.Email).Value;
+    }
 }

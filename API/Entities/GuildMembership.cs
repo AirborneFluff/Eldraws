@@ -2,7 +2,7 @@
 
 public class GuildMembership
 {
-    public required string GuidId { get; set; }
+    public required string GuildId { get; set; }
     public Guild? Guild { get; set; }
     
     public required string AppUserId { get; set; }

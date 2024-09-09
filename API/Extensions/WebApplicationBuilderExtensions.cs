@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using API.ActionFilters;
+using API.Data;
 using API.Entities;
 using API.Helpers;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,6 +15,7 @@ public static class WebApplicationBuilderExtensions
         builder.AddCustomServices();
         builder.AddDataContext();
         builder.AddIdentityServices();
+        builder.AddActionFilters();
         builder.Services.AddControllers();
     }
 
@@ -55,5 +57,10 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<UnitOfWork>();
         builder.Services.AddScoped<DiscordAuthenticationHelper>();
         builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+    }
+    
+    public static void AddActionFilters(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<ValidateGuildExists>();
     }
 }

@@ -17,6 +17,14 @@ const guildApi = baseApi.injectEndpoints({
         body: guild
       })
     }),
+    applyToGuild: builder.mutation({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}/apply`,
+          method: 'POST'
+        }
+      }
+    }),
     searchGuilds: builder.query({
       query: (searchTerm: string) => {
         const params = new URLSearchParams();
@@ -35,4 +43,5 @@ const guildApi = baseApi.injectEndpoints({
 export const {
   useGetUserGuildsQuery,
   useSearchGuildsQuery,
-  useCreateGuildMutation } = guildApi;
+  useCreateGuildMutation,
+  useApplyToGuildMutation } = guildApi;

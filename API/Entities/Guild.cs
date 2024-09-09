@@ -10,4 +10,6 @@ public class Guild
     public required string Name { get; set; }
 
     public IList<GuildMembership> Memberships { get; set; } = new List<GuildMembership>();
+    public IList<GuildApplication> Applications { get; set; } = new List<GuildApplication>();
+    public IList<GuildBlacklist> Blacklist { get; set; }
 }

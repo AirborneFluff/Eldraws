@@ -16,8 +16,8 @@ export function HomePage() {
     <div>
       <Button onClick={() => navigate("/app/guilds/create")}>Create Guild</Button>
       <Button onClick={() => setShowSearch(true)}>Search Guild</Button>
-      <GuildsList/>
-      <JoinGuildModal open={showSearch} />
+      <GuildsList />
+      <JoinGuildModal open={showSearch} onCancel={() => setShowSearch(false)} />
     </div>
   )
 }

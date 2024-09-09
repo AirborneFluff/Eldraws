@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240909202328_AddedGuildBlacklist")]
+    partial class AddedGuildBlacklist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,37 +107,30 @@ namespace API.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Guilds", (string)null);
+                    b.ToTable("Guilds");
                 });
 
             modelBuilder.Entity("API.Entities.GuildApplications", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("GuildId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ApplicationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GuildId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ReviewerId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("GuildId", "AppUserId");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("GuildId");
-
                     b.HasIndex("ReviewerId");
 
-                    b.ToTable("GuildApplications", (string)null);
+                    b.ToTable("GuildApplications");
                 });
 
             modelBuilder.Entity("API.Entities.GuildBlacklist", b =>
@@ -147,7 +143,7 @@ namespace API.Migrations
 
                     b.HasKey("GuildId", "Email");
 
-                    b.ToTable("GuildBlacklists", (string)null);
+                    b.ToTable("GuildBlacklists");
                 });
 
             modelBuilder.Entity("API.Entities.GuildMembership", b =>
@@ -162,7 +158,7 @@ namespace API.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("GuildMemberships", (string)null);
+                    b.ToTable("GuildMemberships");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

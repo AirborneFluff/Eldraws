@@ -8,7 +8,8 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
 {
     public required DbSet<Guild> Guilds { get; set; }
     public required DbSet<GuildMembership> GuildMemberships { get; set; }
-
+    public required DbSet<GuildApplication> GuildApplications { get; set; }
+    public required DbSet<GuildBlacklist> GuildBlacklists { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,12 +22,14 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .OnDelete(DeleteBehavior.Restrict);
         
         SetGuildMembershipRelations(modelBuilder);
+        SetGuildApplicationRelations(modelBuilder);
+        SetGuildApplicationBlacklistRelations(modelBuilder);
     }
 
     private static void SetGuildMembershipRelations(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GuildMembership>()
-            .HasKey(gm => new { gm.GuidId, gm.AppUserId });
+            .HasKey(gm => new { gm.GuildId, gm.AppUserId });
         modelBuilder.Entity<GuildMembership>()
             .HasOne(gm => gm.AppUser)
             .WithMany(user => user.Memberships);
@@ -36,10 +39,45 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         modelBuilder.Entity<GuildMembership>()
             .HasOne(guild => guild.AppUser)
             .WithMany(user => user.Memberships)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<GuildMembership>()
             .HasOne(guild => guild.Guild)
             .WithMany(user => user.Memberships)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+
+    private static void SetGuildApplicationRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GuildApplication>()
+            .HasOne(ga => ga.AppUser)
+            .WithMany(user => user.Applications);
+        modelBuilder.Entity<GuildApplication>()
+            .HasOne(ga => ga.Guild)
+            .WithMany(guild => guild.Applications);
+        modelBuilder.Entity<GuildApplication>()
+            .HasOne(guild => guild.AppUser)
+            .WithMany(user => user.Applications)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<GuildApplication>()
+            .HasOne(guild => guild.Guild)
+            .WithMany(user => user.Applications)
+            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<GuildApplication>()
+            .HasOne(guild => guild.Reviewer)
+            .WithMany(user => user.ReviewedApplications)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
+
+    private static void SetGuildApplicationBlacklistRelations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GuildBlacklist>()
+            .HasKey(ga => new { ga.GuildId, ga.Email });
+        modelBuilder.Entity<GuildBlacklist>()
+            .HasOne(ga => ga.Guild)
+            .WithMany(guild => guild.Blacklist);
+        modelBuilder.Entity<GuildBlacklist>()
+            .HasOne(blacklist => blacklist.Guild)
+            .WithMany(guild => guild.Blacklist)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
