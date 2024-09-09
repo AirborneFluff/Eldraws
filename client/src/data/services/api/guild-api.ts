@@ -9,9 +9,30 @@ const guildApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
       transformResponse: (response: Guild[]) => response?.length == 0 ? undefined : response,
-    })
+    }),
+    createGuild: builder.mutation({
+      query: (guild) => ({
+        url: '/guilds',
+        method: 'POST',
+        body: guild
+      })
+    }),
+    searchGuilds: builder.query({
+      query: (searchTerm: string) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('searchTerm', searchTerm);
+
+        return {
+          url: `/guilds/search?${params.toString()}`,
+          method: 'GET',
+        };
+      }
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetUserGuildsQuery } = guildApi;
+export const {
+  useGetUserGuildsQuery,
+  useSearchGuildsQuery,
+  useCreateGuildMutation } = guildApi;

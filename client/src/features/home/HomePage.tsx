@@ -1,29 +1,43 @@
-import { useGetUserGuildsQuery } from '../../data/services/api/guild-api.ts';
-import { Alert, List } from 'antd';
-import { Guild } from '../../data/models/guild.ts';
-import { CrownOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../data/store.ts';
+import {useGetUserGuildsQuery} from '../../data/services/api/guild-api.ts';
+import {Alert, List} from 'antd';
+import {Guild} from '../../data/models/guild.ts';
+import {CrownOutlined} from '@ant-design/icons';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../data/store.ts';
+import {JoinGuildModal} from "../guilds/modals/JoinGuildModal.tsx";
 
 export function HomePage() {
 
   return (
     <div>
-      <GuildsList />
+      <GuildsList/>
+      <JoinGuildModal open={true} />
     </div>
   )
 }
 
 function GuildsList() {
-  const { data: guilds, isLoading, isError } = useGetUserGuildsQuery();
-  const { user } = useSelector((state: RootState) => state.user);
+  const {data: guilds, isLoading, isError} = useGetUserGuildsQuery();
+  const {user} = useSelector((state: RootState) => state.user);
 
-  const footer = isError ? (
-    <Alert
-      description='There was a problem contacting the server'
-      type='error'
-    />
-  ) : null;
+  const buildFooter = () => {
+    if (isLoading) return null;
+    if (isError) return (
+      <Alert
+        description='There was a problem contacting the server'
+        type='error'
+      />
+    )
+
+    if (guilds?.length > 0) return null;
+
+    return (
+      <Alert
+        description="It's a bit lonely here, maybe you sure try join a Guild, or Create one"
+        type='info'
+      />
+    )
+  }
 
   return (
     <List
@@ -31,9 +45,9 @@ function GuildsList() {
       header={<span>Guilds</span>}
       bordered
       dataSource={guilds}
-      renderItem={(item: Guild) => <GuildListItem item={item} userId={user.id} />}
+      renderItem={(item: Guild) => <GuildListItem item={item} userId={user.id}/>}
       loading={isLoading}
-      footer={footer}
+      footer={buildFooter()}
     />
   );
 }
@@ -42,7 +56,7 @@ function GuildListItem({item, userId}) {
   return (
     <List.Item className='hover:bg-gray-200 cursor-pointer'>
       <div className='flex justify-center items-center gap-4'>
-        {userId === item.ownerId && <CrownOutlined />}
+        {userId === item.ownerId && <CrownOutlined/>}
         <span>{item.name}</span>
       </div>
     </List.Item>

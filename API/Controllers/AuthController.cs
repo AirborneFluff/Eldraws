@@ -13,7 +13,8 @@ namespace API.Controllers;
 
 public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticationHelper discordAuth, IConfiguration config) : BaseApiController
 {
-    private readonly string _redirectUrl = config.GetValue<string>("Client:HostUrl") ?? throw new InvalidOperationException();
+    private readonly string _loginRedirectUrl = 
+        config.GetValue<string>("Client:LoginRedirectUrl") ?? throw new InvalidOperationException();
     
     [HttpGet("signin-discord")]
     public async Task<IActionResult> DiscordCallback(string code)
@@ -28,7 +29,7 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         if (userExists != null)
         {
             await HttpSignin(userExists);
-            return Redirect(_redirectUrl + "app");
+            return Redirect(_loginRedirectUrl);
         }
 
         var result = await userManager.CreateAsync(user);
@@ -39,7 +40,7 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         }
 
         await HttpSignin(user);
-        return Redirect(_redirectUrl + "app");
+        return Redirect(_loginRedirectUrl);
     }
 
     [HttpPost("logout")]

@@ -9,6 +9,22 @@ public class GuildRepository(DataContext context)
     {
         context.Guilds.Add(guild);
     }
+
+    public Task<bool> Exists(string name)
+    {
+        return context.Guilds
+            .AnyAsync(guild => guild.Name.ToUpper() == name.ToUpper());
+    }
+
+    public Task<List<Guild>> SearchByName(string name)
+    {
+        return context.Guilds
+            .Where(guild => guild.Name.ToUpper().Contains(name.ToUpper()))
+            .OrderBy(guild => guild.Name)
+            .Take(10)
+            .AsNoTracking()
+            .ToListAsync();
+    }
     
     public Task<List<Guild>> GetUsersGuilds(string userId)
     {

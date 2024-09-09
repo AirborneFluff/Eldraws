@@ -9,6 +9,7 @@ import { LoginPage } from './features/login/LoginPage.tsx';
 import { HomePage } from './features/home/HomePage.tsx';
 import { LoadingPage } from './components/LoadingPage.tsx';
 import { loginUser } from './data/slices/userSlice.ts';
+import {CreateGuildPage} from "./features/guilds/CreateGuildPage.tsx";
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -48,6 +49,15 @@ const router = createBrowserRouter([
         index: true,
         Component: HomePage,
       },
+      {
+        path: "guilds",
+        children: [
+          {
+            path: "create",
+            Component: CreateGuildPage
+          }
+        ]
+      }
     ],
   },
   {
