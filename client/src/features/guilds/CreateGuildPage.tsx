@@ -1,6 +1,7 @@
 import {Alert, Button, Form, Input, Typography} from "antd";
 import {useCreateGuildMutation} from "../../data/services/api/guild-api.ts";
 import {useNavigate} from "react-router-dom";
+import { useEffect } from 'react';
 
 const {Title} = Typography;
 
@@ -8,12 +9,11 @@ export function CreateGuildPage() {
   const [createGuild, {isLoading, isError, error, isSuccess, data}] = useCreateGuildMutation();
   const navigate = useNavigate();
 
-  async function onFormSubmit(form: NewGuildForm) {
-    await createGuild(form);
+  useEffect(() => {
     if (isSuccess) {
       navigate("/app");
     }
-  }
+  }, [isSuccess, navigate]);
 
   return (
     <>
@@ -23,7 +23,7 @@ export function CreateGuildPage() {
         name="basic"
         style={{maxWidth: 600}}
         initialValues={{remember: true}}
-        onFinish={onFormSubmit}
+        onFinish={createGuild}
         autoComplete="off"
       >
 

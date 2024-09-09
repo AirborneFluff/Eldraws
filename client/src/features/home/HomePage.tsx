@@ -1,17 +1,23 @@
 import {useGetUserGuildsQuery} from '../../data/services/api/guild-api.ts';
-import {Alert, List} from 'antd';
+import { Alert, Button, List } from 'antd';
 import {Guild} from '../../data/models/guild.ts';
 import {CrownOutlined} from '@ant-design/icons';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../data/store.ts';
 import {JoinGuildModal} from "../guilds/modals/JoinGuildModal.tsx";
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export function HomePage() {
+  const [ showSearch, setShowSearch ] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div>
+      <Button onClick={() => navigate("/app/guilds/create")}>Create Guild</Button>
+      <Button onClick={() => setShowSearch(true)}>Search Guild</Button>
       <GuildsList/>
-      <JoinGuildModal open={true} />
+      <JoinGuildModal open={showSearch} />
     </div>
   )
 }
