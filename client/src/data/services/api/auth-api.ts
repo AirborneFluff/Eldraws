@@ -29,11 +29,3 @@ export const performLogout = (dispatch: AppDispatch) => async () => {
     console.error('Logout failed:', error);
   }
 };
-
-export const performGetUser = (dispatch: AppDispatch) => async (): Promise<User | null> => {
-  try {
-    return await dispatch(authApi.endpoints.getUser.initiate()).unwrap();
-  } catch (error) {
-    return null;
-  }
-};

@@ -3,11 +3,12 @@ import {
   redirect, RouterProvider,
 } from 'react-router-dom';
 import { AppLayout } from './core/ui/AppLayout.tsx';
-import { performGetUser, performLogout } from './data/services/api/auth-api.ts';
-import { store } from './data/store.ts';
+import { performLogout } from './data/services/api/auth-api.ts';
+import { AppDispatch, store } from './data/store.ts';
 import { LoginPage } from './features/login/LoginPage.tsx';
 import { HomePage } from './features/home/HomePage.tsx';
 import { LoadingPage } from './components/LoadingPage.tsx';
+import { loginUser } from './data/slices/userSlice.ts';
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -18,12 +19,19 @@ const logoutAction = async () => {
 };
 
 const checkUserLoader = async () => {
-  const dispatch = store.dispatch;
-  const user = await performGetUser(dispatch)();
-  console.log(user)
-  if (user == null) return redirect("/")
+  const dispatch: AppDispatch = store.dispatch;
+  try {
+    await dispatch(loginUser());
+    const user = store.getState().user.user;
 
-  return null;
+    if (user == null) {
+      return redirect("/");
+    }
+    return null;
+  } catch (error) {
+    console.error("Error checking user:", error);
+    return redirect("/");
+  }
 };
 
 const router = createBrowserRouter([

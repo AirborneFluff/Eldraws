@@ -27,7 +27,7 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         var userExists = await userManager.FindByEmailAsync(user.Email!);
         if (userExists != null)
         {
-            await HttpSignin(user);
+            await HttpSignin(userExists);
             return Redirect(_redirectUrl + "app");
         }
 
