@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/pro-components": "^2.7.16",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/lodash": "^4.17.7",
     "antd": "^5.20.5",

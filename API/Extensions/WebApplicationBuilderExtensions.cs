@@ -62,5 +62,6 @@ public static class WebApplicationBuilderExtensions
     public static void AddActionFilters(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<ValidateGuildExists>();
+        builder.Services.AddScoped<ValidateGuildOwner>();
     }
 }

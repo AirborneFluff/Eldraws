@@ -9,7 +9,8 @@ import { LoginPage } from './features/login/LoginPage.tsx';
 import { HomePage } from './features/home/HomePage.tsx';
 import { LoadingPage } from './components/LoadingPage.tsx';
 import { loginUser } from './data/slices/userSlice.ts';
-import {CreateGuildPage} from "./features/guilds/CreateGuildPage.tsx";
+import { GuildsPage } from './features/guilds/GuildsPage.tsx';
+import { ManageGuildPage } from './features/guilds/ManageGuildPage.tsx';
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -53,9 +54,13 @@ const router = createBrowserRouter([
         path: "guilds",
         children: [
           {
-            path: "create",
-            Component: CreateGuildPage
-          }
+            index: true,
+            Component: GuildsPage
+          },
+          {
+            path: ":guildId",
+            Component: ManageGuildPage
+          },
         ]
       }
     ],

@@ -75,4 +75,13 @@ public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest("There was an issue creating your application.");
     }
+    
+    [HttpGet("{guildId}")]
+    [Authorize]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> GetGuild(string guildId)
+    {
+        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        return Ok(mapper.Map<GuildDto>(guild));
+    }
 }

@@ -36,6 +36,14 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getGuild: builder.query<Guild>({
+      query: (id: string) => {
+        return {
+          url: `/guilds/${id}`,
+          method: 'GET',
+        };
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -44,4 +52,5 @@ export const {
   useGetUserGuildsQuery,
   useSearchGuildsQuery,
   useCreateGuildMutation,
-  useApplyToGuildMutation } = guildApi;
+  useApplyToGuildMutation,
+  useGetGuildQuery } = guildApi;

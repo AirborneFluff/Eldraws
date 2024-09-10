@@ -1,4 +1,4 @@
-import {Alert, Modal, Select} from 'antd';
+import { Alert, Button, Modal, Select } from 'antd';
 import {
   useApplyToGuildMutation,
   useSearchGuildsQuery
@@ -12,7 +12,7 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const [applyToGuild, {isLoading, isError: isApplicationError, error: applicationError, isSuccess}] = useApplyToGuildMutation();
-  const { data = [], isFetching, isError: isFetchError, error: fetchError } = useSearchGuildsQuery(debouncedSearchQuery, {
+  const { data = [], isFetching } = useSearchGuildsQuery(debouncedSearchQuery, {
     skip: !debouncedSearchQuery || debouncedSearchQuery.length < 3 || !open
   });
 
@@ -28,31 +28,16 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
     }
   }, [isSuccess]);
 
-  function handleOnCancel() {
-    setSearchQuery("");
-    setSelectedGuildId(undefined)
-    onCancel();
-  }
-
-  const buildAlert = () => {
-    if (isApplicationError) {
-      return (
-        <Alert
-          type='error'
-          description={applicationError?.message}
-        />
-      )
-    }
-    if (isFetchError) {
-      return (
-        <Alert
-          type='error'
-          description={fetchError?.message}
-        />
-      )
-    }
-    return null;
-  }
+  const footer = [
+    <Button key="back" onClick={onCancel}>Cancel</Button>,
+    <Button
+      key="submit"
+      type="primary"
+      loading={isLoading}
+      onClick={() => applyToGuild(selectedGuildId)}
+      disabled={!selectedGuildId}>Apply to Guild
+    </Button>
+  ]
 
   return (
     <Modal
@@ -61,7 +46,8 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
       onOk={() => applyToGuild(selectedGuildId)}
       okText='Apply to Guild'
       confirmLoading={isLoading}
-      onCancel={handleOnCancel}
+      onCancel={onCancel}
+      footer={footer}
     >
       <Select
         className='min-w-52'
@@ -78,6 +64,14 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
           label: guild.name,
         }))}
       />
+
+      {isApplicationError &&
+        <Alert
+          className='mt-3'
+          type='error'
+          description={applicationError?.message}
+        />
+      }
     </Modal>
   )
 }

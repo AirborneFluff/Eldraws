@@ -6,7 +6,6 @@ namespace API.ActionFilters;
 
 public class ValidateGuildExists(UnitOfWork unitOfWork) : IAsyncActionFilter
 {
-
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var guildId = (string?) context.ActionArguments["guildId"];

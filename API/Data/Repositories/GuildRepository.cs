@@ -22,6 +22,12 @@ public class GuildRepository(DataContext context)
             .AnyAsync(guild => guild.Id == guildId);
     }
 
+    public Task<bool> IsGuildOwner(string guildId, string userId)
+    {
+        return context.Guilds
+            .AnyAsync(guild => guild.Id == guildId && guild.OwnerId == userId);
+    }
+
     public Task<bool> ExistsByName(string name)
     {
         return context.Guilds
