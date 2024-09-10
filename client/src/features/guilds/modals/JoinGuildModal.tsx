@@ -1,21 +1,32 @@
 import {Alert, Modal, Select} from 'antd';
-import {useSearchGuildsQuery} from "../../../data/services/api/guild-api.ts";
-import {useState} from "react";
+import {
+  useApplyToGuildMutation,
+  useSearchGuildsQuery
+} from '../../../data/services/api/guild-api.ts';
+import { useEffect, useState } from 'react';
 import { Guild } from '../../../data/models/guild.ts';
 import useDebounce from "../../../core/hooks/useDebounce.ts";
 
-export function JoinGuildModal({open, onOkay, onCancel}) {
+export function JoinGuildModal({open, onSuccess, onCancel}) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const { data = [], isFetching } = useSearchGuildsQuery(debouncedSearchQuery, {
+  const [applyToGuild, {isLoading, isError: isApplicationError, error: applicationError, isSuccess}] = useApplyToGuildMutation();
+  const { data = [], isFetching, isError: isFetchError, error: fetchError } = useSearchGuildsQuery(debouncedSearchQuery, {
     skip: !debouncedSearchQuery || debouncedSearchQuery.length < 3 || !open
   });
+
   const [ selectedGuildId, setSelectedGuildId ] = useState<string | undefined>(undefined);
 
   function handleSearch(search: string) {
     setSearchQuery(search);
   }
+
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess();
+    }
+  }, [isSuccess]);
 
   function handleOnCancel() {
     setSearchQuery("");
@@ -23,13 +34,33 @@ export function JoinGuildModal({open, onOkay, onCancel}) {
     onCancel();
   }
 
+  const buildAlert = () => {
+    if (isApplicationError) {
+      return (
+        <Alert
+          type='error'
+          description={applicationError?.message}
+        />
+      )
+    }
+    if (isFetchError) {
+      return (
+        <Alert
+          type='error'
+          description={fetchError?.message}
+        />
+      )
+    }
+    return null;
+  }
+
   return (
     <Modal
       title="Search for a guild"
       open={open}
-      onOk={onOkay}
+      onOk={() => applyToGuild(selectedGuildId)}
       okText='Apply to Guild'
-      confirmLoading={isFetching}
+      confirmLoading={isLoading}
       onCancel={handleOnCancel}
     >
       <Select

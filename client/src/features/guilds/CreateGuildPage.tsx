@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 const {Title} = Typography;
 
 export function CreateGuildPage() {
-  const [createGuild, {isLoading, isError, error, isSuccess, data}] = useCreateGuildMutation();
+  const [createGuild, {isLoading, isError, error, isSuccess}] = useCreateGuildMutation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,8 +50,4 @@ export function CreateGuildPage() {
       </Form>
     </>
   )
-}
-
-interface NewGuildForm {
-  name: string
 }

@@ -12,12 +12,16 @@ export function HomePage() {
   const [ showSearch, setShowSearch ] = useState(false);
   const navigate = useNavigate();
 
+  function hideModal() {
+    setShowSearch(false)
+  }
+
   return (
     <div>
       <Button onClick={() => navigate("/app/guilds/create")}>Create Guild</Button>
       <Button onClick={() => setShowSearch(true)}>Search Guild</Button>
       <GuildsList />
-      <JoinGuildModal open={showSearch} onCancel={() => setShowSearch(false)} />
+      <JoinGuildModal open={showSearch} onSuccess={hideModal} onCancel={hideModal} />
     </div>
   )
 }
