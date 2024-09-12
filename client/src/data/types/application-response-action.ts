@@ -1,0 +1,1 @@
+export type ApplicationResponseAction = 'accept' | 'reject' | 'blacklist'

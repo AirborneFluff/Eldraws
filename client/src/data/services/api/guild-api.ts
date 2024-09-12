@@ -1,6 +1,6 @@
-import { baseApi } from './base-api.ts';
-import { Guild } from '../../models/guild.ts';
-import { GuildApplication } from '../../models/guild-application.ts';
+import {baseApi} from './base-api.ts';
+import {Guild} from '../../models/guild.ts';
+import {ApplicationResponseAction} from "../../types/application-response-action.ts";
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -37,7 +37,7 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
-    getGuild: builder.query<Guild>({
+    getGuild: builder.query({
       query: (id: string) => {
         return {
           url: `/guilds/${id}`,
@@ -45,12 +45,24 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
-    getGuildApplications: builder.query<GuildApplication[]>({
+    getGuildApplications: builder.query({
       query: (id: string) => {
         return {
           url: `/guilds/${id}/applications`,
           method: 'GET',
         };
+      }
+    }),
+    applicationResponse: builder.mutation({
+      query: ({guildId, applicationId, action}: {
+        guildId: string,
+        applicationId: string,
+        action: ApplicationResponseAction
+      }) => {
+        return {
+          url: `/guilds/${guildId}/applications/${applicationId}/${action}`,
+          method: 'POST'
+        }
       }
     }),
   }),
@@ -63,4 +75,6 @@ export const {
   useCreateGuildMutation,
   useApplyToGuildMutation,
   useGetGuildQuery,
-  useGetGuildApplicationsQuery } = guildApi;
+  useGetGuildApplicationsQuery,
+  useApplicationResponseMutation,
+} = guildApi;

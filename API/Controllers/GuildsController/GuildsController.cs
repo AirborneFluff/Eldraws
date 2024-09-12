@@ -47,29 +47,19 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : B
         return Ok(mapper.Map<IEnumerable<GuildDto>>(guilds));
     }
     
-    [HttpPost("{guildId}/apply")]
-    [ServiceFilter(typeof(ValidateGuildExists))]
-    public async Task<ActionResult> ApplyToGuild(string guildId)
+    [HttpGet("{guildId}")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> GetGuild(string guildId)
     {
-        var isUserMember = await unitOfWork.GuildRepository.IsGuildMember(guildId, User.GetUserId());
-        if (isUserMember) return BadRequest("You're already a member of this guild");
-        
-        var isUserBlacklisted = await unitOfWork.GuildRepository.IsEmailBlacklisted(guildId, User.GetUserEmail());
-        if (isUserBlacklisted) return BadRequest("You can't apply to this guild");
-        
-        var hasOutstanding = await unitOfWork.GuildRepository
-            .HasOutstandingApplication(guildId, User.GetUserId());
-        if (hasOutstanding) return BadRequest("You've already applied to this guild");
-
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        guild.Applications.Add(new GuildApplication
-        {
-            Id = Guid.NewGuid().ToString(),
-            AppUserId = User.GetUserId(),
-            GuildId = guildId
-        });
-        
-        if (await unitOfWork.Complete()) return Ok();
-        return BadRequest("There was an issue creating your application.");
+        return Ok(mapper.Map<GuildDto>(guild));
+    }
+    
+    [HttpGet("{guildId}/members")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> GetGuildMembers(string guildId)
+    {
+        var members = await unitOfWork.GuildRepository.GetGuildMembers(guildId);
+        return Ok(mapper.Map<IEnumerable<GuildMemberDto>>(members));
     }
 }

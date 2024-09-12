@@ -13,4 +13,7 @@ public class GuildApplication
     public AppUser? Reviewer { get; set; }
 
     public DateTime ApplicationDate { get; set; } = DateTime.UtcNow;
+
+    public bool? Accepted { get; set; }
+    public DateTime? ReviewDate { get; set; } = null;
 }

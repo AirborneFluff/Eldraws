@@ -7,4 +7,6 @@ public class GuildMembership
     
     public required string AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
+
+    public DateTime AcceptanceDate { get; set; } = DateTime.UtcNow;
 }

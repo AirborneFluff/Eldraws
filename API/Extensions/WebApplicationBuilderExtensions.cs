@@ -46,6 +46,7 @@ public static class WebApplicationBuilderExtensions
                 options.ExpireTimeSpan = TimeSpan.FromHours(600);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
         builder.Services.AddScoped<UserManager<AppUser>>();

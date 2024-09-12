@@ -14,9 +14,11 @@ export function ManageGuildPage() {
   const guild = data as Guild;
 
   useEffect(() => {
+    if (!guild) return;
+    
     setHeaderContent({
       title: "Manage Guild",
-      subtitle: guild?.name
+      subtitle: guild.name
     })
   }, [guild]);
 
