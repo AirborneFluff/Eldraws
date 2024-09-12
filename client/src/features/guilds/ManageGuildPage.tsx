@@ -3,6 +3,9 @@ import { Guild } from '../../data/models/guild.ts';
 import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
 import { useEffect } from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
+import { Tabs } from 'antd';
+import { TabItem } from '../../data/types/tab-item.ts';
+import { GuildApplicationsList } from './components/GuildApplicationsList.tsx';
 
 export function ManageGuildPage() {
   const { guildId } = useParams();
@@ -21,9 +24,21 @@ export function ManageGuildPage() {
     setLoading(guildLoading);
   }, [guildLoading]);
 
+  const tabs: TabItem[] = [
+    {
+      key: 'applications',
+      label: 'Applications',
+      children: <GuildApplicationsList guildId={guild?.id} />
+    }
+  ]
+
   return (
     <>
-      {guildId}
+      <Tabs
+        defaultActiveKey="1"
+        size='large'
+        items={tabs}
+      />
     </>
   )
 }

@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiController
+[Authorize]
+public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiController
 {
     [HttpPost]
-    [Authorize]
     public async Task<ActionResult> CreateGuild([FromBody] NewGuildDto guild)
     {
         var guildNameTaken = await unitOfWork.GuildRepository.ExistsByName(guild.Name);
@@ -34,7 +34,6 @@ public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
     }
     
     [HttpGet("getUsersGuilds")]
-    [Authorize]
     public async Task<ActionResult> GetUsersGuilds()
     {
         var guilds = await unitOfWork.GuildRepository.GetUsersGuilds(User.GetUserId());
@@ -42,7 +41,6 @@ public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
     }
     
     [HttpGet("search")]
-    [Authorize]
     public async Task<ActionResult> GetUsersGuilds([FromQuery] string searchTerm)
     {
         var guilds = await unitOfWork.GuildRepository.SearchByName(searchTerm);
@@ -51,7 +49,6 @@ public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
     
     [HttpPost("{guildId}/apply")]
     [ServiceFilter(typeof(ValidateGuildExists))]
-    [Authorize]
     public async Task<ActionResult> ApplyToGuild(string guildId)
     {
         var isUserMember = await unitOfWork.GuildRepository.IsGuildMember(guildId, User.GetUserId());
@@ -74,14 +71,5 @@ public class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest("There was an issue creating your application.");
-    }
-    
-    [HttpGet("{guildId}")]
-    [Authorize]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> GetGuild(string guildId)
-    {
-        var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        return Ok(mapper.Map<GuildDto>(guild));
     }
 }

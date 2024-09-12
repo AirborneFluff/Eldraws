@@ -10,6 +10,13 @@ public class AutoMapperProfiles : Profile
     {
         CreateMap<NewGuildDto, Guild>();
         CreateMap<Guild, GuildDto>();
-    }
+        
+        CreateMap<AppUser, GuildMemberDto>()
+            .ForMember(dest => dest.AppUserId, opt =>
+                opt.MapFrom(src => src.Id));
 
+        CreateMap<GuildApplication, GuildApplicationDto>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser!.Email))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
+    }
 }

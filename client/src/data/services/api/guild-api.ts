@@ -1,5 +1,6 @@
 import { baseApi } from './base-api.ts';
 import { Guild } from '../../models/guild.ts';
+import { GuildApplication } from '../../models/guild-application.ts';
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -44,6 +45,14 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getGuildApplications: builder.query<GuildApplication[]>({
+      query: (id: string) => {
+        return {
+          url: `/guilds/${id}/applications`,
+          method: 'GET',
+        };
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -53,4 +62,5 @@ export const {
   useSearchGuildsQuery,
   useCreateGuildMutation,
   useApplyToGuildMutation,
-  useGetGuildQuery } = guildApi;
+  useGetGuildQuery,
+  useGetGuildApplicationsQuery } = guildApi;
