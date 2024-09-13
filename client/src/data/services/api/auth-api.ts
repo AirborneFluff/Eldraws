@@ -1,5 +1,5 @@
 import { baseApi } from './base-api.ts';
-import { User } from '../../models/user';
+import { User } from '../../entities/user.ts';
 import { AppDispatch } from '../../store.ts';
 
 export const authApi = baseApi.injectEndpoints({

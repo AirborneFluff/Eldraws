@@ -59,13 +59,12 @@ public class GuildRepository(DataContext context)
             .ToListAsync();
     }
     
-    public Task<List<AppUser>> GetGuildMembers(string guildId)
+    public Task<List<GuildMembership>> GetGuildMembers(string guildId)
     {
         return context.GuildMemberships
             .Where(gm => gm.GuildId == guildId)
             .Include(gm => gm.AppUser)
             .AsNoTracking()
-            .Select(gm => gm.AppUser!)
             .ToListAsync();
     }
     
@@ -104,5 +103,16 @@ public class GuildRepository(DataContext context)
         return context.GuildApplications
             .Include(ga => ga.AppUser)
             .FirstOrDefaultAsync(a => a.Id == applicationId);
+    }
+
+    public Task<GuildMembership?> GetMembership(string guildId, string appUserId)
+    {
+        return context.GuildMemberships
+            .FirstOrDefaultAsync(m => m.AppUserId == appUserId && m.GuildId == guildId);
+    }
+
+    public void RemoveMember(GuildMembership membership)
+    {
+        context.GuildMemberships.Remove(membership);
     }
 }

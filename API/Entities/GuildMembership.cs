@@ -1,4 +1,6 @@
-﻿namespace API.Entities;
+﻿using System.ComponentModel;
+
+namespace API.Entities;
 
 public class GuildMembership
 {
@@ -9,4 +11,7 @@ public class GuildMembership
     public AppUser? AppUser { get; set; }
 
     public DateTime AcceptanceDate { get; set; } = DateTime.UtcNow;
+    
+    [DefaultValue(true)]
+    public bool Active { get; set; }
 }

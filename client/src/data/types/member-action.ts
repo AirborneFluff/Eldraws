@@ -1,0 +1,1 @@
+export type MemberAction = 'remove' | 'blacklist' | 'deactivate' | 'activate'

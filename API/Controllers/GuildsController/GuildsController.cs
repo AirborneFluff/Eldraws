@@ -5,12 +5,13 @@ using API.Entities;
 using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [Authorize]
-public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiController
+public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager) : BaseApiController
 {
     [HttpPost]
     public async Task<ActionResult> CreateGuild([FromBody] NewGuildDto guild)
@@ -48,19 +49,11 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : B
     }
     
     [HttpGet("{guildId}")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ServiceFilter(typeof(ValidateGuildMember))]
     public async Task<ActionResult> GetGuild(string guildId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
         return Ok(mapper.Map<GuildDto>(guild));
-    }
-    
-    [HttpGet("{guildId}/members")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> GetGuildMembers(string guildId)
-    {
-        var members = await unitOfWork.GuildRepository.GetGuildMembers(guildId);
-        return Ok(mapper.Map<IEnumerable<GuildMemberDto>>(members));
     }
     
     [HttpDelete("{guildId}")]

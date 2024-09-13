@@ -10,7 +10,7 @@ import { HomePage } from './features/home/HomePage.tsx';
 import { LoadingPage } from './components/LoadingPage.tsx';
 import { loginUser } from './data/slices/userSlice.ts';
 import { GuildsPage } from './features/guilds/GuildsPage.tsx';
-import { ManageGuildPage } from './features/guilds/ManageGuildPage.tsx';
+import { GuildDetailsPage } from './features/guilds/GuildDetailsPage.tsx';
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
           },
           {
             path: ":guildId",
-            Component: ManageGuildPage
+            Component: GuildDetailsPage
           },
         ]
       }

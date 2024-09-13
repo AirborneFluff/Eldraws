@@ -4,7 +4,7 @@ import {
   useSearchGuildsQuery
 } from '../../../data/services/api/guild-api.ts';
 import { useEffect, useState } from 'react';
-import { Guild } from '../../../data/models/guild.ts';
+import { Guild } from '../../../data/entities/guild.ts';
 import useDebounce from "../../../core/hooks/useDebounce.ts";
 
 export function JoinGuildModal({open, onSuccess, onCancel}) {

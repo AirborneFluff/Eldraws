@@ -29,6 +29,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     private static void SetGuildMembershipRelations(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GuildMembership>()
+            .Property(gm => gm.Active)
+            .HasDefaultValue(true);
+        
+        modelBuilder.Entity<GuildMembership>()
             .HasKey(gm => new { gm.GuildId, gm.AppUserId });
         modelBuilder.Entity<GuildMembership>()
             .HasOne(gm => gm.AppUser)

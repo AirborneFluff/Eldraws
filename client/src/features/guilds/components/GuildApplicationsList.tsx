@@ -1,6 +1,6 @@
 import { Button, Descriptions, List, Space } from 'antd';
 import { CheckOutlined, StopOutlined, CloseOutlined } from '@ant-design/icons';
-import { GuildApplication } from '../../../data/models/guild-application.ts';
+import { GuildApplication } from '../../../data/entities/guild-application.ts';
 import {
   useApplicationResponseMutation,
   useGetGuildApplicationsQuery
@@ -8,11 +8,11 @@ import {
 import {ApplicationResponseAction} from "../../../data/types/application-response-action.ts";
 import {useEffect} from "react";
 import {ApplicationResponseBody} from "../../../data/models/application-response-body.ts";
+import {useParams} from "react-router-dom";
 
-export function GuildApplicationsList({guildId}) {
-  const {data, isLoading, refetch} = useGetGuildApplicationsQuery(guildId, {
-    skip: guildId == undefined
-  });
+export function GuildApplicationsList() {
+  const { guildId } = useParams();
+  const {data, isLoading, refetch} = useGetGuildApplicationsQuery(guildId);
   const applications = data as GuildApplication[];
 
   const [respondToApplication, {
@@ -47,7 +47,7 @@ export function GuildApplicationsList({guildId}) {
           item={item}
           onResponse={handleResponse}
         />}
-      loading={isLoading || !guildId}
+      loading={isLoading}
     />
   )
 }

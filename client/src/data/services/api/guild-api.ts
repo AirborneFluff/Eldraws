@@ -1,6 +1,7 @@
 import {baseApi} from './base-api.ts';
-import {Guild} from '../../models/guild.ts';
+import {Guild} from '../../entities/guild.ts';
 import {ApplicationResponseAction} from "../../types/application-response-action.ts";
+import {MemberAction} from "../../types/member-action.ts";
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -53,6 +54,14 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getGuildMembers: builder.query({
+      query: (id: string) => {
+        return {
+          url: `/guilds/${id}/members`,
+          method: 'GET',
+        };
+      }
+    }),
     applicationResponse: builder.mutation({
       query: ({guildId, applicationId, action}: {
         guildId: string,
@@ -73,6 +82,18 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    memberAction: builder.mutation({
+      query: ({guildId, appUserId, action}: {
+        guildId: string,
+        appUserId: string,
+        action: MemberAction
+      }) => {
+        return {
+          url: `/guilds/${guildId}/members/${appUserId}/${action}`,
+          method: 'POST'
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -85,5 +106,7 @@ export const {
   useGetGuildQuery,
   useGetGuildApplicationsQuery,
   useApplicationResponseMutation,
-  useDeleteGuildMutation
+  useDeleteGuildMutation,
+  useGetGuildMembersQuery,
+  useMemberActionMutation,
 } = guildApi;

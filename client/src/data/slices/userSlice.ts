@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '../models/user.ts';
+import { User } from '../entities/user.ts';
 import { AppDispatch } from '../store.ts';
 import { authApi } from '../services/api/auth-api.ts';
 
