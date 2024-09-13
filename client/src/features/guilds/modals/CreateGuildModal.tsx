@@ -41,7 +41,7 @@ export function CreateGuildModal({open, onSuccess, onCancel}) {
 
         {isError &&
           <Alert
-            className='mb-6'
+            className='my-4'
             type='error'
             description={error?.message}/>
         }

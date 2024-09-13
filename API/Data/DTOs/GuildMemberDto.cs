@@ -7,4 +7,7 @@ public class GuildMemberDto
     
     public required string UserName { get; set; }
     public required string Email { get; set; }
+    
+    public required string RoleId { get; set; }
+    public required string RoleName { get; set; }
 }

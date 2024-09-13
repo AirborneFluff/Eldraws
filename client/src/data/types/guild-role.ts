@@ -1,0 +1,1 @@
+export type GuildRole = 'Owner' | 'Member';

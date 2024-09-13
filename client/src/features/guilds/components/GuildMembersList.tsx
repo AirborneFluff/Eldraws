@@ -19,6 +19,11 @@ export function GuildMembersList() {
     setSelectedMember(item);
   }
 
+  function handleMemberUpdate() {
+    setSelectedMember(null);
+    refetch(guildId);
+  }
+
   return (
     <>
       <List
@@ -35,7 +40,8 @@ export function GuildMembersList() {
       />
       <GuildMemberDetailsModal
         member={selectedMember}
-        onCancel={() => setSelectedMember(null)} />
+        onSuccess={handleMemberUpdate}
+        onDismiss={() => setSelectedMember(null)} />
     </>
   )
 }

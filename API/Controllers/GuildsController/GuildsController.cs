@@ -22,10 +22,26 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
         var newGuild = mapper.Map<Guild>(guild);
         newGuild.Id = Guid.NewGuid().ToString();
         newGuild.OwnerId = User.GetUserId();
+        var ownerRole = new GuildRole()
+        {
+            Id = Guid.NewGuid().ToString(),
+            GuildId = newGuild.Id,
+            Name = "Owner"
+        };
+        var defaultRole = new GuildRole()
+        {
+            Id = Guid.NewGuid().ToString(),
+            GuildId = newGuild.Id,
+            Name = "Member"
+        };
+        newGuild.DefaultGuildMemberRoleId = defaultRole.Id;
+        newGuild.Roles.Add(ownerRole);
+        newGuild.Roles.Add(defaultRole);
         newGuild.Memberships.Add(new GuildMembership()
         {
             AppUserId = newGuild.OwnerId,
-            GuildId = newGuild.Id
+            GuildId = newGuild.Id,
+            RoleId = ownerRole.Id
         });
         
         unitOfWork.GuildRepository.Add(newGuild);

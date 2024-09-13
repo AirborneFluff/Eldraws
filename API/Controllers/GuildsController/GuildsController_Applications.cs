@@ -58,7 +58,8 @@ public partial class GuildsController
         guild.Memberships.Add(new GuildMembership
         {
             AppUserId = application.AppUserId,
-            GuildId = guildId
+            GuildId = guildId,
+            RoleId = guild.DefaultGuildMemberRoleId,
         });
 
         application.ReviewerId = User.GetUserId();

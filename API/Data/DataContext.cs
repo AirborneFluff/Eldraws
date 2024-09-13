@@ -10,6 +10,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<GuildMembership> GuildMemberships { get; set; }
     public required DbSet<GuildApplication> GuildApplications { get; set; }
     public required DbSet<GuildBlacklist> GuildBlacklists { get; set; }
+    public required DbSet<GuildRole> GuildRoles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +21,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .WithMany(user => user.OwnedGuilds)
             .HasForeignKey(g => g.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<GuildRole>()
+            .HasOne(gr => gr.Guild)
+            .WithMany(g => g.Roles);
         
         SetGuildMembershipRelations(modelBuilder);
         SetGuildApplicationRelations(modelBuilder);
@@ -31,7 +36,9 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         modelBuilder.Entity<GuildMembership>()
             .Property(gm => gm.Active)
             .HasDefaultValue(true);
-        
+
+        modelBuilder.Entity<GuildMembership>()
+            .HasOne(gm => gm.Role);
         modelBuilder.Entity<GuildMembership>()
             .HasKey(gm => new { gm.GuildId, gm.AppUserId });
         modelBuilder.Entity<GuildMembership>()

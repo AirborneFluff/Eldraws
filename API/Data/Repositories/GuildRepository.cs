@@ -64,6 +64,7 @@ public class GuildRepository(DataContext context)
         return context.GuildMemberships
             .Where(gm => gm.GuildId == guildId)
             .Include(gm => gm.AppUser)
+            .Include(gm => gm.Role)
             .AsNoTracking()
             .ToListAsync();
     }

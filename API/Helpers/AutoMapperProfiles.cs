@@ -15,7 +15,9 @@ public class AutoMapperProfiles : Profile
             .ForMember(dest => dest.UserName, opt =>
                 opt.MapFrom(src => src.AppUser!.UserName))
             .ForMember(dest => dest.Email, opt =>
-                opt.MapFrom(src => src.AppUser!.Email));
+                opt.MapFrom(src => src.AppUser!.Email))
+            .ForMember(dest => dest.RoleName, opt =>
+                opt.MapFrom(src => src.Role!.Name));
 
         CreateMap<GuildApplication, GuildApplicationDto>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser!.Email))
