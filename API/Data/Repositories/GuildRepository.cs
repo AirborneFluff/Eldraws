@@ -69,6 +69,14 @@ public class GuildRepository(DataContext context)
             .ToListAsync();
     }
     
+    public Task<List<GuildBlacklist>> GetGuildBlacklist(string guildId)
+    {
+        return context.GuildBlacklists
+            .Where(gm => gm.GuildId == guildId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+    
     public Task<List<GuildApplication>> GetGuildApplications(string guildId)
     {
         return context.GuildApplications

@@ -17,6 +17,21 @@ public partial class GuildsController
         return Ok(mapper.Map<IEnumerable<GuildMemberDto>>(members));
     }
     
+    [HttpGet("{guildId}/blacklist")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> GetGuildBlacklist(string guildId)
+    {
+        var users = await unitOfWork.GuildRepository.GetGuildBlacklist(guildId);
+        return Ok(mapper.Map<IEnumerable<BlacklistedUserDto>>(users));
+    }
+    
+    [HttpGet("{guildId}/blacklist/{email}")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> RemoveFromBlacklist(string guildId, string email)
+    {
+        throw new NotImplementedException();
+    }
+    
     [HttpPost("{guildId}/members/{appUserId}/remove")]
     [ServiceFilter(typeof(ValidateGuildOwner))]
     public async Task<ActionResult> RemoveGuildMember(string guildId, string appUserId)

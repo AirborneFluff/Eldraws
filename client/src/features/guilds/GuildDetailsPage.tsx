@@ -11,6 +11,7 @@ import {RootState} from "../../data/store.ts";
 import {User} from "../../data/entities/user.ts";
 import {GuildEventsList} from "./components/GuildEventsList.tsx";
 import {GuildMembersList} from "./components/GuildMembersList.tsx";
+import {GuildBlacklistList} from "./components/GuildBlacklistList.tsx";
 
 export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
@@ -49,6 +50,11 @@ export function GuildDetailsPage() {
       key: 'members',
       label: 'Members',
       children: <GuildMembersList />
+    },
+    {
+      key: 'blacklist',
+      label: 'Blacklist',
+      children: <GuildBlacklistList />
     }
   ] : [];
 

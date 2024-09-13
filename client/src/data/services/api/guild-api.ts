@@ -54,6 +54,14 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getGuildBlacklistedUsers: builder.query({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}/blacklist`,
+          method: 'GET',
+        };
+      }
+    }),
     getGuildMembers: builder.query({
       query: (id: string) => {
         return {
@@ -109,4 +117,5 @@ export const {
   useDeleteGuildMutation,
   useGetGuildMembersQuery,
   useMemberActionMutation,
+  useGetGuildBlacklistedUsersQuery
 } = guildApi;
