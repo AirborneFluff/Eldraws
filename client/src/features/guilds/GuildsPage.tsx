@@ -9,7 +9,7 @@ import { usePage } from '../../core/ui/AppLayout.tsx';
 export function GuildsPage() {
   const [ showGuildSearchModal, setShowGuildSearchModal ] = useState(false);
   const [ showCreate, setShowCreate ] = useState(false);
-  const {data: guilds, guildsLoading, guildsError, refetch} = useGetUserGuildsQuery();
+  const {data: guilds, isLoading: guildsLoading, isError: guildsError, refetch} = useGetUserGuildsQuery();
   const {setHeaderContent} = usePage();
 
   useEffect(() => {

@@ -62,4 +62,15 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper) : B
         var members = await unitOfWork.GuildRepository.GetGuildMembers(guildId);
         return Ok(mapper.Map<IEnumerable<GuildMemberDto>>(members));
     }
+    
+    [HttpDelete("{guildId}")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> DeleteGuild(string guildId)
+    {
+        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        unitOfWork.GuildRepository.Remove(guild);
+
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest("There was an issue removing this guild");
+    }
 }

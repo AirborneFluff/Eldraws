@@ -65,6 +65,14 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    deleteGuild: builder.mutation({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}`,
+          method: 'DELETE'
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -77,4 +85,5 @@ export const {
   useGetGuildQuery,
   useGetGuildApplicationsQuery,
   useApplicationResponseMutation,
+  useDeleteGuildMutation
 } = guildApi;

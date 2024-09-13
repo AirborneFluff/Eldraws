@@ -15,7 +15,6 @@ export function GuildApplicationsList({guildId}) {
   });
   const applications = data as GuildApplication[];
 
-
   const [respondToApplication, {
     isLoading: isResponseLoading,
     isSuccess: isResponseSuccess

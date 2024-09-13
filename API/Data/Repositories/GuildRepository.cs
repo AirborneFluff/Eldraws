@@ -9,6 +9,11 @@ public class GuildRepository(DataContext context)
     {
         context.Guilds.Add(guild);
     }
+    
+    public void Remove(Guild guild)
+    {
+        context.Guilds.Remove(guild);
+    }
 
     public Task<Guild> GetById(string guildId)
     {
