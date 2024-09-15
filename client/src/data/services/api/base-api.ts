@@ -12,6 +12,8 @@ const baseQuery = fetchBaseQuery({
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+const enableDelay = import.meta.env.VITE_API_DELAY || false;
+
 const baseQueryWithErrorTransform: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
@@ -27,7 +29,8 @@ const baseQueryWithErrorTransform: BaseQueryFn<string | FetchArgs, unknown, Fetc
       }
     }
   }
-  await delay(500);
+
+  if (enableDelay) await delay(500);
   return result;
 };
 
