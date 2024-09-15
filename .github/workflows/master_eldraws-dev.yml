@@ -20,6 +20,8 @@ jobs:
 
       - name: Build Vite Application
         working-directory: ./client
+        env:
+          VITE_DISCORD_OAUTH_URL: ${{ vars.DISCORD_OAUTH_URL }}
         run: |
           npm install
           npm run build
