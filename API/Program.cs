@@ -13,6 +13,9 @@ builder.Services.AddSpaStaticFiles(configuration =>
 
 var app = builder.Build();
 
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("V1");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
