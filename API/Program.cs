@@ -14,7 +14,12 @@ if (app.Environment.IsDevelopment())
 } 
 
 app.UseHttpsRedirection();
+
+app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.MapControllers();
+app.MapFallbackToController("Index", "Fallback");
 
 app.UseAuthentication();
 app.UseAuthorization();
