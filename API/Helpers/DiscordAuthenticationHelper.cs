@@ -25,9 +25,8 @@ public class DiscordAuthenticationHelper(IConfiguration config)
         var userResponse = JsonSerializer.Deserialize<UserResponse>(responseContent);
         if (userResponse == null) return null;
 
-        return new AppUser()
+        return new AppUser
         {
-            Email = userResponse.Email,
             UserName = userResponse.UserName
         };
     }
@@ -73,6 +72,4 @@ public class UserResponse
 {
     [JsonPropertyName("username")]
     public required string UserName { get; set; }
-    [JsonPropertyName("email")]
-    public required string Email { get; set; }
 }

@@ -14,15 +14,12 @@ public class AutoMapperProfiles : Profile
         CreateMap<GuildMembership, GuildMemberDto>()
             .ForMember(dest => dest.UserName, opt =>
                 opt.MapFrom(src => src.AppUser!.UserName))
-            .ForMember(dest => dest.Email, opt =>
-                opt.MapFrom(src => src.AppUser!.Email))
             .ForMember(dest => dest.RoleName, opt =>
                 opt.MapFrom(src => src.Role!.Name));
 
         CreateMap<GuildBlacklist, BlacklistedUserDto>();
 
         CreateMap<GuildApplication, GuildApplicationDto>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser!.Email))
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
     }
 }

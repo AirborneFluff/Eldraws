@@ -9,27 +9,25 @@ public class GuildRepository(DataContext context)
     {
         context.Guilds.Add(guild);
     }
-    
-    public void Remove(Guild guild)
-    {
-        context.Guilds.Remove(guild);
-    }
 
     public Task<Guild> GetById(string guildId)
     {
         return context.Guilds
+            .Where(guild => !guild.Archived)
             .SingleAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> ExistsById(string guildId)
     {
         return context.Guilds
+            .Where(guild => !guild.Archived)
             .AnyAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> IsGuildOwner(string guildId, string userId)
     {
         return context.Guilds
+            .Where(guild => !guild.Archived)
             .AnyAsync(guild => guild.Id == guildId && guild.OwnerId == userId);
     }
 
@@ -48,17 +46,18 @@ public class GuildRepository(DataContext context)
             .AsNoTracking()
             .ToListAsync();
     }
-    
+
     public Task<List<Guild>> GetUsersGuilds(string userId)
     {
         return context.GuildMemberships
             .Where(gm => gm.AppUserId == userId)
             .Include(gm => gm.Guild)
+            .Where(gm => gm.Guild != null && !gm.Guild.Archived)
             .AsNoTracking()
             .Select(gm => gm.Guild!)
             .ToListAsync();
     }
-    
+
     public Task<List<GuildMembership>> GetGuildMembers(string guildId)
     {
         return context.GuildMemberships
@@ -68,7 +67,7 @@ public class GuildRepository(DataContext context)
             .AsNoTracking()
             .ToListAsync();
     }
-    
+
     public Task<List<GuildBlacklist>> GetGuildBlacklist(string guildId)
     {
         return context.GuildBlacklists
@@ -76,7 +75,7 @@ public class GuildRepository(DataContext context)
             .AsNoTracking()
             .ToListAsync();
     }
-    
+
     public Task<List<GuildApplication>> GetGuildApplications(string guildId)
     {
         return context.GuildApplications
@@ -89,13 +88,16 @@ public class GuildRepository(DataContext context)
     public Task<bool> IsGuildMember(string guidId, string appUserId)
     {
         return context.GuildMemberships
+            .Include(gm => gm.Guild)
+            .Where(gm => gm.Guild != null && !gm.Guild.Archived)
             .AnyAsync(gm => gm.GuildId == guidId && gm.AppUserId == appUserId);
     }
 
-    public Task<bool> IsEmailBlacklisted(string guidId, string email)
+    public Task<bool> IsUserNameBlacklisted(string guidId, string userName)
     {
         return context.GuildBlacklists
-            .AnyAsync(blacklist => blacklist.GuildId == guidId && blacklist.Email.ToUpper() == email.ToUpper());
+            .Where(bl => bl.GuildId == guidId)
+            .AnyAsync(bl => bl.UserName.ToLower() == userName.ToLower());
     }
 
     public Task<bool> HasOutstandingApplication(string guidId, string userId)
@@ -123,5 +125,17 @@ public class GuildRepository(DataContext context)
     public void RemoveMember(GuildMembership membership)
     {
         context.GuildMemberships.Remove(membership);
+    }
+
+    public void RemoveBlacklist(GuildBlacklist blacklist)
+    {
+        context.GuildBlacklists.Remove(blacklist);
+    }
+    
+    public Task<GuildBlacklist?> GetBlacklistByUserName(string guildId, string userName)
+    {
+        return context.GuildBlacklists
+            .Where(bl => bl.GuildId == guildId)
+            .FirstOrDefaultAsync(gb => gb.UserName.ToLower() == userName.ToLower());
     }
 }

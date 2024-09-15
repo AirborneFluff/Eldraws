@@ -74,12 +74,12 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
     
     [HttpDelete("{guildId}")]
     [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> DeleteGuild(string guildId)
+    public async Task<ActionResult> ArchiveGuild(string guildId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        unitOfWork.GuildRepository.Remove(guild);
+        guild.Archived = true;
 
         if (await unitOfWork.Complete()) return Ok();
-        return BadRequest("There was an issue removing this guild");
+        return BadRequest("There was an issue archiving this guild");
     }
 }

@@ -1,21 +1,29 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
-import { Layout, Skeleton } from 'antd';
-import { Outlet, useFetcher } from 'react-router-dom';
-import { usePathSegments } from '../hooks/usePathSegments.ts';
-import { HumanizeWord } from '../utils/text-utilities.ts';
-import { PageHeader } from '@ant-design/pro-components';
+import React, {createContext, useCallback, useContext, useState} from 'react';
+import {Layout, Skeleton} from 'antd';
+import {Outlet, useFetcher} from 'react-router-dom';
+import {usePathSegments} from '../hooks/usePathSegments.ts';
+import {HumanizeWord} from '../utils/text-utilities.ts';
+import {PageHeader} from '@ant-design/pro-components';
+import {ArrowLeftOutlined} from "@ant-design/icons";
 
-const { Header, Content } = Layout;
+
+const {Header, Content} = Layout;
 
 const PageContext = createContext<{
   isLoading: boolean;
   setLoading: (loading: boolean) => void;
   setHeaderContent: (loading: HeaderContent) => void;
+  addBreadcrumbOverride: (item: BreadcrumbOverride) => void;
 } | undefined>(undefined);
 
 interface HeaderContent {
   title: string,
   subtitle: string
+}
+
+interface BreadcrumbOverride {
+  match: string,
+  override: string
 }
 
 export function AppLayout() {
@@ -25,16 +33,41 @@ export function AppLayout() {
     breadcrumbName: HumanizeWord(segment)
   }))
   const [isLoading, setIsLoading] = useState(false);
-  const [headerContent, setHeaderContent] = useState<HeaderContent | null>(null);
+  const [headerContent, setHeaderContent] = useState<HeaderContent>();
+  const [breadcrumbOverrides, setBreadcrumbOverrides] = useState<BreadcrumbOverride[]>([]);
 
   const setLoading = useCallback((loading: boolean) => {
     setIsLoading(loading);
   }, []);
 
+  const breadcrumbs = routes.map(bc => {
+    const index = breadcrumbOverrides
+      .findIndex(override => override.match.toLowerCase() === bc.breadcrumbName.toLowerCase());
+    if (index === -1) return bc;
+
+    return {
+      breadcrumbName: breadcrumbOverrides[index].override
+    }
+  })
+
   function handleOnLogout() {
     fetcher.submit(null, {
       action: '/logout',
       method: 'post',
+    });
+  }
+
+  function addBreadcrumbOverride(item: BreadcrumbOverride) {
+    setBreadcrumbOverrides(curr => {
+      const index = curr.findIndex(ov => ov.match.toLowerCase() === item.match.toLowerCase());
+
+      if (index !== -1) {
+        const newOverrides = [...curr];
+        newOverrides[index] = item;
+        return newOverrides;
+      }
+
+      return [...curr, item];
     });
   }
 
@@ -51,17 +84,18 @@ export function AppLayout() {
         </Menu>*/}
       </Header>
       <Content className='p-1'>
-        <PageContext.Provider value={{ setLoading, setHeaderContent }}>
+        <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
           <div className='container'>
             <div className='rounded-sm p-8 bg-gray-100'>
               {headerContent &&
                 <PageHeader
+                  backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
                   onBack={() => window.history.back()}
-                  title={isLoading ? <Skeleton.Input size='large' active /> : headerContent.title}
-                  subTitle={isLoading ? <Skeleton.Input size='small' active /> : headerContent.subtitle}
-                  breadcrumb={{routes}} />
+                  title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
+                  subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
+                  breadcrumb={{breadcrumbs}}/>
               }
-              <Outlet />
+              <Outlet/>
             </div>
           </div>
         </PageContext.Provider>
