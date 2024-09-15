@@ -45,7 +45,7 @@ export function GuildDetailsPage() {
   const tabs: TabItem[] = [
     {
       key: 'events',
-      label: 'Current Events',
+      label: 'Events',
       children: <GuildEventsList />,
     }
   ]
@@ -77,9 +77,10 @@ export function GuildDetailsPage() {
       <Tabs
         destroyInactiveTabPane={true}
         defaultActiveKey="1"
-        size='large'
+        size='small'
+
         items={[...tabs, ...adminTabs]}
-        tabBarExtraContent={
+        tabBarExtraContent={false && //todo Fix for mobile view later
           <Button
             danger
             onClick={() => setShowArchiveGuildModal(true)}

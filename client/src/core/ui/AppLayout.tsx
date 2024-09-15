@@ -83,10 +83,10 @@ export function AppLayout() {
           <Menu.Item key='logout' className='ml-auto' icon={<UserOutlined />} onClick={handleOnLogout}>Logout</Menu.Item>
         </Menu>*/}
       </Header>
-      <Content className='p-1'>
+      <Content>
         <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
           <div className='container'>
-            <div className='rounded-sm p-8 bg-gray-100'>
+            <div className='rounded-sm p-4 md:p-8 bg-gray-100'>
               {headerContent &&
                 <PageHeader
                   backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
