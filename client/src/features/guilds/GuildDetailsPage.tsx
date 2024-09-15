@@ -1,9 +1,9 @@
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import { Guild } from '../../data/entities/guild.ts';
 import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
-import { useEffect } from 'react';
+import {useEffect, useState} from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
-import { Tabs } from 'antd';
+import {Button, Flex, Input, Modal, Space, Tabs} from 'antd';
 import { TabItem } from '../../data/types/tab-item.ts';
 import { GuildApplicationsList } from './components/GuildApplicationsList.tsx';
 import {useSelector} from "react-redux";
@@ -12,20 +12,30 @@ import {User} from "../../data/entities/user.ts";
 import {GuildEventsList} from "./components/GuildEventsList.tsx";
 import {GuildMembersList} from "./components/GuildMembersList.tsx";
 import {GuildBlacklistList} from "./components/GuildBlacklistList.tsx";
+import {ArchiveGuildModal} from "./modals/ArchiveGuildModal.tsx";
 
 export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const {guildId} = useParams();
-  const {setLoading, setHeaderContent} = usePage();
+  const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data, isLoading: guildLoading, isError: guildError, refetch} = useGetGuildQuery<Guild>(guildId);
   const guild = data as Guild;
   const isGuildOwner = guild?.ownerId === user.id;
+  const [showArchiveGuildModal, setShowArchiveGuildModal]= useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHeaderContent({
       title: "Guild Details",
       subtitle: guild ? guild.name : null
-    })
+    });
+
+    if (guild) {
+      addBreadcrumbOverride({
+        match: guild.id,
+        override: guild.name
+      })
+    }
   }, [guild]);
 
   useEffect(() => {
@@ -58,6 +68,10 @@ export function GuildDetailsPage() {
     }
   ] : [];
 
+  function onArchiveGuild() {
+    navigate('/app/guilds');
+  }
+
   return (
     <>
       <Tabs
@@ -65,6 +79,18 @@ export function GuildDetailsPage() {
         defaultActiveKey="1"
         size='large'
         items={[...tabs, ...adminTabs]}
+        tabBarExtraContent={
+          <Button
+            danger
+            onClick={() => setShowArchiveGuildModal(true)}
+          >Close Guild</Button>
+        }
+      />
+      <ArchiveGuildModal
+        open={showArchiveGuildModal}
+        onSuccess={onArchiveGuild}
+        guild={guild}
+        onCancel={() => setShowArchiveGuildModal(false)}
       />
     </>
   )

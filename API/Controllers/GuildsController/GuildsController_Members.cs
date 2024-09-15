@@ -1,8 +1,6 @@
 ﻿using API.ActionFilters;
 using API.Data.DTOs;
 using API.Entities;
-using API.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -25,11 +23,44 @@ public partial class GuildsController
         return Ok(mapper.Map<IEnumerable<BlacklistedUserDto>>(users));
     }
     
-    [HttpGet("{guildId}/blacklist/{email}")]
+    [HttpPost("{guildId}/blacklist/{userName}")]
     [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> RemoveFromBlacklist(string guildId, string email)
+    public async Task<ActionResult> AddUserToBlacklist(string guildId, string userName)
     {
-        throw new NotImplementedException();
+        var userBlacklisted = await unitOfWork.GuildRepository
+            .IsUserNameBlacklisted(guildId, userName);
+        if (userBlacklisted) return BadRequest("This username has already been blacklisted");
+        
+        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        guild.Blacklist.Add(new GuildBlacklist
+        {
+            UserName = userName,
+            GuildId = guildId
+        });
+
+        var outstandingApplications = await unitOfWork.GuildRepository.GetGuildApplications(guildId);
+        var application = outstandingApplications
+            .FirstOrDefault(apl => apl.AppUser!.UserName!.ToLower() == userName.ToLower());
+
+        if (application != null)
+            return BadRequest("This user has already applied.\nBlacklist this user through the applications page");
+        
+
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest("Issue adding username to blacklist");
+    }
+    
+    [HttpDelete("{guildId}/blacklist/{userName}")]
+    [ServiceFilter(typeof(ValidateGuildOwner))]
+    public async Task<ActionResult> RemoveFromBlacklist(string guildId, string userName)
+    {
+        var blacklistedUser = await unitOfWork.GuildRepository.GetBlacklistByUserName(guildId, userName);
+        if (blacklistedUser == null) return NotFound("No blacklisted member found by this username");
+        
+        unitOfWork.GuildRepository.RemoveBlacklist(blacklistedUser);
+        
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest("Issue removing username from blacklist");
     }
     
     [HttpPost("{guildId}/members/{appUserId}/remove")]
@@ -61,10 +92,14 @@ public partial class GuildsController
         var user = await userManager.FindByIdAsync(appUserId);
         if (user == null) return BadRequest("Couldn't find any user by that Id");
         
+        var userBlacklisted = await unitOfWork.GuildRepository
+            .IsUserNameBlacklisted(guildId, user.UserName!);
+        if (userBlacklisted) return BadRequest("This username has already been blacklisted");
+        
         unitOfWork.GuildRepository.RemoveMember(membership);
         guild.Blacklist.Add(new GuildBlacklist
         {
-            Email = user.Email!,
+            UserName = user.UserName!,
             GuildId = guildId
         });
 

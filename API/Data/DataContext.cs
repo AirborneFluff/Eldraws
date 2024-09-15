@@ -22,6 +22,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .HasForeignKey(g => g.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Guild>()
+            .Property(g => g.Archived)
+            .HasDefaultValue(false);
+
         modelBuilder.Entity<GuildRole>()
             .HasOne(gr => gr.Guild)
             .WithMany(g => g.Roles);
@@ -82,7 +86,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     private static void SetGuildApplicationBlacklistRelations(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<GuildBlacklist>()
-            .HasKey(ga => new { ga.GuildId, ga.Email });
+            .HasKey(ga => new { ga.GuildId, ga.UserName });
         modelBuilder.Entity<GuildBlacklist>()
             .HasOne(ga => ga.Guild)
             .WithMany(guild => guild.Blacklist);

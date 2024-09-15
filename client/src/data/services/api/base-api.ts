@@ -17,7 +17,6 @@ const baseQueryWithErrorTransform: BaseQueryFn<string | FetchArgs, unknown, Fetc
   api,
   extraOptions
 ) => {
-  await delay(1000);
   const result = await baseQuery(args, api, extraOptions) as any;
 
   if (result.error) {
@@ -28,7 +27,7 @@ const baseQueryWithErrorTransform: BaseQueryFn<string | FetchArgs, unknown, Fetc
       }
     }
   }
-
+  await delay(500);
   return result;
 };
 

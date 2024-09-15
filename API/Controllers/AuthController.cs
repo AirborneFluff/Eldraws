@@ -25,7 +25,7 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         var user = await DiscordAuthenticationHelper.CreateUserFromDiscord(tokenResponse.AccessToken);
         if (user == null) return BadRequest();
 
-        var userExists = await userManager.FindByEmailAsync(user.Email!);
+        var userExists = await userManager.FindByNameAsync(user.UserName!);
         if (userExists != null)
         {
             await HttpSignin(userExists);
@@ -57,7 +57,6 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         var user = new UserDto()
         {
             Id = User.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
-            Email = User.Claims.Single(claim => claim.Type == ClaimTypes.Email).Value,
             UserName = User.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value
         };
         
@@ -69,7 +68,6 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         var claims = new Collection<Claim>()
         {
             new (ClaimTypes.NameIdentifier, user.Id),
-            new (ClaimTypes.Email, user.Email!),
             new (ClaimTypes.Name, user.UserName!),
         };
         

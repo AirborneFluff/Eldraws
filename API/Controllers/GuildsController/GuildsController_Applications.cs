@@ -15,8 +15,8 @@ public partial class GuildsController
         var isUserMember = await unitOfWork.GuildRepository.IsGuildMember(guildId, User.GetUserId());
         if (isUserMember) return BadRequest("You're already a member of this guild");
         
-        var isUserBlacklisted = await unitOfWork.GuildRepository.IsEmailBlacklisted(guildId, User.GetUserEmail());
-        if (isUserBlacklisted) return BadRequest("You can't apply to this guild");
+        var isUserBlacklisted = await unitOfWork.GuildRepository.IsUserNameBlacklisted(guildId, User.GetUserName());
+        if (isUserBlacklisted) return BadRequest("You've been blacklisted from this guild");
         
         var hasOutstanding = await unitOfWork.GuildRepository
             .HasOutstandingApplication(guildId, User.GetUserId());
@@ -51,7 +51,7 @@ public partial class GuildsController
         if (application.Accepted != null) return BadRequest("This application has already been reviewed");
 
         var userBlacklisted = await unitOfWork.GuildRepository
-            .IsEmailBlacklisted(guildId, application.AppUser!.Email!);
+            .IsUserNameBlacklisted(guildId, application.AppUser!.UserName!);
         if (userBlacklisted) return BadRequest("This user has been blacklisted");
 
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
@@ -72,18 +72,23 @@ public partial class GuildsController
     
     [HttpPost("{guildId}/applications/{applicationId}/blacklist")]
     [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> RejectApplication(string guildId, string applicationId)
+    public async Task<ActionResult> BlacklistApplication(string guildId, string applicationId)
     {
         var application = await unitOfWork.GuildRepository.GetApplicationById(applicationId);
         if (application == null) return NotFound("No application found by that Id.");
         if (application.Accepted != null) return BadRequest("This application has already been reviewed");
 
-        var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        guild.Blacklist.Add(new GuildBlacklist
+        var userBlacklisted = await unitOfWork.GuildRepository
+            .IsUserNameBlacklisted(guildId, application.AppUser!.UserName!);
+        if (!userBlacklisted)
         {
-            Email = application.AppUser!.Email!,
-            GuildId = guildId
-        });
+            var guild = await unitOfWork.GuildRepository.GetById(guildId);
+            guild.Blacklist.Add(new GuildBlacklist
+            {
+                UserName = application.AppUser!.UserName!,
+                GuildId = guildId
+            });
+        }
 
         application.ReviewerId = User.GetUserId();
         application.ReviewDate = DateTime.UtcNow;
@@ -95,7 +100,7 @@ public partial class GuildsController
     
     [HttpPost("{guildId}/applications/{applicationId}/reject")]
     [ServiceFilter(typeof(ValidateGuildOwner))]
-    public async Task<ActionResult> BlacklistUserApplication(string guildId, string applicationId)
+    public async Task<ActionResult> RejectApplication(string guildId, string applicationId)
     {
         var application = await unitOfWork.GuildRepository.GetApplicationById(applicationId);
         if (application == null) return NotFound("No application found by that Id.");

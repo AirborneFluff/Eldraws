@@ -2,6 +2,7 @@ import {baseApi} from './base-api.ts';
 import {Guild} from '../../entities/guild.ts';
 import {ApplicationResponseAction} from "../../types/application-response-action.ts";
 import {MemberAction} from "../../types/member-action.ts";
+import {BlacklistedUser} from "../../entities/blacklisted-user.ts";
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,7 +11,7 @@ const guildApi = baseApi.injectEndpoints({
         url: '/guilds/getUsersGuilds',
         method: 'GET',
       }),
-      transformResponse: (response: Guild[]) => response?.length == 0 ? undefined : response,
+      transformResponse: (response: Guild[]) => response?.length == 0 ? undefined : response
     }),
     createGuild: builder.mutation({
       query: (guild) => ({
@@ -102,6 +103,30 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    removeBlacklistedUser: builder.mutation({
+      query: ({guildId, userName}: BlacklistedUser) => {
+        return {
+          url: `/guilds/${guildId}/blacklist/${userName}`,
+          method: 'DELETE'
+        }
+      }
+    }),
+    blacklistUser: builder.mutation({
+      query: ({guildId, userName}: BlacklistedUser) => {
+        return {
+          url: `/guilds/${guildId}/blacklist/${userName}`,
+          method: 'POST'
+        }
+      }
+    }),
+    archiveGuild: builder.mutation({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}`,
+          method: 'DELETE'
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -117,5 +142,8 @@ export const {
   useDeleteGuildMutation,
   useGetGuildMembersQuery,
   useMemberActionMutation,
-  useGetGuildBlacklistedUsersQuery
+  useGetGuildBlacklistedUsersQuery,
+  useRemoveBlacklistedUserMutation,
+  useBlacklistUserMutation,
+  useArchiveGuildMutation
 } = guildApi;

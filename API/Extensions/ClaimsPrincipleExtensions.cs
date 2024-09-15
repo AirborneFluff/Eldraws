@@ -9,8 +9,8 @@ public static class ClaimsPrincipleExtensions
         return user.Claims.Single(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
     }
 
-    public static string GetUserEmail(this ClaimsPrincipal user)
+    public static string GetUserName(this ClaimsPrincipal user)
     {
-        return user.Claims.Single(claim => claim.Type == ClaimTypes.Email).Value;
+        return user.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
     }
 }

@@ -6,6 +6,7 @@ import {Descriptions, List} from "antd";
 import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
+import {ListView} from "../../../core/ui/ListView.tsx";
 
 export function GuildMembersList() {
   const {guildId} = useParams();
@@ -25,7 +26,7 @@ export function GuildMembersList() {
   }
 
   return (
-    <>
+    <ListView>
       <List
         size='large'
         header={<span>Members</span>}
@@ -42,7 +43,7 @@ export function GuildMembersList() {
         member={selectedMember}
         onSuccess={handleMemberUpdate}
         onDismiss={() => setSelectedMember(null)} />
-    </>
+    </ListView>
   )
 }
 
@@ -56,7 +57,6 @@ function ListItem({item, onClick}: ListItemProps) {
     <List.Item className='hover:bg-gray-200 cursor-pointer !block' onClick={() => onClick(item)}>
       <Descriptions layout='vertical' size='small'>
         <Descriptions.Item label='Username'>{item.userName}</Descriptions.Item>
-        <Descriptions.Item label='Email'>{item.email}</Descriptions.Item>
       </Descriptions>
     </List.Item>
   )

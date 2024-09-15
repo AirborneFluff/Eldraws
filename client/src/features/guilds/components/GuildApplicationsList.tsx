@@ -9,6 +9,7 @@ import {ApplicationResponseAction} from "../../../data/types/application-respons
 import {useEffect} from "react";
 import {ApplicationResponseBody} from "../../../data/models/application-response-body.ts";
 import {useParams} from "react-router-dom";
+import {ListView} from "../../../core/ui/ListView.tsx";
 
 export function GuildApplicationsList() {
   const { guildId } = useParams();
@@ -36,19 +37,21 @@ export function GuildApplicationsList() {
   }
 
   return (
-    <List
-      size='large'
-      header={<span>Your Applications</span>}
-      bordered
-      dataSource={applications}
-      renderItem={(item: GuildApplication) =>
-        <ListItem
-          isLoading={isResponseLoading}
-          item={item}
-          onResponse={handleResponse}
-        />}
-      loading={isLoading}
-    />
+    <ListView>
+      <List
+        size='large'
+        header={<span>Your Applications</span>}
+        bordered
+        dataSource={applications}
+        renderItem={(item: GuildApplication) =>
+          <ListItem
+            isLoading={isResponseLoading}
+            item={item}
+            onResponse={handleResponse}
+          />}
+        loading={isLoading}
+      />
+    </ListView>
   )
 }
 
@@ -62,7 +65,6 @@ function ListItem({item, onResponse, isLoading}: ListItemProps) {
   return (
     <List.Item className='!block'>
       <Descriptions layout='vertical' bordered size='small' title={item.userName}>
-        <Descriptions.Item label='Email'>{item.email}</Descriptions.Item>
         <Descriptions.Item label='Actions'>
           <Space>
             <Button
