@@ -6,15 +6,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.ConfigureServices();
 
-builder.Services.AddSpaStaticFiles(configuration =>
-{
-    configuration.RootPath = "wwwroot";
-});
-
 var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("V1");
 
 if (app.Environment.IsDevelopment())
 {
@@ -24,13 +16,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseSpaStaticFiles();
-
-app.MapControllers();
-
-app.MapFallbackToFile("index.html");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
+
+app.MapFallbackToFile("index.html"); // This serves your Vite app's index.html for any unmatched routes
 
 app.Run();
