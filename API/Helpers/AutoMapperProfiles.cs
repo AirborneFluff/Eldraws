@@ -21,5 +21,8 @@ public class AutoMapperProfiles : Profile
 
         CreateMap<GuildApplication, GuildApplicationDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
+
+        CreateMap<NewEventDto, Event>();
+        CreateMap<Event, EventDto>();
     }
 }

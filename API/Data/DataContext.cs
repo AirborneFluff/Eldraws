@@ -11,6 +11,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<GuildApplication> GuildApplications { get; set; }
     public required DbSet<GuildBlacklist> GuildBlacklists { get; set; }
     public required DbSet<GuildRole> GuildRoles { get; set; }
+    public required DbSet<Event> Events { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

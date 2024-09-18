@@ -11,6 +11,8 @@ import { LoadingPage } from './components/LoadingPage.tsx';
 import { loginUser } from './data/slices/userSlice.ts';
 import { GuildsPage } from './features/guilds/GuildsPage.tsx';
 import { GuildDetailsPage } from './features/guilds/GuildDetailsPage.tsx';
+import {EventDetailsPage} from "./features/events/EventDetailsPage.tsx";
+import {CreateEventPage} from "./features/events/CreateEventPage.tsx";
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -61,6 +63,19 @@ const router = createBrowserRouter([
             path: ":guildId",
             Component: GuildDetailsPage
           },
+        ]
+      },
+      {
+        path: "events",
+        children: [
+          {
+            path: "create",
+            Component: CreateEventPage
+          },
+          {
+            path: ":eventId",
+            Component: EventDetailsPage
+          }
         ]
       }
     ],
