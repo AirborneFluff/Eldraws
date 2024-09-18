@@ -14,7 +14,7 @@ public class GuildRepository(DataContext context)
     {
         return context.Guilds
             .Where(guild => !guild.Archived)
-            .SingleAsync(guild => guild.Id == guildId);
+            .FirstAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> ExistsById(string guildId)
