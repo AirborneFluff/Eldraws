@@ -58,6 +58,14 @@ public class GuildRepository(DataContext context)
             .ToListAsync();
     }
 
+    public Task<List<Event>> GetGuildEvents(string guildId)
+    {
+        return context.Events
+            .Where(gm => gm.GuildId == guildId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public Task<List<GuildMembership>> GetGuildMembers(string guildId)
     {
         return context.GuildMemberships

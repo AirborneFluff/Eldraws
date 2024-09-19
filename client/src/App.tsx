@@ -63,15 +63,15 @@ const router = createBrowserRouter([
             path: ":guildId",
             Component: GuildDetailsPage
           },
+          {
+            path: ":guildId/events/create",
+            Component: CreateEventPage
+          },
         ]
       },
       {
         path: "events",
         children: [
-          {
-            path: "create",
-            Component: CreateEventPage
-          },
           {
             path: ":eventId",
             Component: EventDetailsPage

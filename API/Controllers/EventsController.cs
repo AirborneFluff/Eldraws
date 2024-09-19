@@ -1,7 +1,7 @@
-using API.ActionFilters;
 using API.Data;
 using API.Data.DTOs;
 using API.Entities;
+using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +18,8 @@ public class EventsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         if (!guildExists) return NotFound("No guild found by that Id");
 
         var newEvent = mapper.Map<Event>(eventDto);
+        newEvent.Id = Guid.NewGuid().ToString();
+        newEvent.HostId = User.GetUserId();
         unitOfWork.EventRepository.Add(newEvent);
 
         if (await unitOfWork.Complete()) return Ok(mapper.Map<EventDto>(newEvent));
