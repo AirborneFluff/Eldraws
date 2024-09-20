@@ -1,15 +1,22 @@
 import {Button, Descriptions, List} from "antd";
-import {useNavigate, useParams} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {useGetGuildEventsQuery} from "../../../data/services/api/guild-api.ts";
 import {Event} from "../../../data/entities/event.ts";
 import {ListView} from "../../../core/ui/ListView.tsx";
+import { useEffect } from 'react';
 
 export function GuildEventsList() {
   const {guildId} = useParams();
   const {data, isLoading, refetch} = useGetGuildEventsQuery(guildId);
   const events = data as Event[];
   const navigate = useNavigate();
-  // todo refetch on new event created
+  const locationState = useLocation().state as GuildEventListNavigationState;
+
+  useEffect(() => {
+    if (locationState?.refetch) {
+      refetch();
+    }
+  }, []);
 
   function handleOnClick(item: Event) {
   }
@@ -38,6 +45,10 @@ export function GuildEventsList() {
 interface ListItemProps {
   item: Event,
   onClick: (item: Event) => void
+}
+
+export interface GuildEventListNavigationState {
+  refetch: boolean
 }
 
 function ListItem({item, onClick}: ListItemProps) {

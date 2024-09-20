@@ -8,7 +8,7 @@ const eventApi = baseApi.injectEndpoints({
         method: 'POST',
         body: event
       })
-    })
+    }),
     overrideExisting: false,
   })
 })

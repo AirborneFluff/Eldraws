@@ -3,12 +3,14 @@ import {useEffect} from "react";
 import {useCreateEventMutation} from "../../data/services/api/event-api.ts";
 import {Button, DatePicker, Divider, Form, Input, InputNumber, Select, Switch} from "antd";
 import {EventType, Event} from "../../data/entities/event.ts";
-import {useParams} from "react-router-dom";
+import { useNavigate, useParams } from 'react-router-dom';
+import { GuildEventListNavigationState } from '../guilds/components/GuildEventsList.tsx';
 const { TextArea } = Input;
 
 export function CreateEventPage() {
   const [createEvent, {data, isLoading, isError, isSuccess, error}] = useCreateEventMutation();
   const {setHeaderContent} = usePage();
+  const navigate = useNavigate();
   const {guildId} = useParams();
   const [form] = Form.useForm();
 
@@ -21,7 +23,13 @@ export function CreateEventPage() {
 
   useEffect(() => {
     if (!isSuccess) return;
-    window.history.back();
+    const locationState: GuildEventListNavigationState = {
+      refetch: true
+    }
+
+    navigate(`/app/guilds/${guildId}`, {
+      state: locationState
+    });
   }, [isSuccess]);
 
 
