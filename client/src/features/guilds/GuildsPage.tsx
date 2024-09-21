@@ -16,7 +16,8 @@ export function GuildsPage() {
   useEffect(() => {
     setHeaderContent({
       title: "Guilds",
-      subtitle: undefined
+      subtitle: undefined,
+      backRoute: "/app"
     })
   }, []);
 

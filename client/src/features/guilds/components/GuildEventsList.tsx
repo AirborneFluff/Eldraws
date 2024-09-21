@@ -22,23 +22,23 @@ export function GuildEventsList() {
   }
 
   return (
-    <>
-      <Button onClick={() => navigate("events/create")}>Create Event</Button>
-      <ListView>
-        <List
-          size='large'
-          header={<span>Events</span>}
-          bordered
-          dataSource={events}
-          renderItem={(item: Event) =>
-            <ListItem
-              item={item}
-              onClick={handleOnClick}
-            />}
-          loading={isLoading}
-        />
-      </ListView>
-    </>
+    <ListView
+      buttons={[
+        <Button onClick={() => navigate("events/create")}>Create Event</Button>
+      ]}>
+      <List
+        size='large'
+        header={<span>Events</span>}
+        bordered
+        dataSource={events}
+        renderItem={(item: Event) =>
+          <ListItem
+            item={item}
+            onClick={handleOnClick}
+          />}
+        loading={isLoading}
+      />
+    </ListView>
   )
 }
 

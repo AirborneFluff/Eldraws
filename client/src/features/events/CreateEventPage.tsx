@@ -17,7 +17,8 @@ export function CreateEventPage() {
   useEffect(() => {
     setHeaderContent({
       title: "Create Event",
-      subtitle: undefined
+      subtitle: undefined,
+      backRoute: `/app/guilds/${guildId}`
     })
   }, []);
 

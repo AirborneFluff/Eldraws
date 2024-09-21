@@ -1,6 +1,6 @@
 import React, {createContext, useCallback, useContext, useState} from 'react';
 import {Layout, Skeleton} from 'antd';
-import {Outlet, useFetcher} from 'react-router-dom';
+import { Outlet, useFetcher, useNavigate } from 'react-router-dom';
 import {usePathSegments} from '../hooks/usePathSegments.ts';
 import {HumanizeWord} from '../utils/text-utilities.ts';
 import {PageHeader} from '@ant-design/pro-components';
@@ -12,13 +12,14 @@ const {Header, Content} = Layout;
 const PageContext = createContext<{
   isLoading: boolean;
   setLoading: (loading: boolean) => void;
-  setHeaderContent: (loading: HeaderContent) => void;
+  setHeaderContent: (content: HeaderContent) => void;
   addBreadcrumbOverride: (item: BreadcrumbOverride) => void;
 } | undefined>(undefined);
 
 interface HeaderContent {
   title: string,
-  subtitle: string
+  subtitle: string,
+  backRoute: string | undefined
 }
 
 interface BreadcrumbOverride {
@@ -35,6 +36,7 @@ export function AppLayout() {
   const [isLoading, setIsLoading] = useState(false);
   const [headerContent, setHeaderContent] = useState<HeaderContent>();
   const [breadcrumbOverrides, setBreadcrumbOverrides] = useState<BreadcrumbOverride[]>([]);
+  const navigate = useNavigate();
 
   const setLoading = useCallback((loading: boolean) => {
     setIsLoading(loading);
@@ -71,6 +73,15 @@ export function AppLayout() {
     });
   }
 
+  function handleOnBackPress() {
+    if (headerContent.backRoute == undefined) {
+      window.history.back();
+      return;
+    }
+
+    navigate(headerContent.backRoute);
+  }
+
   return (
     <Layout className='min-h-screen bg-gray-200'>
       <Header className='flex items-center'>
@@ -90,7 +101,7 @@ export function AppLayout() {
               {headerContent &&
                 <PageHeader
                   backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
-                  onBack={() => window.history.back()}
+                  onBack={handleOnBackPress}
                   title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
                   subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
                   breadcrumb={{breadcrumbs}}/>
