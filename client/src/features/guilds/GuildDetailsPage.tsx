@@ -18,7 +18,7 @@ export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const {guildId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
-  const {data, isLoading: guildLoading, isError: guildError, refetch} = useGetGuildQuery<Guild>(guildId);
+  const {data, isLoading: guildLoading, isError: guildError, refetch} = useGetGuildQuery(guildId);
   const guild = data as Guild;
   const isGuildOwner = guild?.ownerId === user.id;
   const [showArchiveGuildModal, setShowArchiveGuildModal]= useState(false);

@@ -2,6 +2,8 @@
 using API.Data;
 using API.Entities;
 using API.Helpers;
+using API.Services;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -58,9 +60,11 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<UnitOfWork>();
         builder.Services.AddScoped<DiscordAuthenticationHelper>();
         builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+        builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
+        builder.Services.AddScoped<ImageService>();
     }
-    
-    public static void AddActionFilters(this WebApplicationBuilder builder)
+
+    private static void AddActionFilters(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<ValidateGuildExists>();
         builder.Services.AddScoped<ValidateGuildOwner>();

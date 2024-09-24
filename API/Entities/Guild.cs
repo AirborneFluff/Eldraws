@@ -13,4 +13,5 @@ public class Guild
     public IList<GuildBlacklist> Blacklist { get; set; } = new List<GuildBlacklist>();
     public IList<GuildRole> Roles { get; set; } = new List<GuildRole>();
     public IList<Event> Events { get; set; } = new List<Event>();
+    public IList<Tile> CustomTiles { get; set; } = new List<Tile>();
 }
