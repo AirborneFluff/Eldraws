@@ -69,5 +69,6 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<ValidateGuildExists>();
         builder.Services.AddScoped<ValidateGuildOwner>();
         builder.Services.AddScoped<ValidateGuildMember>();
+        builder.Services.AddScoped<ValidateEventExists>();
     }
 }

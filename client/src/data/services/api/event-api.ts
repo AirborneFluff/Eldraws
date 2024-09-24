@@ -9,10 +9,16 @@ const eventApi = baseApi.injectEndpoints({
         body: event
       })
     }),
+    getEvent: builder.query({
+      query: (id: string) => ({
+        url: `/events/${id}`
+      })
+    }),
     overrideExisting: false,
   })
 })
 
 export const {
-  useCreateEventMutation
+  useCreateEventMutation,
+  useGetEventQuery
 } = eventApi;
