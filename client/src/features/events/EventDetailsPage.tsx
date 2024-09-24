@@ -4,9 +4,12 @@ import { usePage } from '../../core/ui/AppLayout.tsx';
 import { useParams } from 'react-router-dom';
 import { Event } from '../../data/entities/event.ts';
 import { useGetEventQuery } from '../../data/services/api/event-api.ts';
-import { Button, Descriptions, DescriptionsProps } from 'antd';
+import { Button, Descriptions, DescriptionsProps, List } from 'antd';
 import { getEventTypeName } from '../../core/utils/enum-helper.ts';
 import { ListView } from '../../core/ui/ListView.tsx';
+import { useGetGuildTilesQuery } from '../../data/services/api/guild-api.ts';
+import { Tile } from '../../data/entities/tile.ts';
+import { TileView } from './components/TileView.tsx';
 
 export function EventDetailsPage() {
   const [showCreateTile, setShowCreateTile] = useState(false);
@@ -14,6 +17,9 @@ export function EventDetailsPage() {
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data, isLoading: eventLoading, isError: eventError, refetch} = useGetEventQuery(eventId);
   const event = data as Event;
+
+  const {data: tileData, isLoading: tilesLoading, isError: tilesError, refetch: refetchTiles} = useGetGuildTilesQuery(event?.guildId);
+  const tiles = tileData as Tile[];
 
   useEffect(() => {
     setHeaderContent({
@@ -33,6 +39,12 @@ export function EventDetailsPage() {
     setLoading(eventLoading);
   }, [eventLoading]);
 
+  function onCreateTileSuccess() {
+    setShowCreateTile(false);
+    console.log("Ho")
+    refetchTiles();
+  }
+
   const eventDescriptionItems: DescriptionsProps['items'] = event ? [
     {key: 1, label: 'Title', children: event.title},
     {key: 2, label: 'Subtitle', children: event.subtitle},
@@ -47,9 +59,23 @@ export function EventDetailsPage() {
       ]}>
       <Descriptions size='small' bordered items={eventDescriptionItems} />
 
+      <List
+        bordered
+        className='mt-8'
+        loading={tilesLoading}
+        grid={{ gutter: 16, column: 4 }}
+        dataSource={tiles}
+        renderItem={(tile: Tile) => (
+          <List.Item>
+            <TileView tile={tile} />
+          </List.Item>
+        )}
+      />
+
       <CreateTileModal
+        guildId={event?.guildId}
         open={showCreateTile}
-        onSuccess={() => null}
+        onSuccess={onCreateTileSuccess}
         onCancel={() => setShowCreateTile(false)} />
     </ListView>
   )

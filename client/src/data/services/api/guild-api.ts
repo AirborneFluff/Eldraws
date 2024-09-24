@@ -134,6 +134,14 @@ const guildApi = baseApi.injectEndpoints({
           method: 'GET'
         }
       }
+    }),
+    getGuildTiles: builder.query({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}/tiles`,
+          method: 'GET'
+        }
+      }
     })
   }),
   overrideExisting: false,
@@ -154,5 +162,6 @@ export const {
   useRemoveBlacklistedUserMutation,
   useBlacklistUserMutation,
   useArchiveGuildMutation,
-  useGetGuildEventsQuery
+  useGetGuildEventsQuery,
+  useGetGuildTilesQuery
 } = guildApi;
