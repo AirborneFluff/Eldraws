@@ -25,7 +25,7 @@ public static class WebApplicationBuilderExtensions
     {
         builder.Services.AddDbContext<DataContext>(options => {
             var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
-            options.UseSqlServer(connStr);
+            options.UseSqlite(connStr);
         });
     }
 
