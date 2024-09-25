@@ -14,7 +14,7 @@ public class GuildRepository(DataContext context)
     {
         return context.Guilds
             .Where(guild => !guild.Archived)
-            .SingleAsync(guild => guild.Id == guildId);
+            .FirstAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> ExistsById(string guildId)
@@ -55,6 +55,14 @@ public class GuildRepository(DataContext context)
             .Where(gm => gm.Guild != null && !gm.Guild.Archived)
             .AsNoTracking()
             .Select(gm => gm.Guild!)
+            .ToListAsync();
+    }
+
+    public Task<List<Event>> GetGuildEvents(string guildId)
+    {
+        return context.Events
+            .Where(gm => gm.GuildId == guildId)
+            .AsNoTracking()
             .ToListAsync();
     }
 

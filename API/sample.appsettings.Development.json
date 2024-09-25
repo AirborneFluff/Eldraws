@@ -1,11 +1,18 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection" : "Server=localhost\\SQLEXPRESS;Database=<db-name>;Trusted_Connection=True;Encrypt=False;"
+    "DefaultConnection": "Data Source=eldraws.db",
+    "AzureBlobStorage": "<Blob storage connection string>"
   },
   "Discord": {
     "ClientId": "<client-id>",
     "ClientSecret": "<client-secret>",
     "RedirectUri": "https://localhost:5001/api/auth/signin-discord"
+  },
+  "Client": {
+    "LoginRedirectUrl": "http://localhost:3000/app"
+  },
+  "Azure": {
+    "ImagesBlobContainer": "<Image blob container name>"
   },
   "Logging": {
     "LogLevel": {

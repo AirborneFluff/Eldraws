@@ -11,6 +11,9 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<GuildApplication> GuildApplications { get; set; }
     public required DbSet<GuildBlacklist> GuildBlacklists { get; set; }
     public required DbSet<GuildRole> GuildRoles { get; set; }
+    public required DbSet<Event> Events { get; set; }
+    public required DbSet<TileRaceEvent> TileRaceEvents { get; set; }
+    public required DbSet<Tile> Tiles { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,6 +32,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         modelBuilder.Entity<GuildRole>()
             .HasOne(gr => gr.Guild)
             .WithMany(g => g.Roles);
+
+        modelBuilder.Entity<Tile>()
+            .HasOne(t => t.Guild)
+            .WithMany(g => g.CustomTiles);
         
         SetGuildMembershipRelations(modelBuilder);
         SetGuildApplicationRelations(modelBuilder);

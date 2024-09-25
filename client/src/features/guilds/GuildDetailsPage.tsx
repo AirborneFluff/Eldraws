@@ -3,7 +3,7 @@ import { Guild } from '../../data/entities/guild.ts';
 import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
 import {useEffect, useState} from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
-import {Button, Flex, Input, Modal, Space, Tabs} from 'antd';
+import {Button, Tabs} from 'antd';
 import { TabItem } from '../../data/types/tab-item.ts';
 import { GuildApplicationsList } from './components/GuildApplicationsList.tsx';
 import {useSelector} from "react-redux";
@@ -18,7 +18,7 @@ export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const {guildId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
-  const {data, isLoading: guildLoading, isError: guildError, refetch} = useGetGuildQuery<Guild>(guildId);
+  const {data, isLoading: guildLoading, isError: guildError, refetch} = useGetGuildQuery(guildId);
   const guild = data as Guild;
   const isGuildOwner = guild?.ownerId === user.id;
   const [showArchiveGuildModal, setShowArchiveGuildModal]= useState(false);
@@ -27,7 +27,8 @@ export function GuildDetailsPage() {
   useEffect(() => {
     setHeaderContent({
       title: "Guild Details",
-      subtitle: guild ? guild.name : null
+      subtitle: guild ? guild.name : null,
+      backRoute: `/app/guilds`
     });
 
     if (guild) {

@@ -82,4 +82,12 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest("There was an issue archiving this guild");
     }
+
+    [HttpGet("{guildId}/events")]
+    [ServiceFilter(typeof(ValidateGuildMember))]
+    public async Task<ActionResult> GetGuildEvents(string guildId)
+    {
+        var events = await unitOfWork.GuildRepository.GetGuildEvents(guildId);
+        return Ok(mapper.Map<List<EventDto>>(events));
+    }
 }

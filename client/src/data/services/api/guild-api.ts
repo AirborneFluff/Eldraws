@@ -127,6 +127,22 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    getGuildEvents: builder.query({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}/events`,
+          method: 'GET'
+        }
+      }
+    }),
+    getGuildTiles: builder.query({
+      query: (guildId: string) => {
+        return {
+          url: `/guilds/${guildId}/tiles`,
+          method: 'GET'
+        }
+      }
+    })
   }),
   overrideExisting: false,
 });
@@ -145,5 +161,7 @@ export const {
   useGetGuildBlacklistedUsersQuery,
   useRemoveBlacklistedUserMutation,
   useBlacklistUserMutation,
-  useArchiveGuildMutation
+  useArchiveGuildMutation,
+  useGetGuildEventsQuery,
+  useGetGuildTilesQuery
 } = guildApi;
