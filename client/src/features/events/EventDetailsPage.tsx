@@ -4,12 +4,11 @@ import { usePage } from '../../core/ui/AppLayout.tsx';
 import { useParams } from 'react-router-dom';
 import { Event } from '../../data/entities/event.ts';
 import { useGetEventQuery } from '../../data/services/api/event-api.ts';
-import { Button, Descriptions, DescriptionsProps, Flex, List } from 'antd';
+import { Button, Descriptions, DescriptionsProps } from 'antd';
 import { getEventTypeName } from '../../core/utils/enum-helper.ts';
 import { ListView } from '../../core/ui/ListView.tsx';
 import { useGetGuildTilesQuery } from '../../data/services/api/guild-api.ts';
 import { Tile } from '../../data/entities/tile.ts';
-import { TileView } from './components/TileView.tsx';
 import { BingoBoard } from './components/BingoBoard.tsx';
 
 export function EventDetailsPage() {
@@ -60,7 +59,7 @@ export function EventDetailsPage() {
       ]}>
       <Descriptions size='small' bordered items={eventDescriptionItems} />
 
-      <BingoBoard />
+      <BingoBoard guildId={event?.guildId} />
 
       <CreateTileModal
         guildId={event?.guildId}

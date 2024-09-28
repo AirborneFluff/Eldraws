@@ -1,21 +1,25 @@
-import { Card, Carousel, Col, Row, Space } from 'antd';
-import { Tile } from '../../../data/entities/tile.ts';
+import { Card, Carousel } from 'antd';
 import { TilePlaceholder } from './TilePlaceholder.tsx';
-import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
+import { BingoBoardTile, GridPosition } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
+import { SelectTileModal } from '../modals/SelectTileModal.tsx';
+import { useState } from 'react';
 
-export function BingoBoard({tiles}: {tiles: Tile[]}) {
+export function BingoBoard({guildId}) {
   const {breakpoints} = useBreakpoints();
+  const [showSelectTile, setShowSelectTile] = useState(false);
   const generateBingoBoard = (): BingoBoardTile[] => {
     const tiles: BingoBoardTile[] = [];
 
     for (let row = 0; row < 5; row++) {
       for (let column = 0; column < 5; column++) {
         tiles.push({
-          id: `${row}-${column}`, // unique id using row and column
-          tile: null,              // null tile for now
-          column: column,          // column 0 to 4
-          row: row,                // row 0 to 4
+          id: `${row}-${column}`,
+          tile: null,
+          position: {
+            row: row,
+            column: column
+          }
         });
       }
     }
@@ -27,45 +31,53 @@ export function BingoBoard({tiles}: {tiles: Tile[]}) {
 
   const sortBingoBoardTiles = (tiles: BingoBoardTile[]): BingoBoardTile[] => {
     return tiles.sort((a, b) => {
-      if (a.row === b.row) {
-        // If the rows are the same, compare by column
-        return a.column - b.column;
+      if (a.position.row === b.position.row) {
+        return a.position.column - b.position.column;
       }
-      // Otherwise, compare by row
-      return a.row - b.row;
+      return a.position.row - b.position.row;
     });
   };
 
   const orderedTiles = sortBingoBoardTiles(bingoTiles);
 
+  function handleOnAddTileRequest() {
+    setShowSelectTile(true);
+  }
+
   return (
-    <Card bordered title='Board'>
-      <div className='max-w-[34rem] mx-auto'>
-        {breakpoints.md ? (
-          <DesktopView tileRows={orderedTiles} />
-        ) : (
-          <MobileView tileRows={orderedTiles} />
-        )}
-      </div>
-    </Card>
+    <>
+      <Card bordered title='Board'>
+        <div className='max-w-[34rem] mx-auto'>
+          {breakpoints.md ? (
+            <DesktopView tileRows={orderedTiles} onAddTileRequest={handleOnAddTileRequest} />
+          ) : (
+            <MobileView tileRows={orderedTiles} onAddTileRequest={handleOnAddTileRequest} />
+          )}
+        </div>
+      </Card>
+      <SelectTileModal
+        guildId={guildId}
+        open={showSelectTile}
+        onCancel={() => setShowSelectTile(false)} />
+    </>
   );
 }
 
-function DesktopView({tileRows}) {
+function DesktopView({tileRows, onAddTileRequest}: BoardViewProps) {
   return (
     <div className="grid grid-cols-5 gap-4">
       {tileRows.map((tile, rowIndex) => (
         <div className='flex justify-center items-center'>
-          <TilePlaceholder row={tile.row} col={tile.column} />
+          <TilePlaceholder position={tile.position} onAddTileRequest={onAddTileRequest} />
         </div>
       ))}
     </div>
   )
 }
 
-function MobileView({tileRows}) {
+function MobileView({tileRows, onAddTileRequest}: BoardViewProps) {
   const columns = [0, 1, 2, 3, 4].map((colIndex) =>
-    tileRows.filter(tile => tile.column === colIndex)
+    tileRows.filter(tile => tile.position.column === colIndex)
   );
 
   return (
@@ -74,11 +86,16 @@ function MobileView({tileRows}) {
         <div key={columnIndex} className="flex flex-col gap-4 items-center">
           {columnTiles.map((tile) => (
             <div key={tile.id} className="flex justify-center items-center">
-              <TilePlaceholder row={tile.row} col={tile.column} />
+              <TilePlaceholder position={tile.position} onAddTileRequest={onAddTileRequest} />
             </div>
           ))}
         </div>
       ))}
     </Carousel>
   )
+}
+
+export interface BoardViewProps {
+  tileRows: BingoBoardTile[],
+  onAddTileRequest: (position: GridPosition) => void;
 }
