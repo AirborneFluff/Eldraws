@@ -84,22 +84,24 @@ export function AppLayout() {
 
   return (
     <Layout className='h-screen'>
-      <Header className='flex items-center bg-gray-200'>
+      <Header className='bg-gray-200 px-0.5 sm:px-4 flex items-center'>
         {headerContent &&
-          <PageHeader
-            className='text-white'
-            backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
-            onBack={handleOnBackPress}
-            title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
-            subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
-            breadcrumb={{breadcrumbs}}/>
+          <div className='container'>
+            <PageHeader
+              className='text-white'
+              backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
+              onBack={handleOnBackPress}
+              title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
+              subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
+              breadcrumb={{breadcrumbs}}/>
+          </div>
         }
       </Header>
       <Layout>
-        <Content>
+        <Content className='overflow-y-auto'>
           <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
-            <div className='container overflow-y-auto'>
-              <div className='rounded-sm p-4 md:p-8 bg-gray-100'>
+            <div className='container'>
+              <div className='rounded-md p-4 md:p-8 bg-white shadow-lg'>
                 <Outlet/>
               </div>
             </div>
