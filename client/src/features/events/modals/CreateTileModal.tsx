@@ -77,11 +77,11 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
             description={error?.message}/>
         }
 
-        <Card className='flex justify-center items-center min-h-48'>
+        <Card className='flex justify-center items-center'>
           {imagesLoading ? (
             <Spin size='large' />
           ) : (
-            <Space size={8} wrap className='justify-between max-h-96 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
+            <Space size={8} wrap className='justify-between max-h-36 sm:max-h-96 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
               {tileImages?.map((src, index) =>
                 <Button
                   size='large'

@@ -17,4 +17,12 @@ public class ImageService(IConfiguration config, BlobServiceClient blobServiceCl
 
         return blobNames;
     }
+    
+    public async Task UploadImageAsync(Stream imageStream, string imageName)
+    {
+        var containerClient = blobServiceClient.GetBlobContainerClient(_imageContainerName);
+        var blobClient = containerClient.GetBlobClient(imageName);
+        
+        await blobClient.UploadAsync(imageStream, overwrite: true);
+    }
 }

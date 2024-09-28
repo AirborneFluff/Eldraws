@@ -83,34 +83,29 @@ export function AppLayout() {
   }
 
   return (
-    <Layout className='min-h-screen bg-gray-200'>
-      <Header className='flex items-center'>
-        {/*<Menu
-          className='flex-grow flex-shrink basis-0 flex justify-end'
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={['home']} >
-          <Menu.Item key='home' icon={<PieChartOutlined />} onClick={() => navigate('/app')}>Home</Menu.Item>
-          <Menu.Item key='logout' className='ml-auto' icon={<UserOutlined />} onClick={handleOnLogout}>Logout</Menu.Item>
-        </Menu>*/}
+    <Layout className='h-screen'>
+      <Header className='flex items-center bg-gray-200'>
+        {headerContent &&
+          <PageHeader
+            className='text-white'
+            backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
+            onBack={handleOnBackPress}
+            title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
+            subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
+            breadcrumb={{breadcrumbs}}/>
+        }
       </Header>
-      <Content>
-        <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
-          <div className='container'>
-            <div className='rounded-sm p-4 md:p-8 bg-gray-100'>
-              {headerContent &&
-                <PageHeader
-                  backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
-                  onBack={handleOnBackPress}
-                  title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
-                  subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
-                  breadcrumb={{breadcrumbs}}/>
-              }
-              <Outlet/>
+      <Layout>
+        <Content>
+          <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
+            <div className='container overflow-y-auto'>
+              <div className='rounded-sm p-4 md:p-8 bg-gray-100'>
+                <Outlet/>
+              </div>
             </div>
-          </div>
-        </PageContext.Provider>
-      </Content>
+          </PageContext.Provider>
+        </Content>
+      </Layout>
     </Layout>
   );
 }

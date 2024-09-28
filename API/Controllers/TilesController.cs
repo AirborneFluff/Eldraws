@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Authorize]
 public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService imageService) : BaseApiController
 {
     [HttpPost]
@@ -32,5 +31,16 @@ public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService
     {
         var images = await imageService.GetImagesAsync();
         return Ok(images);
+    }
+    
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadTileImage(IFormFile file) 
+    {
+        if (file == null) return BadRequest("No file received");
+
+        var fileName = file.FileName;
+        await imageService.UploadImageAsync(file.OpenReadStream(), fileName);
+    
+        return Ok("File uploaded successfully");   
     }
 }
