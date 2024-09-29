@@ -8,13 +8,11 @@ namespace API.Controllers;
 
 public partial class EventsController
 {
-    [HttpPut("{eventId}/bingotiles")]
-    [ServiceFilter(typeof(ValidateEventExists))]
+    [HttpPut("{eventId}/bingo")]
+    [ServiceFilter(typeof(ValidateBingoEventHost))]
     public async Task<ActionResult> SetBingoTile([FromBody] UpdateBingoTileDto bingoTileDto, string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
-        if (bingoEvent is null) return BadRequest("You cannot perform this action on this event type");
-        if (bingoEvent.Event!.HostId != User.GetUserId()) return NotFound("Only the guild owner can do this action");
 
         var tile = await unitOfWork.TileRepository.GetTileById(bingoTileDto.TileId);
         if (tile is null) return NotFound("No tile found by that Id");
@@ -41,11 +39,22 @@ public partial class EventsController
         return BadRequest();
     }
 
-    [HttpGet("{eventId}/bingotiles")]
+    [HttpGet("{eventId}/bingo")]
+    [ServiceFilter(typeof(ValidateBingoEventExists))]
     public async Task<ActionResult> GetBingoTiles(string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
-        if (bingoEvent is null) return BadRequest("You cannot perform this action on this event type");
+
+        var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
+        return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));
+    }
+
+    [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
+    [ServiceFilter(typeof(ValidateBingoEventExists))]
+    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId)
+    {
+        throw new NotImplementedException();
+        var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
 
         var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
         return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));

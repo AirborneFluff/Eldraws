@@ -7,24 +7,22 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetBingoBoardTilesQuery } from '../../../data/services/api/event-api.ts';
 import generateBlankBingoBoard from '../../../data/helpers/bingo-board-generator.ts';
+import { SubmitTileModal } from '../modals/SubmitTileModal.tsx';
 
-export function BingoBoard({guildId}) {
+export function BingoBoard({guildId, isHost}) {
   const {eventId} = useParams();
   const {breakpoints} = useBreakpoints();
-  const [selectedPosition, setSelectedPosition] = useState<GridPosition | undefined>(undefined);
+  const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
   const {data, refetch, isLoading, isError, error} = useGetBingoBoardTilesQuery(eventId);
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
-  const showSelectTile = selectedPosition != undefined;
+  const showModal = selectedBingoTile != undefined;
 
-
-  console.log(boardTiles);
-
-  function handleOnAddTileRequest(position: GridPosition) {
-    setSelectedPosition(position);
+  function handleOnAddTileRequest(tile: BingoBoardTile) {
+    setSelectedBingoTile(tile);
   }
 
   function onSelectTileSuccess() {
-    setSelectedPosition(undefined);
+    setSelectedBingoTile(undefined);
     refetch();
   }
 
@@ -47,12 +45,21 @@ export function BingoBoard({guildId}) {
           <MobileView bingoTiles={boardTiles} onAddTileRequest={handleOnAddTileRequest} />
         )}
       </Card>
-      <SelectTileModal
-        selectedPosition={selectedPosition}
-        guildId={guildId}
-        open={showSelectTile}
-        onCancel={() => setSelectedPosition(undefined)}
-        onSuccess={onSelectTileSuccess}/>
+      {isHost ? (
+        <SelectTileModal
+          selectedBingoTile={selectedBingoTile}
+          guildId={guildId}
+          open={showModal}
+          onCancel={() => setSelectedBingoTile(undefined)}
+          onSuccess={onSelectTileSuccess}/>
+      ) : (
+        <SubmitTileModal
+          selectedBingoTile={selectedBingoTile}
+          guildId={guildId}
+          open={showModal}
+          onCancel={() => setSelectedBingoTile(undefined)}
+          onSuccess={onSelectTileSuccess}/>
+      )}
     </>
   );
 }

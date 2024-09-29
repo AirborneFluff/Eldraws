@@ -17,7 +17,6 @@ export function EventDetailsPage() {
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data, isLoading: eventLoading, isError: eventError, refetch} = useGetEventQuery(eventId);
   const event = data as Event;
-
   const {data: tileData, isLoading: tilesLoading, isError: tilesError, refetch: refetchTiles} = useGetGuildTilesQuery(event?.guildId);
   const tiles = tileData as Tile[];
 
@@ -59,7 +58,7 @@ export function EventDetailsPage() {
       ]}>
       <Descriptions size='small' bordered items={eventDescriptionItems} />
 
-      <BingoBoard guildId={event?.guildId} />
+      <BingoBoard guildId={event?.guildId} isHost={true} />
 
       <CreateTileModal
         guildId={event?.guildId}

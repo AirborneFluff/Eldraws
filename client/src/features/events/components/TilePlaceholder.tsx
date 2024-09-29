@@ -7,7 +7,7 @@ export function TilePlaceholder({bingoTile, onAddTileRequest}: TilePlaceholderPr
 
   return (
     <div
-      onClick={() => onAddTileRequest(bingoTile.position)}
+      onClick={() => onAddTileRequest(bingoTile)}
       className='border border-gray-200 rouned-md cursor-pointer min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56'>
       <div className='flex justify-center items-center h-full'>
         {bingoTile.tile ? (

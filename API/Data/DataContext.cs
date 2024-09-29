@@ -16,6 +16,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<Tile> Tiles { get; set; }
     public required DbSet<BingoBoardTile> BingoBoardTiles { get; set; }
     public required DbSet<BingoEvent> BingoEvents { get; set; }
+    public required DbSet<TileSubmission> TileSubmissions { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -36,16 +36,40 @@ public class EventRepository(DataContext context)
             .AnyAsync(e => e.Id == eventId);
     }
 
+    public Task<bool> EventTypeExistsById(string eventId, Event.EventType type)
+    {
+        return type switch
+        {
+            Event.EventType.TileRace => context.TileRaceEvents.AnyAsync(e => e.EventId == eventId),
+            Event.EventType.Bingo => context.BingoEvents.AnyAsync(e => e.EventId == eventId),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    public Task<bool> EventTypeHostById(string eventId, string userId, Event.EventType type)
+    {
+        return type switch
+        {
+            Event.EventType.TileRace => context.TileRaceEvents
+                .Include(e => e.Event)
+                .AnyAsync(e => e.EventId == eventId && e.Event!.HostId == userId),
+            Event.EventType.Bingo => context.BingoEvents
+                .Include(e => e.Event)
+                .AnyAsync(e => e.EventId == eventId && e.Event!.HostId == userId),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
     public Task<Event> GetById(string id)
     {
         return context.Events.FirstAsync(e => e.Id == id);
     }
 
-    public Task<BingoEvent?> GetBingoEventByEventId(string id)
+    public Task<BingoEvent> GetBingoEventByEventId(string id)
     {
         return context.BingoEvents
             .Include(e => e.Event)
-            .FirstOrDefaultAsync(e => e.EventId == id);
+            .FirstAsync(e => e.EventId == id);
     }
 
     public Task<BingoBoardTile?> GetBingoBoardTileByPosition(string bingoEventId, Position position)

@@ -1,11 +1,11 @@
-import { Card, Modal, Space, Spin } from 'antd';
+import { Card, Modal, Spin } from 'antd';
 import { useGetGuildTilesQuery } from '../../../data/services/api/guild-api.ts';
 import { Tile } from '../../../data/entities/tile.ts';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 
-export function SelectTileModal({guildId, selectedPosition, open, onSuccess, onCancel}) {
+export function SelectTileModal({guildId, selectedBingoTile, open, onSuccess, onCancel}) {
   const [bingoBoardTile, {isLoading, isSuccess, isError, error}] = useBingoBoardTileMutation();
   const {data, isLoading: isTilesLoading, isError: isTilesError} = useGetGuildTilesQuery(guildId);
   const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
@@ -22,7 +22,7 @@ export function SelectTileModal({guildId, selectedPosition, open, onSuccess, onC
     bingoBoardTile({
       eventId: eventId,
       tileId: selectedTile.id,
-      position: selectedPosition
+      position: selectedBingoTile.position
     });
   }
 
@@ -35,13 +35,13 @@ export function SelectTileModal({guildId, selectedPosition, open, onSuccess, onC
     <Modal
       title="Select a tile"
       open={open}
-      okText='Create'
+      okText='Submit'
       onOk={onSubmit}
       onCancel={onCancel}
       loading={isLoading}
     >
       <Card className='flex justify-center items-center'>
-        {isLoading ? (
+        {isTilesLoading ? (
           <Spin size='large' />
         ) : (
           <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-96 items-stretch overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
