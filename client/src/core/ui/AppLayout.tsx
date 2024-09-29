@@ -5,6 +5,7 @@ import {usePathSegments} from '../hooks/usePathSegments.ts';
 import {HumanizeWord} from '../utils/text-utilities.ts';
 import {PageHeader} from '@ant-design/pro-components';
 import {ArrowLeftOutlined} from "@ant-design/icons";
+import { useBreakpoints } from '../hooks/useBreakpoints.ts';
 
 
 const {Header, Content} = Layout;
@@ -37,6 +38,7 @@ export function AppLayout() {
   const [headerContent, setHeaderContent] = useState<HeaderContent>();
   const [breadcrumbOverrides, setBreadcrumbOverrides] = useState<BreadcrumbOverride[]>([]);
   const navigate = useNavigate();
+  const {currentBreakpoint} = useBreakpoints();
 
   const setLoading = useCallback((loading: boolean) => {
     setIsLoading(loading);
@@ -86,7 +88,7 @@ export function AppLayout() {
     <Layout className='h-screen'>
       <Header className='bg-gray-200 px-0.5 sm:px-4 flex items-center'>
         {headerContent &&
-          <div className='container'>
+          <div className='container flex justify-between'>
             <PageHeader
               className='text-white'
               backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
@@ -94,6 +96,7 @@ export function AppLayout() {
               title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
               subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
               breadcrumb={{breadcrumbs}}/>
+            <span>{currentBreakpoint}</span>
           </div>
         }
       </Header>

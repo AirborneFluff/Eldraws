@@ -16,4 +16,9 @@ public class TileRepository(DataContext context)
             .Where(t => t.GuildId == null || t.GuildId == guildId)
             .ToListAsync();
     }
+
+    public Task<Tile?> GetTileById(string id)
+    {
+        return context.Tiles.FirstOrDefaultAsync(t => t.Id == id);
+    }
 }

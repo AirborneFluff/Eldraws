@@ -1,4 +1,6 @@
 import {baseApi} from './base-api.ts';
+import { BingoBoardTile, GridPosition } from '../../entities/bingo-board-tile.ts';
+import { ApplicationResponseAction } from '../../types/application-response-action.ts';
 
 const eventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -14,11 +16,35 @@ const eventApi = baseApi.injectEndpoints({
         url: `/events/${id}`
       })
     }),
+    getBingoBoardTiles: builder.query({
+      query: (eventId: string) => ({
+        url: `/events/${eventId}/bingotiles`,
+        method: 'GET'
+      })
+    }),
+    bingoBoardTile: builder.mutation({
+      query: ({ eventId, tileId, position }: {
+        eventId: string,
+        tileId: string,
+        position: GridPosition
+      }) => {
+        return {
+          url: `/events/${eventId}/bingotiles`,
+          method: 'PUT',
+          body: {
+            tileId: tileId,
+            tilePosition: position
+          },
+        }
+      }
+    }),
     overrideExisting: false,
   })
 })
 
 export const {
   useCreateEventMutation,
-  useGetEventQuery
+  useGetEventQuery,
+  useBingoBoardTileMutation,
+  useGetBingoBoardTilesQuery
 } = eventApi;

@@ -23,6 +23,7 @@ public class Event
     
     public enum EventType
     {
-        TileRace
+        TileRace,
+        Bingo
     }
 }

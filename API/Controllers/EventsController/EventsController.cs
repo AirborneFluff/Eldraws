@@ -9,14 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Authorize]
-public class EventsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiController
+public partial class EventsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiController
 {
     [HttpPost]
     public async Task<ActionResult> CreateEvent([FromBody] NewEventDto eventDto)
     {
-        var guildExists = await unitOfWork.GuildRepository.ExistsById(eventDto.GuildId);
-        if (!guildExists) return NotFound("No guild found by that Id");
+        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(eventDto.GuildId, User.GetUserId());
+        if (!isGuildOwner) return NotFound("Only the guild owner can do this action");
 
         var newEvent = mapper.Map<Event>(eventDto);
         newEvent.Id = Guid.NewGuid().ToString();
@@ -29,7 +28,7 @@ public class EventsController(UnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
     
     [HttpGet("{eventId}")]
     [ServiceFilter(typeof(ValidateEventExists))]
-    public async Task<ActionResult> CreateEvent(string eventId)
+    public async Task<ActionResult> GetEvent(string eventId)
     {
         var guildEvent = await unitOfWork.EventRepository.GetById(eventId);
         return Ok(mapper.Map<EventDto>(guildEvent));

@@ -15,6 +15,5 @@ export interface Event {
 
 export enum EventType {
   TileRace,
-  SoloBingo,
-  GroupBingo
+  Bingo,
 }

@@ -30,9 +30,19 @@ export function useBreakpoints() {
     return 0;
   }
 
+  function getLargestActiveBreakpoint() {
+    if (xxl) return '2XL';
+    if (xl) return 'XL';
+    if (lg) return 'LG';
+    if (md) return 'MD';
+    if (sm) return 'SM';
+    return 'XS';
+  }
+
   return {
     screenWidth: width,
     maxBreakpointWidth: getMaxBreakpointWidth(),
+    currentBreakpoint: getLargestActiveBreakpoint(),
     breakpoints: { sm, md, lg, xl, xxl }
   }
 }

@@ -16,3 +16,30 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+.ant-carousel .slick-prev,
+.ant-carousel .slick-next,
+.ant-carousel .slick-prev:hover,
+.ant-carousel .slick-next:hover,
+.ant-carousel .slick-prev:focus,
+.ant-carousel .slick-next:focus {
+  font-size: inherit;
+  color: #444 !important;
+}
+
+.ant-carousel .slick-prev::before {
+  color: #444 !important;
+}
+
+.slick-arrow.slick-prev {
+  font-size: 20px !important;
+}
+
+.ant-carousel .slick-next::before {
+  color: #444 !important;
+}
+
+.slick-arrow.slick-next {
+  font-size: 20px !important;
+}

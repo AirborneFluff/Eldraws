@@ -40,8 +40,8 @@ export function CreateEventPage() {
   }
 
   const eventTypes = [
-    { label: "Solo Bingo", value: EventType.SoloBingo },
-    { label: "Group Bingo", value: EventType.GroupBingo }
+    { label: "Tile Race", value: EventType.TileRace },
+    { label: "Bingo", value: EventType.Bingo },
   ]
 
   return (

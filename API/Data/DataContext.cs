@@ -14,6 +14,8 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<Event> Events { get; set; }
     public required DbSet<TileRaceEvent> TileRaceEvents { get; set; }
     public required DbSet<Tile> Tiles { get; set; }
+    public required DbSet<BingoBoardTile> BingoBoardTiles { get; set; }
+    public required DbSet<BingoEvent> BingoEvents { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +38,9 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         modelBuilder.Entity<Tile>()
             .HasOne(t => t.Guild)
             .WithMany(g => g.CustomTiles);
+
+        modelBuilder.Entity<BingoBoardTile>()
+            .OwnsOne(tile => tile.Position);
         
         SetGuildMembershipRelations(modelBuilder);
         SetGuildApplicationRelations(modelBuilder);

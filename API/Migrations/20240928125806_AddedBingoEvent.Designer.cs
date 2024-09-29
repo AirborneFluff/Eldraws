@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240928125806_AddedBingoEvent")]
+    partial class AddedBingoEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -86,7 +89,7 @@ namespace API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("BingoEventId")
+                    b.Property<string>("EventId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -96,7 +99,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BingoEventId");
+                    b.HasIndex("EventId");
 
                     b.HasIndex("TileId");
 
@@ -473,9 +476,9 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.BingoBoardTile", b =>
                 {
-                    b.HasOne("API.Entities.BingoEvent", "BingoEvent")
+                    b.HasOne("API.Entities.BingoEvent", "Event")
                         .WithMany("BoardTiles")
-                        .HasForeignKey("BingoEventId")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -504,7 +507,7 @@ namespace API.Migrations
                                 .HasForeignKey("BingoBoardTileId");
                         });
 
-                    b.Navigation("BingoEvent");
+                    b.Navigation("Event");
 
                     b.Navigation("Position")
                         .IsRequired();
