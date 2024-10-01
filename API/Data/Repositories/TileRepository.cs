@@ -10,6 +10,8 @@ public class TileRepository(DataContext context)
         context.Tiles.Add(tile);
     }
 
+    public Task<bool> Any() => context.Tiles.AnyAsync();
+
     public Task<List<Tile>> GetAllTiles(string guildId)
     {
         return context.Tiles

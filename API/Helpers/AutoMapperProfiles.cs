@@ -26,6 +26,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<Event, EventDto>();
         
         CreateMap<NewTileDto, Tile>();
+        CreateMap<TileDto, Tile>();
         CreateMap<Tile, TileDto>();
 
         CreateMap<BingoBoardTile, BingoBoardTileDto>();

@@ -19,6 +19,8 @@ if (app.Environment.IsProduction())
     app.ApplyMigrations();
 }
 
+app.SeedUser();
+app.SeedTiles();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

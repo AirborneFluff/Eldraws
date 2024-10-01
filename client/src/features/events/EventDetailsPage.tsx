@@ -10,8 +10,12 @@ import { ListView } from '../../core/ui/ListView.tsx';
 import { useGetGuildTilesQuery } from '../../data/services/api/guild-api.ts';
 import { Tile } from '../../data/entities/tile.ts';
 import { BingoBoard } from './components/BingoBoard.tsx';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../data/store.ts';
+import { User } from '../../data/entities/user.ts';
 
 export function EventDetailsPage() {
+  const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const [showCreateTile, setShowCreateTile] = useState(false);
   const {eventId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
@@ -57,8 +61,9 @@ export function EventDetailsPage() {
         <Button onClick={() => setShowCreateTile(true)}>Create a tile</Button>
       ]}>
       <Descriptions size='small' bordered items={eventDescriptionItems} />
-
-      <BingoBoard guildId={event?.guildId} isHost={true} />
+      {event &&
+        <BingoBoard guildId={event?.guildId} isHost={event.hostId == user.id} />
+      }
 
       <CreateTileModal
         guildId={event?.guildId}

@@ -1,6 +1,72 @@
-﻿{
-  "task": "Group photo atop the archway in Vivic",
-  "description": "",
-  "conditions": "",
-  "imagePath": ""
-}
+﻿[
+  {
+    "Id": "",
+    "Task": "Defeat Molag Bal in Coldharbour",
+    "Description": "This is a main quest task and requires to progress in the main story line",
+    "Conditions": "Main story progression is necessary",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Complete a public dungeon",
+    "Description": "Public dungeons are usually harder than normal ones and requires a team of four",
+    "Conditions": "Advanced level is recommended",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Craft a set item",
+    "Description": "Crafting a set item requires you to have the necessary crafting skills and recipes",
+    "Conditions": "Crafting skills and recipes are necessary",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Join a guild",
+    "Description": "Joining a guild can open new quests and allow you to play with others",
+    "Conditions": "None",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Reach level 50",
+    "Description": "Level up your character to level 50 to unlock more content",
+    "Conditions": "Accumulate enough experience by completing quests",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Complete a round of Battlegrounds",
+    "Description": "Battlegrounds is a PvP mode of 4v4v4",
+    "Conditions": "Character must reach level 10 to unlock Battlegrounds",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Explore a new zone",
+    "Description": "There are many unique explorable zones in Elder Scrolls Online",
+    "Conditions": "None",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Collect 10 rare motifs",
+    "Description": "Motifs are rare items that allow you to change your armor's appearance",
+    "Conditions": "Loot from various sources or buy from other players",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Complete a Veteran Dungeon",
+    "Description": "Veteran dungeons are challenging instances that require skilled play and a well-coordinated group",
+    "Conditions": "Character should be at a high level with good gear",
+    "ImagePath": ""
+  },
+  {
+    "Id": "",
+    "Task": "Earn 100,000 in Gold",
+    "Description": "Gather 100,000 gold through various activities like questing, trading and looting",
+    "Conditions": "None",
+    "ImagePath": ""
+  }
+]

@@ -14,6 +14,10 @@
   "Azure": {
     "ImagesBlobContainer": "<Image blob container name>"
   },
+  "UserSeed": {
+    "Id": "bd52d3ef-7d30-4795-aa4a-7b7c0e4bff6e",
+    "UserName": "<your discord username for testing>"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Debug",
