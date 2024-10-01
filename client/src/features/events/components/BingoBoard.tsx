@@ -26,6 +26,11 @@ export function BingoBoard({guildId, isHost}) {
     refetch();
   }
 
+  function onSubmitTileSuccess() {
+    setSelectedBingoTile(undefined);
+    refetch();
+  }
+
   useEffect(() => {
     const dataTiles = data as BingoBoardTile[];
     setBoardTiles((tiles: BingoBoardTile[]) => {
@@ -60,8 +65,10 @@ export function BingoBoard({guildId, isHost}) {
           onSuccess={onSelectTileSuccess}/>
       ) : (
         <SubmitTileModal
-          selectedBingoTile={selectedBingoTile}
+          eventId={eventId}
+          bingoTile={selectedBingoTile}
           open={showModal}
+          onSuccess={onSubmitTileSuccess}
           onCancel={() => setSelectedBingoTile(undefined)} />
       )}
     </>

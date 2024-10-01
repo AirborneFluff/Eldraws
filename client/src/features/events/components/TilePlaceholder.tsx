@@ -1,9 +1,14 @@
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { PlusCircleOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../data/store.ts';
+import { User } from '../../../data/entities/user.ts';
 
 export function TilePlaceholder({bingoTile, onTileClick, isEditable}: TilePlaceholderProps) {
+  const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const tile = bingoTile.tile;
-  const enableClick = isEditable || !!bingoTile.tile;
+  const hasSubmission = !!bingoTile.submissions?.find(s => s.appUserId === user.id);
+  const enableClick = (isEditable || !!bingoTile.tile) && !hasSubmission;
 
   function handleOnClick() {
     if (!enableClick) return;

@@ -51,12 +51,25 @@ public partial class EventsController
 
     [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
     [ServiceFilter(typeof(ValidateBingoEventExists))]
-    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId)
+    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId, [FromBody]NewTileSubmissionDto dto)
     {
-        throw new NotImplementedException();
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
+        var bingoTile = bingoEvent.BoardTiles.FirstOrDefault(t => t.Id == bingoTileId);
+        if (bingoTile is null) return NotFound("No tile found by that Id");
 
-        var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
-        return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));
+        if (bingoTile.Submissions.Any(t => t.AppUserId == User.GetUserId()))
+            return BadRequest("You've already submitted this tile");
+
+        var submission = new TileSubmission
+        {
+            Id = Guid.NewGuid().ToString(),
+            AppUserId = User.GetUserId(),
+            BingoBoardTileId = bingoTileId,
+            SubmittedAt = dto.SubmittedAt
+        };
+        
+        bingoTile.Submissions.Add(submission);
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest();
     }
 }

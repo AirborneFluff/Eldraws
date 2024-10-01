@@ -1,30 +1,42 @@
 import { useEffect } from 'react';
-import { Card, DatePicker, Form, Modal, Spin } from 'antd';
+import { Alert, Card, DatePicker, Form, Modal, Spin } from 'antd';
 import dayjs from 'dayjs';
+import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
+import { NewTileSubmission } from '../../../data/entities/tile-submission.ts';
+import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 
-export function SubmitTileModal({selectedBingoTile, open, onCancel}) {
-  //const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
-  // const tiles = data as Tile[];
-  const [form] = Form.useForm();
-  //const {eventId} = useParams();
+type FormTileSubmission = Omit<NewTileSubmission, 'eventId' | 'bingoBoardTileId'>;
 
-  /*useEffect(() => {
+interface SubmitTileModalProps {
+  eventId: string,
+  bingoTile: BingoBoardTile,
+  open: boolean,
+  onCancel: () => void,
+  onSuccess: (bingoBoardTile: BingoBoardTile) => void
+}
+
+export function SubmitTileModal({eventId, bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
+  const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
+  const [form] = Form.useForm<FormTileSubmission>();
+
+  useEffect(() => {
     if (isSuccess) {
-      onSuccess();
+      onSuccess(bingoTile);
     }
-  }, [isSuccess]);*/
+  }, [isSuccess]);
 
   useEffect(() => {
     if (!open) return;
     form.resetFields();
   }, [open]);
 
-  function handleOnFinish() {
-    /*bingoBoardTile({
+  function handleOnFinish(form: FormTileSubmission) {
+    console.log(bingoTile);
+    submitTile({
       eventId: eventId,
-      tileId: selectedTile.id,
-      position: selectedPosition
-    });*/
+      bingoBoardTileId: bingoTile.id,
+      submittedAt: form.submittedAt
+    });
   }
 
   return (
@@ -34,20 +46,20 @@ export function SubmitTileModal({selectedBingoTile, open, onCancel}) {
       okText='Confirm'
       onOk={() => form.submit()}
       onCancel={onCancel}
-      loading={false}
+      loading={isLoading}
     >
       <Form
         className='mt-8'
         form={form}
-        disabled={false}
+        disabled={isLoading}
         name="basic"
         initialValues={{remember: true}}
         onFinish={handleOnFinish}
         autoComplete="off"
       >
 
-        <Form.Item label='Submitted At' name='submittedAt'>
-          <DatePicker defaultValue={dayjs()} showTime />
+        <Form.Item<string> label='Submitted At' name='submittedAt' initialValue={dayjs()}>
+          <DatePicker showTime />
         </Form.Item>
 
       </Form>
@@ -56,11 +68,18 @@ export function SubmitTileModal({selectedBingoTile, open, onCancel}) {
           <Spin size='large' />
         ) : (
           <div className='flex justify-center items-center gap-2 flex-col rounded min-h-24 p-2'>
-            <img className='p-0.5' alt='Tile Image' src={selectedBingoTile?.tile?.imagePath} />
-            <div className='font-bold text-gray-600 text-center text-sm'>{selectedBingoTile?.tile?.task}</div>
+            <img className='p-0.5' alt='Tile Image' src={bingoTile?.tile?.imagePath} />
+            <div className='font-bold text-gray-600 text-center text-sm'>{bingoTile?.tile?.task}</div>
           </div>
         )}
       </Card>
+
+      {isError &&
+        <Alert
+          className='my-4'
+          type='error'
+          description={error?.message}/>
+      }
     </Modal>
   )
 }

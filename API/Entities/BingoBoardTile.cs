@@ -11,6 +11,8 @@ public class BingoBoardTile
     public Tile? Tile { get; set; }
 
     public required Position Position { get; set; }
+
+    public IList<TileSubmission> Submissions { get; set; } = new List<TileSubmission>();
 }
 
 public class Position

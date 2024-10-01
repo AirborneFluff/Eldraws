@@ -69,6 +69,8 @@ public class EventRepository(DataContext context)
     {
         return context.BingoEvents
             .Include(e => e.Event)
+            .Include(e => e.BoardTiles)
+            .ThenInclude(bt => bt.Submissions)
             .FirstAsync(e => e.EventId == id);
     }
 
