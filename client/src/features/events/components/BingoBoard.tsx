@@ -1,6 +1,6 @@
 import { Card, Carousel } from 'antd';
 import { TilePlaceholder } from './TilePlaceholder.tsx';
-import { BingoBoardTile, GridPosition } from '../../../data/entities/bingo-board-tile.ts';
+import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
 import { SelectTileModal } from '../modals/SelectTileModal.tsx';
 import { useEffect, useState } from 'react';
@@ -13,11 +13,11 @@ export function BingoBoard({guildId, isHost}) {
   const {eventId} = useParams();
   const {breakpoints} = useBreakpoints();
   const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
-  const {data, refetch, isLoading, isError, error} = useGetBingoBoardTilesQuery(eventId);
+  const {data, refetch} = useGetBingoBoardTilesQuery(eventId);
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
   const showModal = selectedBingoTile != undefined;
 
-  function handleOnAddTileRequest(tile: BingoBoardTile) {
+  function handleOnTileClick(tile: BingoBoardTile) {
     setSelectedBingoTile(tile);
   }
 
@@ -40,9 +40,15 @@ export function BingoBoard({guildId, isHost}) {
     <>
       <Card bordered title='Board'>
         {breakpoints.md ? (
-          <DesktopView bingoTiles={boardTiles} onAddTileRequest={handleOnAddTileRequest} />
+          <DesktopView
+            isEditable={isHost}
+            bingoTiles={boardTiles}
+            onTileClick={handleOnTileClick} />
         ) : (
-          <MobileView bingoTiles={boardTiles} onAddTileRequest={handleOnAddTileRequest} />
+          <MobileView
+            isEditable={isHost}
+            bingoTiles={boardTiles}
+            onTileClick={handleOnTileClick} />
         )}
       </Card>
       {isHost ? (
@@ -55,26 +61,28 @@ export function BingoBoard({guildId, isHost}) {
       ) : (
         <SubmitTileModal
           selectedBingoTile={selectedBingoTile}
-          guildId={guildId}
           open={showModal}
-          onCancel={() => setSelectedBingoTile(undefined)}
-          onSuccess={onSelectTileSuccess}/>
+          onCancel={() => setSelectedBingoTile(undefined)} />
       )}
     </>
   );
 }
 
-function DesktopView({bingoTiles, onAddTileRequest}: BoardViewProps) {
+function DesktopView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
   return (
     <div className='grid grid-cols-5 gap-2 items-stretch'>
       {bingoTiles?.map((tile, rowIndex) => (
-        <TilePlaceholder bingoTile={tile} onAddTileRequest={onAddTileRequest} />
+        <TilePlaceholder
+          isEditable={isEditable}
+          key={rowIndex}
+          bingoTile={tile}
+          onTileClick={onTileClick} />
       ))}
     </div>
   )
 }
 
-function MobileView({bingoTiles, onAddTileRequest}: BoardViewProps) {
+function MobileView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
   const columns = [0, 1, 2, 3, 4].map((colIndex) =>
     bingoTiles?.filter(tile => tile.position.column === colIndex)
   );
@@ -84,9 +92,13 @@ function MobileView({bingoTiles, onAddTileRequest}: BoardViewProps) {
       {columns.map((columnTiles, columnIndex) => (
         <div key={columnIndex}>
           <p className='text-center mb-6 text-xl font-medium'>Column {columnIndex + 1}</p>
-          {columnTiles?.map((tile) => (
+          {columnTiles?.map((tile, index) => (
             <div className='max-w-48 mx-auto my-2'>
-              <TilePlaceholder bingoTile={tile} onAddTileRequest={onAddTileRequest} />
+              <TilePlaceholder
+                isEditable={isEditable}
+                key={index}
+                bingoTile={tile}
+                onTileClick={onTileClick} />
             </div>
           ))}
         </div>
@@ -97,5 +109,6 @@ function MobileView({bingoTiles, onAddTileRequest}: BoardViewProps) {
 
 export interface BoardViewProps {
   bingoTiles: BingoBoardTile[],
-  onAddTileRequest: (position: GridPosition) => void;
+  onTileClick: (tile: BingoBoardTile) => void,
+  isEditable: boolean
 }

@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Tile } from '../../../data/entities/tile.ts';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Card, DatePicker, Form, Modal, Spin } from 'antd';
 import dayjs from 'dayjs';
 
-export function SubmitTileModal({guildId, selectedBingoTile, open, onSuccess, onCancel}) {
-  const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
+export function SubmitTileModal({selectedBingoTile, open, onCancel}) {
+  //const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
   // const tiles = data as Tile[];
   const [form] = Form.useForm();
-  const {eventId} = useParams();
+  //const {eventId} = useParams();
 
   /*useEffect(() => {
     if (isSuccess) {
@@ -57,9 +55,9 @@ export function SubmitTileModal({guildId, selectedBingoTile, open, onSuccess, on
         {false ? (
           <Spin size='large' />
         ) : (
-          <div className='flex justify-center items-center gap-2 flex-col cursor-pointer rounded min-h-24 p-2'>
-            <img className='p-0.5' alt='Tile Image' src={selectedBingoTile?.tile.imagePath} />
-            <div className='font-bold text-gray-600 text-center text-sm'>{selectedBingoTile?.tile.task}</div>
+          <div className='flex justify-center items-center gap-2 flex-col rounded min-h-24 p-2'>
+            <img className='p-0.5' alt='Tile Image' src={selectedBingoTile?.tile?.imagePath} />
+            <div className='font-bold text-gray-600 text-center text-sm'>{selectedBingoTile?.tile?.task}</div>
           </div>
         )}
       </Card>

@@ -4,11 +4,12 @@ import {
 import {Alert, Form, Input, Modal} from "antd";
 import {useEffect} from "react";
 import {useParams} from "react-router-dom";
+import { BlacklistedUser } from '../../../data/entities/blacklisted-user.ts';
 
 export function BlacklistUserModal({open, onSuccess, onCancel}) {
   const [blacklistUser, {isLoading, isError, error, isSuccess}] = useBlacklistUserMutation();
   const {guildId} = useParams();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<Partial<BlacklistedUser>>();
 
   useEffect(() => {
     if (isSuccess) {
@@ -16,7 +17,7 @@ export function BlacklistUserModal({open, onSuccess, onCancel}) {
     }
   }, [isSuccess]);
 
-  function handleFormSubmit({userName}) {
+  function handleFormSubmit({userName}: Partial<BlacklistedUser>) {
     blacklistUser({
       guildId: guildId,
       userName: userName

@@ -12,17 +12,12 @@ import {BlacklistUserModal} from "../modals/BlacklistUserModal.tsx";
 export function GuildBlacklistList() {
   const {guildId} = useParams();
   const [modalVisible, setModalVisible] = useState(false);
-  const {data, isFetching, refetch} = useGetGuildBlacklistedUsersQuery(guildId);
-  const [removeUser, {
-    isLoading: isRemoveLoading,
-    isError: isRemoveError,
-    isSuccess
-  }] = useRemoveBlacklistedUserMutation();
-  const blacklistedUsers = data as BlacklistedUser[];
+  const {data: blacklistedUsers, isFetching, refetch} = useGetGuildBlacklistedUsersQuery(guildId);
+  const [removeUser, {isLoading: isRemoveLoading, isSuccess}] = useRemoveBlacklistedUserMutation();
 
   useEffect(() => {
     if (!isSuccess) return;
-    refetch(guildId);
+    refetch();
   }, [isSuccess]);
 
   function onUserRemove(item: BlacklistedUser) {
@@ -31,7 +26,7 @@ export function GuildBlacklistList() {
 
   function onUserAdd() {
     setModalVisible(false);
-    refetch(guildId);
+    refetch();
   }
 
   return (

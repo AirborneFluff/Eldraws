@@ -13,8 +13,6 @@ export function GuildMemberDetailsModal({onSuccess, onDismiss, member}: {
   const [performAction, {isLoading, isError, error, isSuccess}] = useMemberActionMutation();
   const isOwner = member?.roleName === 'Owner';
 
-  //todo Implement error handling and action complete close modal
-
   useEffect(() => {
     if (!isSuccess) return;
     onSuccess();

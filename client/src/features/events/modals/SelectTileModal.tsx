@@ -6,10 +6,9 @@ import { useEffect, useState } from 'react';
 import { useBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 
 export function SelectTileModal({guildId, selectedBingoTile, open, onSuccess, onCancel}) {
-  const [bingoBoardTile, {isLoading, isSuccess, isError, error}] = useBingoBoardTileMutation();
-  const {data, isLoading: isTilesLoading, isError: isTilesError} = useGetGuildTilesQuery(guildId);
+  const [bingoBoardTile, {isLoading, isSuccess}] = useBingoBoardTileMutation();
+  const {data: tiles, isFetching: isTilesLoading, refetch: refetchTiles} = useGetGuildTilesQuery(guildId);
   const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
-  const tiles = data as Tile[];
   const {eventId} = useParams();
 
   useEffect(() => {
@@ -17,6 +16,12 @@ export function SelectTileModal({guildId, selectedBingoTile, open, onSuccess, on
       onSuccess();
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (!open) return;
+    setSelectedTile(undefined);
+    refetchTiles();
+  }, [open]);
 
   function onSubmit() {
     bingoBoardTile({

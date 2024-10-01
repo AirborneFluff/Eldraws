@@ -1,10 +1,11 @@
 import { Alert, Form, Input, Modal } from 'antd';
 import { useCreateGuildMutation } from '../../../data/services/api/guild-api.ts';
 import { useEffect } from 'react';
+import { NewGuild } from '../../../data/entities/guild.ts';
 
 export function CreateGuildModal({open, onSuccess, onCancel}) {
   const [createGuild, {isLoading, isError, error, isSuccess}] = useCreateGuildMutation();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<NewGuild>();
 
   useEffect(() => {
     if (isSuccess) {
@@ -36,7 +37,7 @@ export function CreateGuildModal({open, onSuccess, onCancel}) {
           name="name"
           rules={[{required: true, message: 'Please input your Guild Name!'}]}
         >
-          <Input/>
+          <Input maxLength={25} />
         </Form.Item>
 
         {isError &&

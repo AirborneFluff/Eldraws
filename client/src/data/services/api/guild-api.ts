@@ -1,26 +1,29 @@
 import {baseApi} from './base-api.ts';
-import {Guild} from '../../entities/guild.ts';
-import {ApplicationResponseAction} from "../../types/application-response-action.ts";
+import { Guild, NewGuild } from '../../entities/guild.ts';
 import {MemberAction} from "../../types/member-action.ts";
 import {BlacklistedUser} from "../../entities/blacklisted-user.ts";
+import { Tile } from '../../entities/tile.ts';
+import { GuildApplication } from '../../entities/guild-application.ts';
+import { Event } from '../../entities/event.ts';
+import { GuildMember } from '../../entities/guild-member.ts';
+import { ApplicationResponseBody } from '../../models/application-response-body.ts';
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getUserGuilds: builder.query({
+    getUserGuilds: builder.query<Guild[], void>({
       query: () => ({
         url: '/guilds/getUsersGuilds',
         method: 'GET',
-      }),
-      transformResponse: (response: Guild[]) => response?.length == 0 ? undefined : response
+      })
     }),
-    createGuild: builder.mutation({
-      query: (guild) => ({
+    createGuild: builder.mutation<void, NewGuild>({
+      query: (guild: NewGuild) => ({
         url: '/guilds',
         method: 'POST',
         body: guild
       })
     }),
-    applyToGuild: builder.mutation({
+    applyToGuild: builder.mutation<void, string>({
       query: (guildId: string) => {
         return {
           url: `/guilds/${guildId}/apply`,
@@ -28,7 +31,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    searchGuilds: builder.query({
+    searchGuilds: builder.query<Guild[], string>({
       query: (searchTerm: string) => {
         const params = new URLSearchParams();
         if (searchTerm) params.append('searchTerm', searchTerm);
@@ -39,15 +42,15 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
-    getGuild: builder.query({
-      query: (id: string) => {
+    getGuild: builder.query<Guild, string>({
+      query: (guildId: string) => {
         return {
-          url: `/guilds/${id}`,
+          url: `/guilds/${guildId}`,
           method: 'GET',
         };
       }
     }),
-    getGuildApplications: builder.query({
+    getGuildApplications: builder.query<GuildApplication[], string>({
       query: (id: string) => {
         return {
           url: `/guilds/${id}/applications`,
@@ -55,7 +58,7 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
-    getGuildBlacklistedUsers: builder.query({
+    getGuildBlacklistedUsers: builder.query<BlacklistedUser[], string>({
       query: (guildId: string) => {
         return {
           url: `/guilds/${guildId}/blacklist`,
@@ -63,20 +66,16 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
-    getGuildMembers: builder.query({
-      query: (id: string) => {
+    getGuildMembers: builder.query<GuildMember[], string>({
+      query: (guildId: string) => {
         return {
-          url: `/guilds/${id}/members`,
+          url: `/guilds/${guildId}/members`,
           method: 'GET',
         };
       }
     }),
-    applicationResponse: builder.mutation({
-      query: ({guildId, applicationId, action}: {
-        guildId: string,
-        applicationId: string,
-        action: ApplicationResponseAction
-      }) => {
+    applicationResponse: builder.mutation<void, ApplicationResponseBody>({
+      query: ({guildId, applicationId, action}: ApplicationResponseBody) => {
         return {
           url: `/guilds/${guildId}/applications/${applicationId}/${action}`,
           method: 'POST'
@@ -91,7 +90,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    memberAction: builder.mutation({
+    memberAction: builder.mutation<void, {guildId: string, appUserId: string, action: MemberAction}>({
       query: ({guildId, appUserId, action}: {
         guildId: string,
         appUserId: string,
@@ -103,7 +102,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    removeBlacklistedUser: builder.mutation({
+    removeBlacklistedUser: builder.mutation<void, BlacklistedUser>({
       query: ({guildId, userName}: BlacklistedUser) => {
         return {
           url: `/guilds/${guildId}/blacklist/${userName}`,
@@ -111,7 +110,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    blacklistUser: builder.mutation({
+    blacklistUser: builder.mutation<void, BlacklistedUser>({
       query: ({guildId, userName}: BlacklistedUser) => {
         return {
           url: `/guilds/${guildId}/blacklist/${userName}`,
@@ -119,7 +118,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    archiveGuild: builder.mutation({
+    archiveGuild: builder.mutation<void, string>({
       query: (guildId: string) => {
         return {
           url: `/guilds/${guildId}`,
@@ -127,7 +126,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    getGuildEvents: builder.query({
+    getGuildEvents: builder.query<Event[], string>({
       query: (guildId: string) => {
         return {
           url: `/guilds/${guildId}/events`,
@@ -135,7 +134,7 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
-    getGuildTiles: builder.query({
+    getGuildTiles: builder.query<Tile[], string>({
       query: (guildId: string) => {
         return {
           url: `/guilds/${guildId}/tiles`,

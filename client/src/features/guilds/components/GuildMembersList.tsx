@@ -10,11 +10,8 @@ import {ListView} from "../../../core/ui/ListView.tsx";
 
 export function GuildMembersList() {
   const {guildId} = useParams();
-  const {data, isLoading, refetch} = useGetGuildMembersQuery(guildId);
-  const members = data as GuildMember[];
+  const {data: members, isLoading, refetch} = useGetGuildMembersQuery(guildId);
   const [selectedMember, setSelectedMember] = useState<GuildMember>(null);
-
-  // todo refetch on data changed in modal?
 
   function handleOnClick(item: GuildMember) {
     setSelectedMember(item);
@@ -22,7 +19,7 @@ export function GuildMembersList() {
 
   function handleMemberUpdate() {
     setSelectedMember(null);
-    refetch(guildId);
+    refetch();
   }
 
   return (

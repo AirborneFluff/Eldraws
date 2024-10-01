@@ -13,8 +13,7 @@ import {ListView} from "../../../core/ui/ListView.tsx";
 
 export function GuildApplicationsList() {
   const { guildId } = useParams();
-  const {data, isLoading, refetch} = useGetGuildApplicationsQuery(guildId);
-  const applications = data as GuildApplication[];
+  const {data: applications, isLoading, refetch} = useGetGuildApplicationsQuery(guildId);
 
   const [respondToApplication, {
     isLoading: isResponseLoading,

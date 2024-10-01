@@ -1,14 +1,14 @@
 import { Alert, Button, Card, Form, Input, Modal, Space, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useCreateTileMutation, useGetTileImagesQuery } from '../../../data/services/api/tile-api.ts';
-import { Tile } from '../../../data/entities/tile.ts';
+import { CreateTileModel } from '../../../data/entities/tile.ts';
 const { TextArea } = Input;
 
 export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
   const [createTile, {isLoading, isError, error, isSuccess}] = useCreateTileMutation();
-  const {data: tileImages, isLoading: imagesLoading, isError: imagesError} = useGetTileImagesQuery();
-  const [form] = Form.useForm();
-  const [selectedImagePath, setSelectedImagePath] = useState('');
+  const {data: tileImageUrls, isFetching: imagesLoading, refetch: refetchImages} = useGetTileImagesQuery();
+  const [form] = Form.useForm<CreateTileModel>();
+  const [selectedImagePath, setSelectedImagePath] = useState(null);
 
   useEffect(() => {
     if (isSuccess) {
@@ -16,8 +16,17 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
     }
   }, [isSuccess]);
 
-  function handleOnFinish(values: Partial<Tile>) {
-    const newTile: Tile = {
+  useEffect(() => {
+    if (!open) return;
+    form.resetFields();
+    setSelectedImagePath(null);
+    refetchImages();
+  }, [open]);
+
+  function handleOnFinish(values: CreateTileModel) {
+    if (selectedImagePath == null) return;
+
+    const newTile: CreateTileModel = {
       ...values,
       imagePath: selectedImagePath,
       guildId: guildId
@@ -82,7 +91,7 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
             <Spin size='large' />
           ) : (
             <Space size={8} wrap className='justify-between max-h-36 sm:max-h-96 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-              {tileImages?.map((src, index) =>
+              {tileImageUrls?.map((src, index) =>
                 <Button
                   size='large'
                   key={index}

@@ -3,3 +3,7 @@ export interface Guild {
   name: string,
   ownerId: string
 }
+
+export interface NewGuild {
+  name: string
+}

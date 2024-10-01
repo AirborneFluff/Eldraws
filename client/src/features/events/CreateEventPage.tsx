@@ -1,18 +1,18 @@
 import {usePage} from "../../core/ui/AppLayout.tsx";
 import {useEffect} from "react";
 import {useCreateEventMutation} from "../../data/services/api/event-api.ts";
-import {Button, DatePicker, Divider, Form, Input, InputNumber, Select, Switch} from "antd";
-import {EventType, Event} from "../../data/entities/event.ts";
+import {Button, DatePicker, Form, Input, Select} from "antd";
+import { EventType, CreateEventModel } from '../../data/entities/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GuildEventListNavigationState } from '../guilds/components/GuildEventsList.tsx';
 const { TextArea } = Input;
 
 export function CreateEventPage() {
-  const [createEvent, {data, isLoading, isError, isSuccess, error}] = useCreateEventMutation();
+  const [createEvent, {isLoading, isSuccess}] = useCreateEventMutation();
   const {setHeaderContent} = usePage();
   const navigate = useNavigate();
   const {guildId} = useParams();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<CreateEventModel>();
 
   useEffect(() => {
     setHeaderContent({
@@ -34,14 +34,13 @@ export function CreateEventPage() {
   }, [isSuccess]);
 
 
-  function handleOnFormFinish(val: Event) {
+  function handleOnFormFinish(val: CreateEventModel) {
     val.guildId = guildId;
     createEvent(val);
   }
 
   const eventTypes = [
-    { label: "Tile Race", value: EventType.TileRace },
-    { label: "Bingo", value: EventType.Bingo },
+    { label: "Bingo", value: EventType.Bingo }
   ]
 
   return (
@@ -77,7 +76,7 @@ export function CreateEventPage() {
         <DatePicker showTime />
       </Form.Item>
 
-      <Divider/>
+      {/*<Divider/>
 
       <Form.Item label="Entry Requires Approval" valuePropName="checked">
         <Switch />
@@ -93,10 +92,8 @@ export function CreateEventPage() {
 
       <Form.Item label="InputNumber">
         <InputNumber />
-      </Form.Item>
-      <Form.Item label="Button">
-        <Button htmlType="submit" type='primary'>Button</Button>
-      </Form.Item>
+      </Form.Item>*/}
+      <Button htmlType="submit" type='primary'>Create Event</Button>
     </Form>
   )
 }

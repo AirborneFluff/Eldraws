@@ -10,9 +10,8 @@ export const authApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
       keepUnusedDataFor: 0,
-      refetchOnMountOrArgChange: true,
     }),
-    logout: builder.mutation({
+    logout: builder.mutation<void, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',

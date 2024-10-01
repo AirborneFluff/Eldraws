@@ -4,7 +4,6 @@ import {
   useSearchGuildsQuery
 } from '../../../data/services/api/guild-api.ts';
 import { useEffect, useState } from 'react';
-import { Guild } from '../../../data/entities/guild.ts';
 import useDebounce from "../../../core/hooks/useDebounce.ts";
 
 export function JoinGuildModal({open, onSuccess, onCancel}) {
@@ -12,7 +11,7 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   const [applyToGuild, {isLoading, isError: isApplicationError, error: applicationError, isSuccess}] = useApplyToGuildMutation();
-  const { data = [], isFetching } = useSearchGuildsQuery(debouncedSearchQuery, {
+  const { data: guildResults, isFetching } = useSearchGuildsQuery(debouncedSearchQuery, {
     skip: !debouncedSearchQuery || debouncedSearchQuery.length < 3 || !open
   });
 
@@ -59,7 +58,7 @@ export function JoinGuildModal({open, onSuccess, onCancel}) {
         onSearch={handleSearch}
         onChange={setSelectedGuildId}
         loading={isFetching}
-        options={(data || []).map((guild: Guild) => ({
+        options={(guildResults || []).map((guild) => ({
           value: guild.id,
           label: guild.name,
         }))}

@@ -1,14 +1,19 @@
-import { BingoBoardTile, GridPosition } from '../../../data/entities/bingo-board-tile.ts';
+import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
-
-export function TilePlaceholder({bingoTile, onAddTileRequest}: TilePlaceholderProps) {
+export function TilePlaceholder({bingoTile, onTileClick, isEditable}: TilePlaceholderProps) {
   const tile = bingoTile.tile;
+  const enableClick = isEditable || !!bingoTile.tile;
+
+  function handleOnClick() {
+    if (!enableClick) return;
+    onTileClick(bingoTile);
+  }
 
   return (
     <div
-      onClick={() => onAddTileRequest(bingoTile)}
-      className='border border-gray-200 rouned-md cursor-pointer min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56'>
+      onClick={handleOnClick}
+      className={"border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56" + (enableClick? ' cursor-pointer' : '')} >
       <div className='flex justify-center items-center h-full'>
         {bingoTile.tile ? (
           <div className='flex justify-center items-center gap-2 flex-col rounded p-2'>
@@ -17,7 +22,7 @@ export function TilePlaceholder({bingoTile, onAddTileRequest}: TilePlaceholderPr
           </div>
         ) : (
           <div className='flex justify-center items-center gap-2 flex-col rounded p-2 max-md:min-h-32'>
-            <PlusCircleOutlined className='text-2xl text-gray-600' />
+            {isEditable && <PlusCircleOutlined className='text-2xl text-gray-600' />}
           </div>
         )}
       </div>
@@ -27,5 +32,6 @@ export function TilePlaceholder({bingoTile, onAddTileRequest}: TilePlaceholderPr
 
 interface TilePlaceholderProps {
   bingoTile: BingoBoardTile,
-  onAddTileRequest: (position: GridPosition) => void
+  onTileClick: (tile: BingoBoardTile) => void,
+  isEditable: boolean
 }

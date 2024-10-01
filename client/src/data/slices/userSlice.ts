@@ -21,7 +21,7 @@ export const userSlice = createSlice({
   }
 })
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser } = userSlice.actions;
 
 export const loginUser = () => async (dispatch: AppDispatch) => {
   try {

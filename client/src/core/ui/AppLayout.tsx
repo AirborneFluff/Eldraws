@@ -1,6 +1,6 @@
-import React, {createContext, useCallback, useContext, useState} from 'react';
+import {createContext, useCallback, useContext, useState} from 'react';
 import {Layout, Skeleton} from 'antd';
-import { Outlet, useFetcher, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import {usePathSegments} from '../hooks/usePathSegments.ts';
 import {HumanizeWord} from '../utils/text-utilities.ts';
 import {PageHeader} from '@ant-design/pro-components';
@@ -20,7 +20,7 @@ const PageContext = createContext<{
 interface HeaderContent {
   title: string,
   subtitle: string,
-  backRoute: string | undefined
+  backRoute?: string | undefined
 }
 
 interface BreadcrumbOverride {
@@ -29,7 +29,6 @@ interface BreadcrumbOverride {
 }
 
 export function AppLayout() {
-  let fetcher = useFetcher();
   const segments = usePathSegments();
   const routes = segments.map(segment => ({
     breadcrumbName: HumanizeWord(segment)
@@ -54,12 +53,12 @@ export function AppLayout() {
     }
   })
 
-  function handleOnLogout() {
+  /*function handleOnLogout() {
     fetcher.submit(null, {
       action: '/logout',
       method: 'post',
     });
-  }
+  }*/
 
   function addBreadcrumbOverride(item: BreadcrumbOverride) {
     setBreadcrumbOverrides(curr => {
@@ -94,15 +93,14 @@ export function AppLayout() {
               backIcon={breadcrumbs.length > 1 ? <ArrowLeftOutlined /> : false}
               onBack={handleOnBackPress}
               title={isLoading ? <Skeleton.Input size='large' active/> : headerContent.title}
-              subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle}
-              breadcrumb={{breadcrumbs}}/>
+              subTitle={isLoading ? <Skeleton.Input size='small' active/> : headerContent.subtitle} />
             <span>{currentBreakpoint}</span>
           </div>
         }
       </Header>
       <Layout>
         <Content className='overflow-y-auto'>
-          <PageContext.Provider value={{setLoading, setHeaderContent, addBreadcrumbOverride}}>
+          <PageContext.Provider value={{isLoading, setLoading, setHeaderContent, addBreadcrumbOverride}}>
             <div className='container'>
               <div className='rounded-md p-4 md:p-8 bg-white shadow-lg'>
                 <Outlet/>
