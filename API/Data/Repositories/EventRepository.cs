@@ -85,7 +85,14 @@ public class EventRepository(DataContext context)
     {
         return context.BingoBoardTiles
             .Include(t => t.Tile)
+            .Include(t => t.Submissions)
+            .ThenInclude(s => s.AppUser)
             .Where(tile => tile.BingoEventId == bingoEventId)
             .ToListAsync();
+    }
+
+    public Task<TileSubmission?> GetBingoTileSubmissionById(string submissionId)
+    {
+        return context.TileSubmissions.FirstOrDefaultAsync(t => t.Id == submissionId);
     }
 }

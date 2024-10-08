@@ -4,20 +4,21 @@ import dayjs from 'dayjs';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { NewTileSubmission } from '../../../data/entities/tile-submission.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
+import { useEventDetails } from '../EventDetailsPage.tsx';
 
 type FormTileSubmission = Omit<NewTileSubmission, 'eventId' | 'bingoBoardTileId'>;
 
 interface SubmitTileModalProps {
-  eventId: string,
   bingoTile: BingoBoardTile,
   open: boolean,
   onCancel: () => void,
   onSuccess: (bingoBoardTile: BingoBoardTile) => void
 }
 
-export function SubmitTileModal({eventId, bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
+export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
   const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
   const [form] = Form.useForm<FormTileSubmission>();
+  const {event} = useEventDetails();
 
   useEffect(() => {
     if (isSuccess) {
@@ -33,7 +34,7 @@ export function SubmitTileModal({eventId, bingoTile, open, onCancel, onSuccess}:
   function handleOnFinish(form: FormTileSubmission) {
     console.log(bingoTile);
     submitTile({
-      eventId: eventId,
+      eventId: event.id,
       bingoBoardTileId: bingoTile.id,
       submittedAt: form.submittedAt
     });

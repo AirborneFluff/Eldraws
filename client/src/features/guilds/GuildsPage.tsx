@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import GuildsList from './components/GuildsList.tsx';
 import { useGetUserGuildsQuery } from '../../data/services/api/guild-api.ts';
 import { usePage } from '../../core/ui/AppLayout.tsx';
-import {ListView} from "../../core/ui/ListView.tsx";
+import {PageView} from "../../core/ui/PageView.tsx";
 
 export function GuildsPage() {
   const [ showGuildSearchModal, setShowGuildSearchModal ] = useState(false);
@@ -27,7 +27,7 @@ export function GuildsPage() {
   }
 
   return (
-    <ListView
+    <PageView
       buttons={[
         <Button onClick={() => setShowCreate(true)}>Create Guild</Button>,
         <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>
@@ -41,6 +41,6 @@ export function GuildsPage() {
         open={showCreate}
         onSuccess={onCreateGuildSuccess}
         onCancel={() => setShowCreate(false)} />
-    </ListView>
+    </PageView>
   )
 }

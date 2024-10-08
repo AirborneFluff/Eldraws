@@ -1,7 +1,7 @@
 import {baseApi} from './base-api.ts';
 import { BingoBoardTile, GridPosition } from '../../entities/bingo-board-tile.ts';
 import { CreateEventModel, Event } from '../../entities/event.ts';
-import { NewTileSubmission } from '../../entities/tile-submission.ts';
+import { NewTileSubmission, TileSubmissionResponse } from '../../entities/tile-submission.ts';
 
 const eventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -46,6 +46,19 @@ const eventApi = baseApi.injectEndpoints({
         };
       }
     }),
+    sendTileSubmissionResponse: builder.mutation<void, TileSubmissionResponse>({
+      query: ({eventId, submissionId, accepted, notes}) => {
+        console.log({accepted, notes})
+        return {
+          url: `/events/${eventId}/bingo/submissions/${submissionId}`,
+          method: 'PUT',
+          body: {
+            accepted,
+            notes
+          }
+        };
+      }
+    }),
   }),
   overrideExisting: false,
 })
@@ -56,4 +69,5 @@ export const {
   useBingoBoardTileMutation,
   useGetBingoBoardTilesQuery,
   useSubmitBingoBoardTileMutation,
+  useSendTileSubmissionResponseMutation,
 } = eventApi;

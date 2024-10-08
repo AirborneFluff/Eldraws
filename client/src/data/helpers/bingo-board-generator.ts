@@ -11,7 +11,8 @@ const generateBlankBingoBoard = (): BingoBoardTile[] => {
         position: {
           row: row,
           column: column
-        }
+        },
+        submissions: []
       });
     }
   }

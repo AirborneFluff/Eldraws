@@ -6,7 +6,7 @@ import {Button, List} from "antd";
 import {BlacklistedUser} from "../../../data/entities/blacklisted-user.ts";
 import {CloseOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
-import {ListView} from "../../../core/ui/ListView.tsx";
+import {PageView} from "../../../core/ui/PageView.tsx";
 import {BlacklistUserModal} from "../modals/BlacklistUserModal.tsx";
 
 export function GuildBlacklistList() {
@@ -30,7 +30,7 @@ export function GuildBlacklistList() {
   }
 
   return (
-    <ListView
+    <PageView
       buttons={[
         <Button onClick={() => setModalVisible(true)}>Add User</Button>
       ]}>
@@ -52,7 +52,7 @@ export function GuildBlacklistList() {
         open={modalVisible}
         onSuccess={onUserAdd}
         onCancel={() => setModalVisible(false)} />
-    </ListView>
+    </PageView>
   )
 }
 

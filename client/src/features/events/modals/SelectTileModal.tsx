@@ -1,15 +1,16 @@
 import { Card, Modal, Spin } from 'antd';
 import { useGetGuildTilesQuery } from '../../../data/services/api/guild-api.ts';
 import { Tile } from '../../../data/entities/tile.ts';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
+import { useEventDetails } from '../EventDetailsPage.tsx';
 
-export function SelectTileModal({guildId, selectedBingoTile, open, onSuccess, onCancel}) {
+export function SelectTileModal({selectedBingoTile, open, onSuccess, onCancel}) {
+  const {event} = useEventDetails();
+
   const [bingoBoardTile, {isLoading, isSuccess}] = useBingoBoardTileMutation();
-  const {data: tiles, isFetching: isTilesLoading, refetch: refetchTiles} = useGetGuildTilesQuery(guildId);
+  const {data: tiles, isFetching: isTilesLoading, refetch: refetchTiles} = useGetGuildTilesQuery(event.guildId);
   const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined);
-  const {eventId} = useParams();
 
   useEffect(() => {
     if (isSuccess) {
@@ -25,7 +26,7 @@ export function SelectTileModal({guildId, selectedBingoTile, open, onSuccess, on
 
   function onSubmit() {
     bingoBoardTile({
-      eventId: eventId,
+      eventId: event.id,
       tileId: selectedTile.id,
       position: selectedBingoTile.position
     });

@@ -72,4 +72,20 @@ public partial class EventsController
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest();
     }
+
+    [HttpPut("{eventId}/bingo/submissions/{submissionId}")]
+    [ServiceFilter(typeof(ValidateBingoEventHost))]
+    public async Task<ActionResult> SubmissionResponse(string eventId, string submissionId,
+        [FromBody] TileSubmissionResponseDto responseDto)
+    {
+        var submission = await unitOfWork.EventRepository.GetBingoTileSubmissionById(submissionId);
+        if (submission is null) return NotFound("No submission found by that Id");
+
+        submission.JudgeId = User.GetUserId();
+        submission.Accepted = responseDto.Accepted;
+        submission.Notes = responseDto.Notes;
+        
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest();
+    }
 }

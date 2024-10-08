@@ -1,7 +1,7 @@
 import {Flex, Space} from "antd";
 import React from "react";
 
-export function ListView({buttons, children}: { buttons?: React.ReactNode[], children: React.ReactNode }) {
+export function PageView({buttons, children, loading}: { buttons?: React.ReactNode[], children: React.ReactNode, loading?: boolean }) {
   return (
     <Flex className='w-full' gap='0.5rem' vertical>
       <Space>
@@ -11,7 +11,7 @@ export function ListView({buttons, children}: { buttons?: React.ReactNode[], chi
           ))
           : buttons}
       </Space>
-      {children}
+      {loading ? null : children}
     </Flex>
   )
 }

@@ -6,7 +6,7 @@ import {Descriptions, List} from "antd";
 import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
-import {ListView} from "../../../core/ui/ListView.tsx";
+import {PageView} from "../../../core/ui/PageView.tsx";
 
 export function GuildMembersList() {
   const {guildId} = useParams();
@@ -23,7 +23,7 @@ export function GuildMembersList() {
   }
 
   return (
-    <ListView>
+    <PageView>
       <List
         size='large'
         header={<span>Members</span>}
@@ -40,7 +40,7 @@ export function GuildMembersList() {
         member={selectedMember}
         onSuccess={handleMemberUpdate}
         onDismiss={() => setSelectedMember(null)} />
-    </ListView>
+    </PageView>
   )
 }
 

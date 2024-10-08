@@ -9,7 +9,7 @@ import {ApplicationResponseAction} from "../../../data/types/application-respons
 import {useEffect} from "react";
 import {ApplicationResponseBody} from "../../../data/models/application-response-body.ts";
 import {useParams} from "react-router-dom";
-import {ListView} from "../../../core/ui/ListView.tsx";
+import {PageView} from "../../../core/ui/PageView.tsx";
 
 export function GuildApplicationsList() {
   const { guildId } = useParams();
@@ -36,7 +36,7 @@ export function GuildApplicationsList() {
   }
 
   return (
-    <ListView>
+    <PageView>
       <List
         size='large'
         header={<span>Your Applications</span>}
@@ -50,7 +50,7 @@ export function GuildApplicationsList() {
           />}
         loading={isLoading}
       />
-    </ListView>
+    </PageView>
   )
 }
 

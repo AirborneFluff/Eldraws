@@ -2,7 +2,7 @@ import {Button, Descriptions, List} from "antd";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {useGetGuildEventsQuery} from "../../../data/services/api/guild-api.ts";
 import {Event} from "../../../data/entities/event.ts";
-import {ListView} from "../../../core/ui/ListView.tsx";
+import {PageView} from "../../../core/ui/PageView.tsx";
 import { useEffect } from 'react';
 
 export function GuildEventsList() {
@@ -23,7 +23,7 @@ export function GuildEventsList() {
   }
 
   return (
-    <ListView
+    <PageView
       buttons={[
         <Button onClick={() => navigate("events/create")}>Create Event</Button>
       ]}>
@@ -39,7 +39,7 @@ export function GuildEventsList() {
           />}
         loading={isLoading}
       />
-    </ListView>
+    </PageView>
   )
 }
 

@@ -2,19 +2,22 @@ import { Card, Carousel } from 'antd';
 import { TilePlaceholder } from './TilePlaceholder.tsx';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
-import { SelectTileModal } from '../modals/SelectTileModal.tsx';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetBingoBoardTilesQuery } from '../../../data/services/api/event-api.ts';
 import generateBlankBingoBoard from '../../../data/helpers/bingo-board-generator.ts';
+import { TileSubmissionResponseModal } from '../modals/TileSubmissionResponseModal.tsx';
+import { BoardViewType, useEventDetails } from '../EventDetailsPage.tsx';
+import { SelectTileModal } from '../modals/SelectTileModal.tsx';
 import { SubmitTileModal } from '../modals/SubmitTileModal.tsx';
 
-export function BingoBoard({guildId, isHost}) {
+export function BingoBoard() {
   const {eventId} = useParams();
   const {breakpoints} = useBreakpoints();
   const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
   const {data, refetch} = useGetBingoBoardTilesQuery(eventId);
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
+  const {viewType} = useEventDetails();
   const showModal = selectedBingoTile != undefined;
 
   function handleOnTileClick(tile: BingoBoardTile) {
@@ -46,26 +49,30 @@ export function BingoBoard({guildId, isHost}) {
       <Card bordered title='Board'>
         {breakpoints.md ? (
           <DesktopView
-            isEditable={isHost}
             bingoTiles={boardTiles}
             onTileClick={handleOnTileClick} />
         ) : (
           <MobileView
-            isEditable={isHost}
             bingoTiles={boardTiles}
             onTileClick={handleOnTileClick} />
         )}
       </Card>
-      {isHost ? (
+      {viewType == BoardViewType.Create && (
         <SelectTileModal
           selectedBingoTile={selectedBingoTile}
-          guildId={guildId}
           open={showModal}
           onCancel={() => setSelectedBingoTile(undefined)}
           onSuccess={onSelectTileSuccess}/>
-      ) : (
+      )}
+      {viewType == BoardViewType.Manage && (
+        <TileSubmissionResponseModal
+          selectedBingoTile={selectedBingoTile}
+          open={showModal}
+          onCancel={() => setSelectedBingoTile(undefined)}
+          onSuccess={onSelectTileSuccess} />
+      )}
+      {viewType == BoardViewType.Play && (
         <SubmitTileModal
-          eventId={eventId}
           bingoTile={selectedBingoTile}
           open={showModal}
           onSuccess={onSubmitTileSuccess}
@@ -75,12 +82,11 @@ export function BingoBoard({guildId, isHost}) {
   );
 }
 
-function DesktopView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
+function DesktopView({bingoTiles, onTileClick}: BoardViewProps) {
   return (
     <div className='grid grid-cols-5 gap-2 items-stretch'>
       {bingoTiles?.map((tile, rowIndex) => (
         <TilePlaceholder
-          isEditable={isEditable}
           key={rowIndex}
           bingoTile={tile}
           onTileClick={onTileClick} />
@@ -89,7 +95,7 @@ function DesktopView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
   )
 }
 
-function MobileView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
+function MobileView({bingoTiles, onTileClick}: BoardViewProps) {
   const columns = [0, 1, 2, 3, 4].map((colIndex) =>
     bingoTiles?.filter(tile => tile.position.column === colIndex)
   );
@@ -102,7 +108,6 @@ function MobileView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
           {columnTiles?.map((tile, index) => (
             <div className='max-w-48 mx-auto my-2'>
               <TilePlaceholder
-                isEditable={isEditable}
                 key={index}
                 bingoTile={tile}
                 onTileClick={onTileClick} />
@@ -115,7 +120,6 @@ function MobileView({bingoTiles, onTileClick, isEditable}: BoardViewProps) {
 }
 
 export interface BoardViewProps {
-  bingoTiles: BingoBoardTile[],
-  onTileClick: (tile: BingoBoardTile) => void,
-  isEditable: boolean
+  bingoTiles: BingoBoardTile[];
+  onTileClick: (tile: BingoBoardTile) => void;
 }
