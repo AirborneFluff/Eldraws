@@ -3,7 +3,6 @@ import { TilePlaceholder } from './TilePlaceholder.tsx';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useGetBingoBoardTilesQuery } from '../../../data/services/api/event-api.ts';
 import generateBlankBingoBoard from '../../../data/helpers/bingo-board-generator.ts';
 import { TileSubmissionResponseModal } from '../modals/TileSubmissionResponseModal.tsx';
@@ -12,12 +11,11 @@ import { SelectTileModal } from '../modals/SelectTileModal.tsx';
 import { SubmitTileModal } from '../modals/SubmitTileModal.tsx';
 
 export function BingoBoard() {
-  const {eventId} = useParams();
+  const {event, viewType} = useEventDetails();
   const {breakpoints} = useBreakpoints();
   const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
-  const {data, refetch} = useGetBingoBoardTilesQuery(eventId);
+  const {data, refetch} = useGetBingoBoardTilesQuery(event.id);
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
-  const {viewType} = useEventDetails();
   const showModal = selectedBingoTile != undefined;
 
   function handleOnTileClick(tile: BingoBoardTile) {

@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { Alert, Button, Form, Input, Modal, Select } from 'antd';
+import {useEffect} from 'react';
+import {Alert, Button, Form, Input, Modal, Select} from 'antd';
 const { TextArea } = Input;
 import {
   useSendTileSubmissionResponseMutation
 } from '../../../data/services/api/event-api.ts';
-import { TileSubmissionResponse } from '../../../data/entities/tile-submission.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
+import {TileSubmissionResponse} from "../../../data/entities/tile-submission";
+import dayjs from "dayjs";
 
 type FormSubmissionResponse = Omit<TileSubmissionResponse, 'eventId'>;
 
@@ -22,6 +23,8 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
   const {event} = useEventDetails();
   const [form] = Form.useForm<FormSubmissionResponse>();
 
+  const selectedSubmissionId = Form.useWatch('submissionId', form);
+
   useEffect(() => {
     if (isSuccess) {
       onSuccess();
@@ -34,7 +37,6 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
   }, [open]);
 
   function handleOnFinish(form: FormSubmissionResponse) {
-    console.log(form);
     submitResponse({
       eventId: event.id,
       submissionId: form.submissionId,
@@ -54,6 +56,8 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
   };
 
   const submissions = selectedBingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
+  const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
+  const submittedAt = selectedSubmission ? dayjs(selectedSubmission.submittedAt).format('DD-MMMM HH:mm') : undefined;
 
   const initialValues: FormSubmissionResponse = {
     submissionId: undefined,
@@ -101,9 +105,16 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
           label="Notes"
           name="notes"
         >
-          <TextArea  />
+          <TextArea />
         </Form.Item>
       </Form>
+
+      {selectedSubmission && (
+        <Alert
+          className='my-4'
+          type='info'
+          description={'This tile was submitted at: ' + submittedAt}/>
+      )}
 
       {isError &&
         <Alert

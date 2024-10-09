@@ -57,7 +57,7 @@ public partial class EventsController
         var bingoTile = bingoEvent.BoardTiles.FirstOrDefault(t => t.Id == bingoTileId);
         if (bingoTile is null) return NotFound("No tile found by that Id");
 
-        if (bingoTile.Submissions.Any(t => t.AppUserId == User.GetUserId()))
+        if (bingoTile.Submissions.Any(t => t.AppUserId == User.GetUserId() && t.JudgeId == null))
             return BadRequest("You've already submitted this tile");
 
         var submission = new TileSubmission

@@ -1,10 +1,10 @@
-import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
-import { PlusCircleOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../data/store.ts';
-import { User } from '../../../data/entities/user.ts';
+import {BingoBoardTile} from '../../../data/entities/bingo-board-tile.ts';
+import {PlusCircleOutlined} from '@ant-design/icons';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../../data/store.ts';
+import {User} from '../../../data/entities/user.ts';
 import React from 'react';
-import { BoardViewType, useEventDetails } from '../EventDetailsPage.tsx';
+import {BoardViewType, useEventDetails} from '../EventDetailsPage.tsx';
 
 export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
@@ -12,6 +12,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
   const tileSubmissions = [...bingoTile.submissions] ?? [];
   const latestUserSubmission = tileSubmissions.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()).find(s => s.appUserId === user.id);
   const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
+
   const {viewType} = useEventDetails();
 
   function handleOnClick() {
@@ -22,40 +23,44 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
   const BG_GRAY = 'bg-gray-200';
   const BG_GREEN = 'bg-green-200';
   const BG_BLUE = 'bg-blue-200';
+  const BG_RED = 'bg-red-200';
   const TRIANGLE_GRAY = 'bg-gray-500';
   const TRIANGLE_GREEN = 'bg-green-500';
   const TRIANGLE_BLUE = 'bg-blue-500';
+  const TRIANGLE_RED = 'bg-red-500';
 
-  const getColorsForPlayView = (submissionApproved: boolean) => {
+  const getColorsForPlayView = () => {
+    if (latestUserSubmission?.judgeId == null) {
+      return {
+        bgColor: BG_GRAY,
+        triangleColor: TRIANGLE_GRAY
+      };
+    }
     return {
-      bgColor: submissionApproved ? BG_GREEN : BG_GRAY,
-      triangleColor: submissionApproved ? TRIANGLE_GREEN : TRIANGLE_GRAY
+      bgColor: latestUserSubmission.accepted ? BG_GREEN : BG_RED,
+      triangleColor: latestUserSubmission.accepted ? TRIANGLE_GREEN : TRIANGLE_RED
     };
   };
 
-  const getColorsForManageView = (submissionCount: number) => {
+  const getColorsForManageView = () => {
     return {
-      bgColor: submissionCount > 0 ? BG_BLUE : BG_GRAY,
-      triangleColor: submissionCount > 0 ? TRIANGLE_BLUE : TRIANGLE_GRAY
+      bgColor: unresolvedSubmissions.length > 0 ? BG_BLUE : BG_GRAY,
+      triangleColor: unresolvedSubmissions.length > 0 ? TRIANGLE_BLUE : TRIANGLE_GRAY
     };
   };
 
   const SubmissionOverlay: React.FC = () => {
-    let bgColor = BG_GRAY;
-    let triangleColor = TRIANGLE_GRAY;
-    let submissionCount = 0;
-
-    if (viewType === BoardViewType.Play) {
-      ({ bgColor, triangleColor } = getColorsForPlayView(latestUserSubmission?.accepted));
-    } else if (viewType === BoardViewType.Manage) {
-      submissionCount = bingoTile.submissions?.filter(s => s.judgeId == undefined).length || 0;
-      ({ bgColor, triangleColor } = getColorsForManageView(submissionCount));
-    }
+    const submissionCount = unresolvedSubmissions.length;
+    const colors = viewType === BoardViewType.Play ? getColorsForPlayView() : getColorsForManageView();
+    const bgColor = colors.bgColor;
+    const triangleColor = colors.triangleColor;
 
     return (
       <div className={`absolute top-0 right-0 bottom-0 left-0 opacity-50 ${bgColor}`}>
         <div className={`absolute top-0 right-0 w-10 h-10 clip-triangle ${triangleColor}`}>
-          {submissionCount > 0 && <p className="text-white text-xs p-1 w-1/2 float-right">{submissionCount}</p>}
+          {submissionCount > 0 && viewType === BoardViewType.Manage && (
+            <p className="text-white text-xs p-1 w-1/2 float-right">{submissionCount}</p>
+          )}
         </div>
       </div>
     );
@@ -73,7 +78,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
 
   const clickEnabled = () => {
     if (viewType === BoardViewType.Play) {
-      return !latestUserSubmission
+      return !latestUserSubmission || !latestUserSubmission.accepted && latestUserSubmission.judgeId != undefined;
     }
 
     if (viewType === BoardViewType.Manage) {

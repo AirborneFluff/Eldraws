@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
-import { Alert, Card, DatePicker, Form, Modal, Spin } from 'antd';
+import { Alert, Card, DatePicker, Form, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { NewTileSubmission } from '../../../data/entities/tile-submission.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
+import {useSelector} from "react-redux";
+import {RootState} from "../../../data/store.ts";
+import {User} from "../../../data/entities/user.ts";
 
 type FormTileSubmission = Omit<NewTileSubmission, 'eventId' | 'bingoBoardTileId'>;
 
@@ -16,9 +19,15 @@ interface SubmitTileModalProps {
 }
 
 export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
+  const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
   const [form] = Form.useForm<FormTileSubmission>();
   const {event} = useEventDetails();
+
+  const latestUserSubmission =
+    bingoTile?.submissions?.slice()
+    .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+    .find(s => s.appUserId === user.id);
 
   useEffect(() => {
     if (isSuccess) {
@@ -32,7 +41,6 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
   }, [open]);
 
   function handleOnFinish(form: FormTileSubmission) {
-    console.log(bingoTile);
     submitTile({
       eventId: event.id,
       bingoBoardTileId: bingoTile.id,
@@ -65,15 +73,19 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
 
       </Form>
       <Card className='flex justify-center items-center'>
-        {false ? (
-          <Spin size='large' />
-        ) : (
-          <div className='flex justify-center items-center gap-2 flex-col rounded min-h-24 p-2'>
-            <img className='p-0.5' alt='Tile Image' src={bingoTile?.tile?.imagePath} />
-            <div className='font-bold text-gray-600 text-center text-sm'>{bingoTile?.tile?.task}</div>
-          </div>
-        )}
+        <div className='flex justify-center items-center gap-2 flex-col rounded min-h-24 p-2'>
+          <img className='p-0.5' alt='Tile Image' src={bingoTile?.tile?.imagePath} />
+          <div className='font-bold text-gray-600 text-center text-sm'>{bingoTile?.tile?.task}</div>
+        </div>
       </Card>
+
+      {latestUserSubmission && (
+        <Alert
+          className='my-4'
+          type='info'
+          message='Previous submission was rejected:'
+          description={latestUserSubmission?.notes ?? 'No reason was given'}/>
+      )}
 
       {isError &&
         <Alert
