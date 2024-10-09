@@ -9,13 +9,13 @@ import { BoardViewType, useEventDetails } from '../EventDetailsPage.tsx';
 export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const tile = bingoTile.tile;
-  const userSubmission = bingoTile.submissions?.find(s => s.appUserId === user.id);
-  const submissionApproved = userSubmission?.accepted;
+  const tileSubmissions = [...bingoTile.submissions] ?? [];
+  const latestUserSubmission = tileSubmissions.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()).find(s => s.appUserId === user.id);
+  const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
   const {viewType} = useEventDetails();
-  const enableClick = viewType != BoardViewType.Play || !userSubmission;
 
   function handleOnClick() {
-    if (!enableClick) return;
+    if (!clickEnabled()) return;
     onTileClick(bingoTile);
   }
 
@@ -46,7 +46,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
     let submissionCount = 0;
 
     if (viewType === BoardViewType.Play) {
-      ({ bgColor, triangleColor } = getColorsForPlayView(submissionApproved));
+      ({ bgColor, triangleColor } = getColorsForPlayView(latestUserSubmission?.accepted));
     } else if (viewType === BoardViewType.Manage) {
       submissionCount = bingoTile.submissions?.filter(s => s.judgeId == undefined).length || 0;
       ({ bgColor, triangleColor } = getColorsForManageView(submissionCount));
@@ -61,20 +61,46 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
     );
   };
 
+  const overlayVisible = () => {
+    if (viewType === BoardViewType.Play) {
+      return !!latestUserSubmission;
+    }
+
+    if (viewType === BoardViewType.Manage) {
+      return unresolvedSubmissions.length > 0;
+    }
+  }
+
+  const clickEnabled = () => {
+    if (viewType === BoardViewType.Play) {
+      return !latestUserSubmission
+    }
+
+    if (viewType === BoardViewType.Manage) {
+      return unresolvedSubmissions.length > 0;
+    }
+
+    if (viewType === BoardViewType.Create) {
+      return true;
+    }
+  }
+
+
+
   return (
     <div
       onClick={handleOnClick}
-      className={'border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (enableClick ? ' cursor-pointer' : '')}>
+      className={'border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (clickEnabled() ? ' cursor-pointer' : '')}>
       <div className="flex justify-center items-center h-full">
       {bingoTile.tile ? (
           <div className="flex justify-center items-center gap-2 flex-col rounded p-2">
             <img className="p-0.5" alt="Tile Image" src={tile?.imagePath}/>
             <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
-            {userSubmission && viewType != BoardViewType.Create && <SubmissionOverlay />}
+            {overlayVisible() && <SubmissionOverlay />}
           </div>
         ) : (
           <div className='flex justify-center items-center gap-2 flex-col rounded p-2 max-md:min-h-32'>
-            {viewType != BoardViewType.Play && <PlusCircleOutlined className='text-2xl text-gray-600' />}
+            {viewType == BoardViewType.Create && <PlusCircleOutlined className='text-2xl text-gray-600' />}
           </div>
         )}
       </div>
