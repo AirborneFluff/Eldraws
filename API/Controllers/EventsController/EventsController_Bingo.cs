@@ -65,7 +65,7 @@ public partial class EventsController
             Id = Guid.NewGuid().ToString(),
             AppUserId = User.GetUserId(),
             BingoBoardTileId = bingoTileId,
-            SubmittedAt = dto.SubmittedAt
+            EvidenceSubmittedAt = dto.EvidenceSubmittedAt
         };
         
         bingoTile.Submissions.Add(submission);

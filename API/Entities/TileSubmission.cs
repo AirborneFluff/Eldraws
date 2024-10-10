@@ -9,8 +9,9 @@ public class TileSubmission
 
     public required string BingoBoardTileId { get; set; }
     public BingoBoardTile? BingoBoardTile { get; set; }
-    
-    public DateTime SubmittedAt { get; set; }
+
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+    public DateTime EvidenceSubmittedAt { get; set; }
     
     public string? JudgeId { get; set; }
     public AppUser? Judge { get; set; }

@@ -36,12 +36,12 @@ const eventApi = baseApi.injectEndpoints({
       }
     }),
     submitBingoBoardTile: builder.mutation<void, NewTileSubmission>({
-      query: ({eventId, bingoBoardTileId, submittedAt}) => {
+      query: ({eventId, bingoBoardTileId, evidenceSubmittedAt}) => {
         return {
           url: `/events/${eventId}/bingo/${bingoBoardTileId}/submit`,
           method: 'POST',
           body: {
-            submittedAt
+            evidenceSubmittedAt
           }
         };
       }

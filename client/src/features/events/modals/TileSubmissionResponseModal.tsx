@@ -8,6 +8,7 @@ import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {TileSubmissionResponse} from "../../../data/entities/tile-submission";
 import dayjs from "dayjs";
+import { DATE_FORMAT } from '../../../data/helpers/constants.ts';
 
 type FormSubmissionResponse = Omit<TileSubmissionResponse, 'eventId'>;
 
@@ -57,7 +58,7 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
 
   const submissions = selectedBingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
   const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
-  const submittedAt = selectedSubmission ? dayjs(selectedSubmission.submittedAt).format('DD-MMMM HH:mm') : undefined;
+  const evidenceSubmittedAt = selectedSubmission ? dayjs(selectedSubmission.evidenceSubmittedAt).format(DATE_FORMAT) : undefined;
 
   const initialValues: FormSubmissionResponse = {
     submissionId: undefined,
@@ -76,7 +77,7 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
       footer={(_, { OkBtn, CancelBtn }) => (
         <>
           <CancelBtn />
-          <Button onClick={handleReject} color='danger'>Reject</Button>
+          <Button onClick={handleReject} danger>Reject</Button>
           <OkBtn />
         </>
       )}
@@ -113,7 +114,7 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
         <Alert
           className='my-4'
           type='info'
-          description={'This tile was submitted at: ' + submittedAt}/>
+          description={'This tile was submitted at: ' + evidenceSubmittedAt}/>
       )}
 
       {isError &&

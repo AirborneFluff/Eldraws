@@ -2,5 +2,5 @@
 
 public class NewTileSubmissionDto
 {
-    public DateTime SubmittedAt { get; set; }
+    public DateTime EvidenceSubmittedAt { get; set; }
 }

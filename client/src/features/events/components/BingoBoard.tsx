@@ -1,4 +1,4 @@
-import { Card, Carousel } from 'antd';
+import { Button, Card, Carousel } from 'antd';
 import { TilePlaceholder } from './TilePlaceholder.tsx';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
@@ -9,14 +9,22 @@ import { TileSubmissionResponseModal } from '../modals/TileSubmissionResponseMod
 import { BoardViewType, useEventDetails } from '../EventDetailsPage.tsx';
 import { SelectTileModal } from '../modals/SelectTileModal.tsx';
 import { SubmitTileModal } from '../modals/SubmitTileModal.tsx';
+import useTimer from '../../../core/hooks/useTimer.ts';
 
 export function BingoBoard() {
+  const trigger = useTimer();
   const {event, viewType} = useEventDetails();
   const {breakpoints} = useBreakpoints();
   const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
-  const {data, refetch} = useGetBingoBoardTilesQuery(event.id);
+  const {data, refetch, isFetching} = useGetBingoBoardTilesQuery(event.id);
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
   const showModal = selectedBingoTile != undefined;
+
+  useEffect(() => {
+    if (trigger) {
+      refetch();
+    }
+  }, [trigger]);
 
   function handleOnTileClick(tile: BingoBoardTile) {
     setSelectedBingoTile(tile);
@@ -44,7 +52,11 @@ export function BingoBoard() {
 
   return (
     <>
-      <Card bordered title='Board'>
+      <Card
+        title='Board'
+        bordered
+        extra={<Button disabled={isFetching} onClick={refetch}>Refresh</Button >}
+      >
         {breakpoints.md ? (
           <DesktopView
             bingoTiles={boardTiles}

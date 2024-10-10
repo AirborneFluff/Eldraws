@@ -3,6 +3,7 @@ export interface TileSubmission {
   appUserId: string,
   userName: string,
   submittedAt: string,
+  evidenceSubmittedAt: string,
   judgeId: string,
   accepted: boolean,
   notes?: string
@@ -11,7 +12,7 @@ export interface TileSubmission {
 export interface NewTileSubmission {
   eventId: string,
   bingoBoardTileId: string,
-  submittedAt: string
+  evidenceSubmittedAt: string
 }
 
 export interface TileSubmissionResponse {

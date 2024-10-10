@@ -2,14 +2,16 @@ import { useEffect } from 'react';
 import { Alert, Card, DatePicker, Form, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
-import { NewTileSubmission } from '../../../data/entities/tile-submission.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {useSelector} from "react-redux";
 import {RootState} from "../../../data/store.ts";
 import {User} from "../../../data/entities/user.ts";
 
-type FormTileSubmission = Omit<NewTileSubmission, 'eventId' | 'bingoBoardTileId'>;
+interface FormTileSubmission {
+  evidenceSubmittedAt: string;
+
+}
 
 interface SubmitTileModalProps {
   bingoTile: BingoBoardTile,
@@ -44,7 +46,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
     submitTile({
       eventId: event.id,
       bingoBoardTileId: bingoTile.id,
-      submittedAt: form.submittedAt
+      evidenceSubmittedAt: form.evidenceSubmittedAt
     });
   }
 
@@ -67,7 +69,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
         autoComplete="off"
       >
 
-        <Form.Item<string> label='Submitted At' name='submittedAt' initialValue={dayjs()}>
+        <Form.Item<string> label='Evidence Submitted At' name='evidenceSubmittedAt' initialValue={dayjs()}>
           <DatePicker showTime />
         </Form.Item>
 
