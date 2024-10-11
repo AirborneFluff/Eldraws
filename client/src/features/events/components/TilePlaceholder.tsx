@@ -78,6 +78,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
 
   const clickEnabled = () => {
     if (viewType === BoardViewType.Play) {
+      if (!bingoTile?.tile) return false;
       return !latestUserSubmission || !latestUserSubmission.accepted && latestUserSubmission.judgeId != undefined;
     }
 

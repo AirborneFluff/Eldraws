@@ -1,10 +1,13 @@
 import {usePage} from "../../core/ui/AppLayout.tsx";
 import {useEffect} from "react";
 import {useCreateEventMutation} from "../../data/services/api/event-api.ts";
-import {Button, DatePicker, Form, Input, Select} from "antd";
+import {Button, Form, Input, Select} from "antd";
 import { EventType, CreateEventModel } from '../../data/entities/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GuildEventListNavigationState } from '../guilds/components/GuildEventsList.tsx';
+import {DateTimePicker} from "../../core/forms/DateTimePicker.tsx";
+import dayjs from "dayjs";
+import {LOCAL_DATE_FORMAT} from "../../data/helpers/constants";
 const { TextArea } = Input;
 
 export function CreateEventPage() {
@@ -42,6 +45,7 @@ export function CreateEventPage() {
   const eventTypes = [
     { label: "Bingo", value: EventType.Bingo }
   ]
+  const currentTime = dayjs().format(LOCAL_DATE_FORMAT);
 
   return (
     <Form
@@ -68,12 +72,12 @@ export function CreateEventPage() {
         </Select>
       </Form.Item>
 
-      <Form.Item label='Start Date' name='startDate'>
-        <DatePicker format='dd/MM/yyyy' showTime />
+      <Form.Item label='Start Date' name='startDate' initialValue={dayjs()}>
+        <DateTimePicker min={currentTime} />
       </Form.Item>
 
-      <Form.Item label='End Date' name='endDate'>
-        <DatePicker showTime />
+      <Form.Item label='End Date' name='endDate' initialValue={dayjs().add(7, 'days')}>
+        <DateTimePicker min={currentTime} />
       </Form.Item>
 
       {/*<Divider/>

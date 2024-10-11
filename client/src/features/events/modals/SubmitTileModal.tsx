@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Alert, Card, DatePicker, Form, Modal } from 'antd';
+import { Alert, Card, Form, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
@@ -7,6 +7,7 @@ import { useEventDetails } from '../EventDetailsPage.tsx';
 import {useSelector} from "react-redux";
 import {RootState} from "../../../data/store.ts";
 import {User} from "../../../data/entities/user.ts";
+import {DateTimePicker} from "../../../core/forms/DateTimePicker";
 
 interface FormTileSubmission {
   evidenceSubmittedAt: string;
@@ -49,6 +50,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
       evidenceSubmittedAt: form.evidenceSubmittedAt
     });
   }
+  const currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
 
   return (
     <Modal
@@ -70,7 +72,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
       >
 
         <Form.Item<string> label='Evidence Submitted At' name='evidenceSubmittedAt' initialValue={dayjs()}>
-          <DatePicker showTime />
+          <DateTimePicker max={currentTime} />
         </Form.Item>
 
       </Form>
