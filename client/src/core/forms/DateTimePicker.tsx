@@ -12,7 +12,6 @@ interface DateTimePickerProps {
 export const DateTimePicker = forwardRef((props: DateTimePickerProps, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [formattedDate, setFormattedDate] = useState<string>(props.value ? dayjs(props.value).format(DATE_FORMAT) : "");
-  console.log(props);
   useEffect(() => {
     if (props.value) {
       setFormattedDate(dayjs(props.value).format(DATE_FORMAT));
@@ -49,7 +48,6 @@ export const DateTimePicker = forwardRef((props: DateTimePickerProps, ref) => {
         aria-label="Date and time"
         type="datetime-local"
         onChange={handleChange}
-        value={formattedDate ? dayjs(formattedDate).format(DATE_FORMAT) : ''}
       />
       <span className="px-3">{formattedDate || 'Select Date and Time'}</span>
     </div>
