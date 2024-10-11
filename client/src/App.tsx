@@ -6,7 +6,6 @@ import { AppLayout } from './core/ui/AppLayout.tsx';
 import { performLogout } from './data/services/api/auth-api.ts';
 import { AppDispatch, store } from './data/store.ts';
 import { LoginPage } from './features/login/LoginPage.tsx';
-import { HomePage } from './features/home/HomePage.tsx';
 import { LoadingPage } from './components/LoadingPage.tsx';
 import { loginUser } from './data/slices/userSlice.ts';
 import { GuildsPage } from './features/guilds/GuildsPage.tsx';
@@ -50,7 +49,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: HomePage,
+        loader: () => redirect('/app/guilds')
       },
       {
         path: "guilds",
