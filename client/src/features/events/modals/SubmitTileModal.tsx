@@ -27,10 +27,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
   const [form] = Form.useForm<FormTileSubmission>();
   const {event} = useEventDetails();
 
-  const latestUserSubmission =
-    bingoTile?.submissions?.slice()
-    .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
-    .find(s => s.appUserId === user.id);
+  const latestUserSubmission = bingoTile?.submissions?.find(s => s.appUserId === user.id);
 
   useEffect(() => {
     if (isSuccess) {

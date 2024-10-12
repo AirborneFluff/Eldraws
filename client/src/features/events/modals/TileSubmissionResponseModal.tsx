@@ -25,6 +25,9 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
   const [form] = Form.useForm<FormSubmissionResponse>();
 
   const selectedSubmissionId = Form.useWatch('submissionId', form);
+  const submissions = selectedBingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
+  const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
+  const evidenceSubmittedAt = selectedSubmission ? dayjs(selectedSubmission.evidenceSubmittedAt).format(DATE_FORMAT) : undefined;
 
   useEffect(() => {
     if (isSuccess) {
@@ -35,6 +38,7 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
   useEffect(() => {
     if (!open) return;
     form.resetFields();
+    form.setFieldValue('submissionId', submissions[0].id)
   }, [open]);
 
   function handleOnFinish(form: FormSubmissionResponse) {
@@ -55,10 +59,6 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
     form.setFieldValue('accepted', true);
     form.submit();
   };
-
-  const submissions = selectedBingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
-  const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
-  const evidenceSubmittedAt = selectedSubmission ? dayjs(selectedSubmission.evidenceSubmittedAt).format(DATE_FORMAT) : undefined;
 
   const initialValues: FormSubmissionResponse = {
     submissionId: undefined,

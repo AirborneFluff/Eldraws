@@ -81,14 +81,30 @@ public class EventRepository(DataContext context)
             .FirstOrDefaultAsync(tile => tile.Position.Column == position.Column && tile.Position.Row == position.Row);
     }
 
-    public Task<List<BingoBoardTile>> GetBingoBoardTiles(string bingoEventId)
+    public async Task<List<BingoBoardTile>> GetBingoBoardTiles(string bingoEventId)
     {
-        return context.BingoBoardTiles
+        var boardTiles = await context.BingoBoardTiles
             .Include(t => t.Tile)
-            .Include(t => t.Submissions)
-            .ThenInclude(s => s.AppUser)
             .Where(tile => tile.BingoEventId == bingoEventId)
             .ToListAsync();
+
+        foreach (var tile in boardTiles)
+        {
+            var tileSubmissions = await context.TileSubmissions
+                .Include(s => s.AppUser)
+                .Where(s => s.BingoBoardTileId == tile.Id)
+                .ToListAsync();
+            
+            var submissionsPerUser = tileSubmissions
+                .GroupBy(s => s.AppUserId)
+                .Select(g => g.OrderByDescending(s => s.SubmittedAt).First())
+                .OrderBy(s => s.SubmittedAt)
+                .ToList();
+
+            tile.Submissions = submissionsPerUser;
+        }
+
+        return boardTiles;
     }
 
     public Task<TileSubmission?> GetBingoTileSubmissionById(string submissionId)

@@ -10,7 +10,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const tile = bingoTile.tile;
   const tileSubmissions = [...bingoTile.submissions] ?? [];
-  const latestUserSubmission = tileSubmissions.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()).find(s => s.appUserId === user.id);
+  const latestUserSubmission = tileSubmissions.find(s => s.appUserId === user.id);
   const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
 
   const {viewType} = useEventDetails();
@@ -91,22 +91,20 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
     }
   }
 
-
-
   return (
     <div
       onClick={handleOnClick}
       className={'border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (clickEnabled() ? ' cursor-pointer' : '')}>
       <div className="flex justify-center items-center h-full">
-      {bingoTile.tile ? (
+        {bingoTile.tile ? (
           <div className="flex justify-center items-center gap-2 flex-col rounded p-2">
             <img className="p-0.5" alt="Tile Image" src={tile?.imagePath}/>
             <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
-            {overlayVisible() && <SubmissionOverlay />}
+            {overlayVisible() && <SubmissionOverlay/>}
           </div>
         ) : (
           <div className='flex justify-center items-center gap-2 flex-col rounded p-2 max-md:min-h-32'>
-            {viewType == BoardViewType.Create && <PlusCircleOutlined className='text-2xl text-gray-600' />}
+            {viewType == BoardViewType.Create && <PlusCircleOutlined className='text-2xl text-gray-600'/>}
           </div>
         )}
       </div>
