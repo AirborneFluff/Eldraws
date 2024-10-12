@@ -14,6 +14,7 @@ import { TabItem } from '../../data/types/tab-item.ts';
 import { Event } from '../../data/entities/event.ts';
 
 import { createContext, useContext } from 'react';
+import { BingoPlayerStatistics } from './components/BingoPlayerStatistics.tsx';
 
 interface EventDetailsContextProps {
   viewType: BoardViewType;
@@ -103,8 +104,7 @@ export function EventDetailsPage() {
       key: 'manage',
       label: 'Manage',
       children: (
-        <PageView
-          loading={!event}>
+        <PageView loading={!event}>
           <EventDetailsProvider viewType={BoardViewType.Manage} event={event}>
             <BingoBoard />
           </EventDetailsProvider>
@@ -136,6 +136,17 @@ export function EventDetailsPage() {
         </PageView>
       )
     },
+    {
+      key: 'statistics',
+      label: 'Player Statistics',
+      children: (
+        <PageView loading={!event}>
+          <EventDetailsProvider viewType={BoardViewType.Create} event={event}>
+            <BingoPlayerStatistics />
+          </EventDetailsProvider>
+        </PageView>
+      )
+    }
   ] : [];
 
   return (

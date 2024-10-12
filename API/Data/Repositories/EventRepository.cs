@@ -98,6 +98,7 @@ public class EventRepository(DataContext context)
             var submissionsPerUser = tileSubmissions
                 .GroupBy(s => s.AppUserId)
                 .Select(g => g.OrderByDescending(s => s.SubmittedAt).First())
+                .OrderBy(s => s.SubmittedAt)
                 .ToList();
 
             tile.Submissions = submissionsPerUser;
