@@ -56,7 +56,8 @@ export function EventDetailsPage() {
   useEffect(() => {
     setHeaderContent({
       title: "Event Details",
-      subtitle: event ? event.title : null
+      subtitle: event ? event.title : null,
+      backRoute: `/app/guilds/${event?.guildId}`
     });
 
     if (event) {
