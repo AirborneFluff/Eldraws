@@ -36,11 +36,10 @@ public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService
     [HttpPost("upload")]
     public async Task<IActionResult> UploadTileImage(IFormFile file) 
     {
-        if (file == null) return BadRequest("No file received");
-
         var fileName = file.FileName;
-        await imageService.UploadImageAsync(file.OpenReadStream(), fileName);
-    
-        return Ok("File uploaded successfully");   
+        var mimeType = file.ContentType;
+        var url = await imageService.UploadImageAsync(file.OpenReadStream(), fileName, mimeType);
+
+        return Ok(url);   
     }
 }

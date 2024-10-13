@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace API.Services;
 
@@ -18,11 +19,19 @@ public class ImageService(IConfiguration config, BlobServiceClient blobServiceCl
         return blobNames;
     }
     
-    public async Task UploadImageAsync(Stream imageStream, string imageName)
+    public async Task<string> UploadImageAsync(Stream imageStream, string imageName, string mimeType)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(_imageContainerName);
         var blobClient = containerClient.GetBlobClient(imageName);
+
+        await blobClient.UploadAsync(imageStream, new BlobUploadOptions
+        {
+            HttpHeaders = new BlobHttpHeaders
+            {
+                ContentType = mimeType
+            }
+        });
         
-        await blobClient.UploadAsync(imageStream, overwrite: true);
+        return blobClient.Uri.ToString();
     }
 }

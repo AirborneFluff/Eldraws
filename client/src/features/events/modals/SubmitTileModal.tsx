@@ -73,6 +73,13 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
         </Form.Item>
 
       </Form>
+      {bingoTile?.tile && (
+        <Alert
+          className='my-4'
+          type='info'
+          message={bingoTile.tile.description}
+          description={bingoTile.tile.conditions}/>
+      )}
       <Card className='flex justify-center items-center'>
         <div className='flex justify-center items-center gap-2 flex-col rounded min-h-24 p-2'>
           <img className='p-0.5' alt='Tile Image' src={bingoTile?.tile?.imagePath} />
@@ -83,7 +90,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
       {latestUserSubmission && (
         <Alert
           className='my-4'
-          type='info'
+          type='warning'
           message='Previous submission was rejected:'
           description={latestUserSubmission?.notes ?? 'No reason was given'}/>
       )}
