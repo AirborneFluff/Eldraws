@@ -3,7 +3,10 @@ import { TilePlaceholder } from './TilePlaceholder.tsx';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
 import { useEffect, useState } from 'react';
-import { useGetBingoBoardTilesQuery } from '../../../data/services/api/event-api.ts';
+import {
+  useLazyGetBingoBoardTilesPeakQuery,
+  useLazyGetBingoBoardTilesQuery
+} from '../../../data/services/api/event-api.ts';
 import generateBlankBingoBoard from '../../../data/helpers/bingo-board-generator.ts';
 import { TileSubmissionResponseModal } from '../modals/TileSubmissionResponseModal.tsx';
 import { BoardViewType, useEventDetails } from '../EventDetailsPage.tsx';
@@ -16,15 +19,26 @@ export function BingoBoard() {
   const {event, viewType} = useEventDetails();
   const {breakpoints} = useBreakpoints();
   const [selectedBingoTile, setSelectedBingoTile] = useState<BingoBoardTile | undefined>(undefined);
-  const {data, refetch, isFetching} = useGetBingoBoardTilesQuery(event.id);
+  const [getTiles, {data, isFetching}] = useLazyGetBingoBoardTilesQuery();
+  const [getTilesPeak, {data: peakTiles}] = useLazyGetBingoBoardTilesPeakQuery();
   const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
   const showModal = selectedBingoTile != undefined;
+  const eventStarted = event?.startDate ? Date.parse(event.startDate) < Date.now() : false;
 
   useEffect(() => {
-    if (trigger) {
-      refetch();
+    if (eventStarted && trigger) {
+      getTiles(event.id);
     }
-  }, [trigger]);
+  }, [trigger, eventStarted]);
+
+  useEffect(() => {
+    if (eventStarted || viewType !== BoardViewType.Play) {
+      getTiles(event.id);
+      return;
+    }
+
+    getTilesPeak(event.id);
+  }, [eventStarted, event, viewType]);
 
   function handleOnTileClick(tile: BingoBoardTile) {
     setSelectedBingoTile(tile);
@@ -32,30 +46,39 @@ export function BingoBoard() {
 
   function onSelectTileSuccess() {
     setSelectedBingoTile(undefined);
-    refetch();
+    getTiles(event.id);
   }
 
   function onSubmitTileSuccess() {
     setSelectedBingoTile(undefined);
-    refetch();
+    getTiles(event.id);
   }
 
   useEffect(() => {
-    const dataTiles = data as BingoBoardTile[];
+    if (eventStarted || viewType !== BoardViewType.Play) {
+      setBoardTiles((tiles: BingoBoardTile[]) => {
+        return tiles.map((currentTile) => {
+          const tile = data?.find(t => t.position.column === currentTile.position.column && t.position.row === currentTile.position.row);
+          return tile ?? currentTile;
+        })
+      })
+      return;
+    }
+
     setBoardTiles((tiles: BingoBoardTile[]) => {
       return tiles.map((currentTile) => {
-        const tile = dataTiles?.find(t => t.position.column === currentTile.position.column && t.position.row === currentTile.position.row);
+        const tile = peakTiles?.find(t => t.position.column === currentTile.position.column && t.position.row === currentTile.position.row);
         return tile ?? currentTile;
       })
     })
-  }, [data]);
+  }, [data, peakTiles]);
 
   return (
     <>
       <Card
         title='Board'
         bordered
-        extra={<Button disabled={isFetching} onClick={refetch}>Refresh</Button >}
+        extra={<Button disabled={isFetching || !eventStarted} onClick={() => getTiles(event.id)}>Refresh</Button >}
       >
         {breakpoints.md ? (
           <DesktopView
@@ -74,19 +97,23 @@ export function BingoBoard() {
           onCancel={() => setSelectedBingoTile(undefined)}
           onSuccess={onSelectTileSuccess}/>
       )}
-      {viewType == BoardViewType.Manage && (
-        <TileSubmissionResponseModal
-          selectedBingoTile={selectedBingoTile}
-          open={showModal}
-          onCancel={() => setSelectedBingoTile(undefined)}
-          onSuccess={onSelectTileSuccess} />
-      )}
-      {viewType == BoardViewType.Play && (
-        <SubmitTileModal
-          bingoTile={selectedBingoTile}
-          open={showModal}
-          onSuccess={onSubmitTileSuccess}
-          onCancel={() => setSelectedBingoTile(undefined)} />
+      {eventStarted && (
+        <>
+          {viewType == BoardViewType.Manage && (
+            <TileSubmissionResponseModal
+              selectedBingoTile={selectedBingoTile}
+              open={showModal}
+              onCancel={() => setSelectedBingoTile(undefined)}
+              onSuccess={onSelectTileSuccess} />
+          )}
+          {viewType == BoardViewType.Play && (
+            <SubmitTileModal
+              bingoTile={selectedBingoTile}
+              open={showModal}
+              onSuccess={onSubmitTileSuccess}
+              onCancel={() => setSelectedBingoTile(undefined)} />
+          )}
+        </>
       )}
     </>
   );
@@ -116,7 +143,7 @@ function MobileView({bingoTiles, onTileClick}: BoardViewProps) {
         <div key={columnIndex}>
           <p className='text-center mb-6 text-xl font-medium'>Column {columnIndex + 1}</p>
           {columnTiles?.map((tile, index) => (
-            <div className='max-w-48 mx-auto my-2'>
+            <div key={tile.id} className='max-w-48 mx-auto my-2'>
               <TilePlaceholder
                 key={index}
                 bingoTile={tile}

@@ -9,11 +9,12 @@ import {BoardViewType, useEventDetails} from '../EventDetailsPage.tsx';
 export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const tile = bingoTile.tile;
-  const tileSubmissions = [...bingoTile.submissions] ?? [];
+  const tileSubmissions =  [...(bingoTile?.submissions ?? [])];
   const latestUserSubmission = tileSubmissions.find(s => s.appUserId === user.id);
   const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
 
-  const {viewType} = useEventDetails();
+  const {viewType, event} = useEventDetails();
+  const eventStarted = event?.startDate ? Date.parse(event.startDate) < Date.now() : false;
 
   function handleOnClick() {
     if (!clickEnabled()) return;
@@ -79,10 +80,12 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
   const clickEnabled = () => {
     if (viewType === BoardViewType.Play) {
       if (!bingoTile?.tile) return false;
+      if (!eventStarted) return false;
       return !latestUserSubmission || !latestUserSubmission.accepted && latestUserSubmission.judgeId != undefined;
     }
 
     if (viewType === BoardViewType.Manage) {
+      if (!eventStarted) return false;
       return unresolvedSubmissions.length > 0;
     }
 
@@ -91,13 +94,16 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
     }
   }
 
+  const blurTiles = viewType === BoardViewType.Play && !eventStarted;
+
   return (
     <div
       onClick={handleOnClick}
       className={'border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (clickEnabled() ? ' cursor-pointer' : '')}>
       <div className="flex justify-center items-center h-full">
         {bingoTile.tile ? (
-          <div className="flex justify-center items-center gap-2 flex-col rounded p-2">
+          <div
+            className={`flex justify-center items-center gap-2 flex-col rounded p-2 ${blurTiles ? 'blur-sm' : ''}`}>
             <img className="p-0.5" alt="Tile Image" src={tile?.imagePath}/>
             <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
             {overlayVisible() && <SubmissionOverlay/>}

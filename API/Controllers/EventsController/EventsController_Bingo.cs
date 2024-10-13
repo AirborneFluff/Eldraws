@@ -49,6 +49,16 @@ public partial class EventsController
         return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));
     }
 
+    [HttpGet("{eventId}/bingo/peak")]
+    [ServiceFilter(typeof(ValidateBingoEventExists))]
+    public async Task<ActionResult> GetBingoTilesPeak(string eventId)
+    {
+        var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
+
+        var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
+        return Ok(mapper.Map<List<BingoBoardTilePeakDto>>(tiles));
+    }
+
     [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
     [ServiceFilter(typeof(ValidateBingoEventExists))]
     public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId, [FromBody]NewTileSubmissionDto dto)

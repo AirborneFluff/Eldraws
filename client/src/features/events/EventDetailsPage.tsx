@@ -52,7 +52,6 @@ export function EventDetailsPage() {
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data: event, isLoading: eventLoading} = useGetEventQuery(eventId);
   const isEventHost = event?.hostId == user.id;
-  const hasEventStarted = event?.startDate ? Date.parse(event.startDate) < Date.now() : false;
 
   useEffect(() => {
     setHeaderContent({
@@ -88,11 +87,7 @@ export function EventDetailsPage() {
       children: (
         <PageView loading={!event}>
           <EventDetailsProvider viewType={BoardViewType.Play} event={event}>
-            {hasEventStarted ? <BingoBoard /> : (
-              <div className='flex justify-center items-center min-h-52'>
-                <p className='text-center text-xl'>Event has not begun yet</p>
-              </div>
-            )}
+            <BingoBoard />
           </EventDetailsProvider>
         </PageView>
       ),

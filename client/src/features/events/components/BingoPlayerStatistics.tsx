@@ -30,6 +30,7 @@ export function BingoPlayerStatistics() {
       <Button onClick={() => refetch()}>Refresh</Button>
       <div className="border border-[#f0f0f0] rounded-lg">
         <Table
+          rowKey={(record) => record.appUserId}
           loading={isFetching}
           pagination={false}
           dataSource={analyzeUserBingoTiles(data)}

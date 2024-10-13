@@ -28,8 +28,10 @@ public class AutoMapperProfiles : Profile
         CreateMap<NewTileDto, Tile>();
         CreateMap<TileDto, Tile>();
         CreateMap<Tile, TileDto>();
+        CreateMap<Tile, TilePeakDto>();
 
         CreateMap<BingoBoardTile, BingoBoardTileDto>();
+        CreateMap<BingoBoardTile, BingoBoardTilePeakDto>();
         CreateMap<TileSubmission, TileSubmissionDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
     }

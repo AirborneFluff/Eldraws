@@ -23,6 +23,12 @@ const eventApi = baseApi.injectEndpoints({
         method: 'GET'
       })
     }),
+    getBingoBoardTilesPeak: builder.query<BingoBoardTile[], string>({
+      query: (eventId) => ({
+        url: `/events/${eventId}/bingo/peak`,
+        method: 'GET'
+      })
+    }),
     bingoBoardTile: builder.mutation<void, { eventId: string, tileId: string, position: GridPosition }>({
       query: ({eventId, tileId, position}) => {
         return {
@@ -67,7 +73,9 @@ export const {
   useCreateEventMutation,
   useGetEventQuery,
   useBingoBoardTileMutation,
+  useLazyGetBingoBoardTilesQuery,
   useGetBingoBoardTilesQuery,
+  useLazyGetBingoBoardTilesPeakQuery,
   useSubmitBingoBoardTileMutation,
   useSendTileSubmissionResponseMutation,
 } = eventApi;

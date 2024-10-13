@@ -1,12 +1,14 @@
-import { Alert, Button, Card, Form, Input, Modal, Space, Spin } from 'antd';
+import { Alert, Button, Card, Form, Input, Modal, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { useCreateTileMutation, useGetTileImagesQuery } from '../../../data/services/api/tile-api.ts';
 import { CreateTileModel } from '../../../data/entities/tile.ts';
+import { TileImageUploader } from '../components/TileImageUploader.tsx';
 const { TextArea } = Input;
 
 export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
   const [createTile, {isLoading, isError, error, isSuccess}] = useCreateTileMutation();
-  const {data: tileImageUrls, isFetching: imagesLoading, refetch: refetchImages} = useGetTileImagesQuery();
+  const {data, isFetching: imagesLoading, refetch} = useGetTileImagesQuery();
+  const [uploadedFileUrls, setUploadedFileUrls] = useState<string[]>([]);
   const [form] = Form.useForm<CreateTileModel>();
   const [selectedImagePath, setSelectedImagePath] = useState(null);
 
@@ -23,6 +25,11 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
     refetchImages();
   }, [open]);
 
+  function refetchImages() {
+    setUploadedFileUrls([]);
+    refetch();
+  }
+
   function handleOnFinish(values: CreateTileModel) {
     if (selectedImagePath == null) return;
 
@@ -34,6 +41,13 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
 
     createTile(newTile);
   }
+
+  function handleOnFileUpload(url: string) {
+    setUploadedFileUrls(curr => [...curr, url]);
+    setSelectedImagePath(url);
+  }
+
+  const tileImageUrls = [...uploadedFileUrls, ...(data ?? [])]
 
   return (
     <Modal
@@ -86,24 +100,26 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
             description={error?.message}/>
         }
 
-        <Card className='flex justify-center items-center'>
+        <Card className="flex justify-center items-center">
           {imagesLoading ? (
-            <Spin size='large' />
+            <Spin size="large"/>
           ) : (
-            <Space size={8} wrap className='justify-between max-h-36 sm:max-h-96 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]'>
-              {tileImageUrls?.map((src, index) =>
-                <Button
-                  size='large'
-                  key={index}
-                  type={selectedImagePath === src ? 'primary' : 'default'}
-                  onClick={() => setSelectedImagePath(src)}
-                  icon={<img className='p-0.5' alt='Tile Image' src={src} />}
-                />
-              )}
-            </Space>
+            <div className="flex justify-center items-center w-full">
+              <div className="flex gap-1 flex-wrap justify-start max-h-36 sm:max-h-96 overflow-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {tileImageUrls?.map((src, index) => (
+                  <Button
+                    size="large"
+                    key={index}
+                    type={selectedImagePath === src ? 'primary' : 'default'}
+                    onClick={() => setSelectedImagePath(src)}
+                    icon={<img className="p-0.5" alt="Tile Image" src={src} />}
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </Card>
-
+        <TileImageUploader onFileUploaded={handleOnFileUpload} />
       </Form>
     </Modal>
   )

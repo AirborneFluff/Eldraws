@@ -10,6 +10,8 @@ export interface BingoPlayerAnalysis {
 }
 
 export function analyzeUserBingoTiles(bingoTiles: BingoBoardTile[], cardSize = 5): BingoPlayerAnalysis[] {
+  if (!bingoTiles || bingoTiles?.length === 0) return [];
+
   const submissionsGroupedByUser = bingoTiles
     .flatMap(tile => tile.submissions)
     .filter(submission => submission.accepted)
