@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 
-export function SelectTileModal({selectedBingoTile, open, onSuccess, onCancel}) {
+export function SelectTileModal({bingoTile, open, onSuccess, onCancel}) {
   const {event} = useEventDetails();
 
   const [bingoBoardTile, {isLoading, isSuccess}] = useBingoBoardTileMutation();
@@ -28,7 +28,7 @@ export function SelectTileModal({selectedBingoTile, open, onSuccess, onCancel}) 
     bingoBoardTile({
       eventId: event.id,
       tileId: selectedTile.id,
-      position: selectedBingoTile.position
+      position: bingoTile.position
     });
   }
 

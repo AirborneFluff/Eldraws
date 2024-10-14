@@ -1,16 +1,44 @@
 import { Alert, Button, Card, Form, Input, Modal, Spin } from 'antd';
 import { useEffect, useState } from 'react';
-import { useCreateTileMutation, useGetTileImagesQuery } from '../../../data/services/api/tile-api.ts';
-import { CreateTileModel } from '../../../data/entities/tile.ts';
+import {
+  useCreateTileMutation,
+  useGetTileImagesQuery,
+  useUpdateTileMutation
+} from '../../../data/services/api/tile-api.ts';
+import { CreateTileModel, Tile, TileForm, UpdateTileModel } from '../../../data/entities/tile.ts';
 import { TileImageUploader } from '../components/TileImageUploader.tsx';
 const { TextArea } = Input;
 
-export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
-  const [createTile, {isLoading, isError, error, isSuccess}] = useCreateTileMutation();
+interface ManageTileModalProps {
+  guildId: string;
+  open: boolean;
+  onSuccess: () => void;
+  onCancel: () => void;
+  tile?: Tile | null;
+  refetchOnOpen?: boolean;
+}
+
+export function ManageTileModal({guildId, open, onSuccess, onCancel, tile = null, refetchOnOpen = true}: ManageTileModalProps) {
+  const [createTile, {
+    isLoading: isCreateLoading,
+    isError: isCreateError,
+    error: createError,
+    isSuccess: isCreateSuccess}] = useCreateTileMutation();
+  const [updateTile, {
+    isLoading: isUpdateLoading,
+    isError: isUpdateError,
+    error: updateError,
+    isSuccess: isUpdateSuccess}] = useUpdateTileMutation();
   const {data, isFetching: imagesLoading, refetch} = useGetTileImagesQuery();
   const [uploadedFileUrls, setUploadedFileUrls] = useState<string[]>([]);
-  const [form] = Form.useForm<CreateTileModel>();
+  const [form] = Form.useForm<TileForm>();
   const [selectedImagePath, setSelectedImagePath] = useState(null);
+
+  const isSuccess = isCreateSuccess || isUpdateSuccess;
+  const isLoading = isCreateLoading || isUpdateLoading;
+  const isError = isCreateError || isUpdateError;
+  const error = createError || updateError;
+  const isEdit = tile != null;
 
   useEffect(() => {
     if (isSuccess) {
@@ -21,24 +49,55 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
   useEffect(() => {
     if (!open) return;
     form.resetFields();
-    setSelectedImagePath(null);
-    refetchImages();
-  }, [open]);
+
+    if (tile) {
+      populateForm(tile);
+    }
+
+    if (refetchOnOpen) {
+      refetchImages();
+    }
+  }, [open, tile, refetchOnOpen]);
+
+  function populateForm(tile: Tile) {
+    form.setFieldsValue({
+      task: tile.task,
+      description: tile.description,
+      conditions: tile.conditions,
+    });
+    setSelectedImagePath(tile.imagePath);
+  }
 
   function refetchImages() {
     setUploadedFileUrls([]);
     refetch();
   }
 
-  function handleOnFinish(values: CreateTileModel) {
+  function handleOnFinish(values: TileForm) {
     if (selectedImagePath == null) return;
-
-    const newTile: CreateTileModel = {
-      ...values,
-      imagePath: selectedImagePath,
-      guildId: guildId
+    if (isEdit) {
+      handleOnUpdate(values);
+      return;
     }
 
+    handleOnCreate(values);
+  }
+
+  function handleOnUpdate(values: TileForm) {
+    const tileUpdate: UpdateTileModel = {
+      ...values,
+      tileId: tile.id,
+      imagePath: selectedImagePath
+    }
+    updateTile(tileUpdate);
+  }
+
+  function handleOnCreate(values: TileForm) {
+    const newTile: CreateTileModel = {
+      ...values,
+      guildId: guildId,
+      imagePath: selectedImagePath
+    }
     createTile(newTile);
   }
 
@@ -53,7 +112,7 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
     <Modal
       title="Create Custom Tile"
       open={open}
-      okText='Create'
+      okText={isEdit ? 'Update' : 'Create'}
       onOk={() => form.submit()}
       onCancel={onCancel}
       confirmLoading={isLoading}
@@ -62,7 +121,7 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
         labelCol={{span: 6}}
         form={form}
         disabled={isLoading}
-        name="basic"
+        name="manageTile"
         style={{maxWidth: 600}}
         initialValues={{remember: true}}
         onFinish={handleOnFinish}
@@ -88,7 +147,6 @@ export function CreateTileModal({guildId, open, onSuccess, onCancel}) {
         <Form.Item<string>
           label="Conditions"
           name="conditions"
-          rules={[{required: true, message: 'Enter task condition!'}]}
         >
           <TextArea />
         </Form.Item>

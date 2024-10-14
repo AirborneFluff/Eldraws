@@ -13,19 +13,19 @@ import { DATE_FORMAT } from '../../../data/helpers/constants.ts';
 type FormSubmissionResponse = Omit<TileSubmissionResponse, 'eventId'>;
 
 interface TileSubmissionResponseModalProps {
-  selectedBingoTile: BingoBoardTile,
+  bingoTile: BingoBoardTile,
   open: boolean,
   onCancel: () => void,
   onSuccess: () => void
 }
 
-export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, onSuccess}: TileSubmissionResponseModalProps) {
+export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSuccess}: TileSubmissionResponseModalProps) {
   const [submitResponse, {isSuccess, isLoading, isError, error}] = useSendTileSubmissionResponseMutation();
   const {event} = useEventDetails();
   const [form] = Form.useForm<FormSubmissionResponse>();
 
   const selectedSubmissionId = Form.useWatch('submissionId', form);
-  const submissions = selectedBingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
+  const submissions = bingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
   const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
   const evidenceSubmittedAt = selectedSubmission ? dayjs(selectedSubmission.evidenceSubmittedAt).format(DATE_FORMAT) : undefined;
 
@@ -86,7 +86,7 @@ export function TileSubmissionResponseModal({selectedBingoTile, open, onCancel, 
         className='mt-8'
         form={form}
         disabled={isLoading}
-        name="basic"
+        name="tileSubmission"
         initialValues={initialValues}
         onFinish={handleOnFinish}
         autoComplete="off"

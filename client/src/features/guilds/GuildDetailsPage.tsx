@@ -1,8 +1,8 @@
-import {useNavigate, useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
-import {Button, Tabs} from 'antd';
+import { Tabs } from 'antd';
 import { TabItem } from '../../data/types/tab-item.ts';
 import { GuildApplicationsList } from './components/GuildApplicationsList.tsx';
 import {useSelector} from "react-redux";
@@ -11,7 +11,7 @@ import {User} from "../../data/entities/user.ts";
 import {GuildEventsList} from "./components/GuildEventsList.tsx";
 import {GuildMembersList} from "./components/GuildMembersList.tsx";
 import {GuildBlacklistList} from "./components/GuildBlacklistList.tsx";
-import {ArchiveGuildModal} from "./modals/ArchiveGuildModal.tsx";
+import { PageView } from '../../core/ui/PageView.tsx';
 
 export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
@@ -19,8 +19,6 @@ export function GuildDetailsPage() {
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data: guild, isLoading: guildLoading} = useGetGuildQuery(guildId);
   const isGuildOwner = guild?.ownerId === user.id;
-  const [showArchiveGuildModal, setShowArchiveGuildModal]= useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setHeaderContent({
@@ -67,31 +65,15 @@ export function GuildDetailsPage() {
     }
   ] : [];
 
-  function onArchiveGuild() {
-    navigate('/app/guilds');
-  }
-
   return (
-    <>
+    <PageView
+      loading={guildLoading}>
       <Tabs
         destroyInactiveTabPane={true}
         defaultActiveKey="1"
         size='small'
-
         items={[...tabs, ...adminTabs]}
-        tabBarExtraContent={false && //todo Fix for mobile view later
-          <Button
-            danger
-            onClick={() => setShowArchiveGuildModal(true)}
-          >Close Guild</Button>
-        }
       />
-      <ArchiveGuildModal
-        open={showArchiveGuildModal}
-        onSuccess={onArchiveGuild}
-        guild={guild}
-        onCancel={() => setShowArchiveGuildModal(false)}
-      />
-    </>
+    </PageView>
   )
 }

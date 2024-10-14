@@ -20,4 +20,11 @@ const generateBlankBingoBoard = (): BingoBoardTile[] => {
   return tiles;
 };
 
+export const replaceTiles = (tiles: BingoBoardTile[], replacementTiles: BingoBoardTile[] | undefined): BingoBoardTile[] => {
+  return tiles.map((currentTile) => {
+    const tile = replacementTiles?.find(t => t.position.column === currentTile.position.column && t.position.row === currentTile.position.row);
+    return tile ?? currentTile;
+  });
+};
+
 export default generateBlankBingoBoard;
