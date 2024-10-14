@@ -1,12 +1,7 @@
-﻿namespace API.Entities;
+﻿namespace API.Data.DTOs;
 
-public class Tile
+public class TileUpdateDto
 {
-    public required string Id { get; set; }
-
-    public string? GuildId { get; set; }
-    public Guild? Guild { get; set; }
-
     public required string Task { get; set; }
     public required string Description { get; set; }
     public string? Conditions { get; set; }

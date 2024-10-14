@@ -4,17 +4,14 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../../../data/store.ts';
 import {User} from '../../../data/entities/user.ts';
 import React from 'react';
-import {BoardViewType, useEventDetails} from '../EventDetailsPage.tsx';
+import { BoardViewType } from '../BingoEventDetailsPage.tsx';
 
-export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) {
+export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlaceholderProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const tile = bingoTile.tile;
   const tileSubmissions =  [...(bingoTile?.submissions ?? [])];
   const latestUserSubmission = tileSubmissions.find(s => s.appUserId === user.id);
   const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
-
-  const {viewType, event} = useEventDetails();
-  const eventStarted = event?.startDate ? Date.parse(event.startDate) < Date.now() : false;
 
   function handleOnClick() {
     if (!clickEnabled()) return;
@@ -79,13 +76,11 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
 
   const clickEnabled = () => {
     if (viewType === BoardViewType.Play) {
-      if (!bingoTile?.tile) return false;
-      if (!eventStarted) return false;
+      if (!bingoTile?.tile || !bingoTile?.tile?.task) return false;
       return !latestUserSubmission || !latestUserSubmission.accepted && latestUserSubmission.judgeId != undefined;
     }
 
     if (viewType === BoardViewType.Manage) {
-      if (!eventStarted) return false;
       return unresolvedSubmissions.length > 0;
     }
 
@@ -94,7 +89,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
     }
   }
 
-  const blurTiles = viewType === BoardViewType.Play && !eventStarted;
+  const blurTiles = tile?.task == null;
 
   return (
     <div
@@ -103,7 +98,7 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
       <div className="flex justify-center items-center h-full">
         {bingoTile.tile ? (
           <div
-            className={`flex justify-center items-center gap-2 flex-col rounded p-2 ${blurTiles ? 'blur-sm' : ''}`}>
+            className={`flex justify-center items-center gap-2 flex-col rounded p-2 ${blurTiles ? 'blur-md' : ''}`}>
             <img className="p-0.5" alt="Tile Image" src={tile?.imagePath}/>
             <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
             {overlayVisible() && <SubmissionOverlay/>}
@@ -121,4 +116,5 @@ export function TilePlaceholder({bingoTile, onTileClick}: TilePlaceholderProps) 
 interface TilePlaceholderProps {
   bingoTile: BingoBoardTile;
   onTileClick: (tile: BingoBoardTile) => void;
+  viewType: BoardViewType;
 }

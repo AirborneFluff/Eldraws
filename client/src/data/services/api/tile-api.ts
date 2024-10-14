@@ -1,5 +1,5 @@
 import { baseApi } from './base-api.ts';
-import { CreateTileModel } from '../../entities/tile.ts';
+import { CreateTileModel, UpdateTileModel } from '../../entities/tile.ts';
 
 const tileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,6 +7,13 @@ const tileApi = baseApi.injectEndpoints({
       query: (tile: CreateTileModel) => ({
         url: '/tiles',
         method: 'POST',
+        body: tile
+      })
+    }),
+    updateTile: builder.mutation<void, UpdateTileModel>({
+      query: (tile) => ({
+        url: `/tiles/${tile.tileId}`,
+        method: 'PUT',
         body: tile
       })
     }),
@@ -22,5 +29,6 @@ const tileApi = baseApi.injectEndpoints({
 
 export const {
   useCreateTileMutation,
+  useUpdateTileMutation,
   useGetTileImagesQuery
 } = tileApi;

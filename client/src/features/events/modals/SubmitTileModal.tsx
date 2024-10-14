@@ -62,7 +62,7 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
         className='mt-8'
         form={form}
         disabled={isLoading}
-        name="basic"
+        name="submitTile"
         initialValues={{remember: true}}
         onFinish={handleOnFinish}
         autoComplete="off"

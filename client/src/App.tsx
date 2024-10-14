@@ -12,6 +12,7 @@ import { GuildsPage } from './features/guilds/GuildsPage.tsx';
 import { GuildDetailsPage } from './features/guilds/GuildDetailsPage.tsx';
 import {EventDetailsPage} from "./features/events/EventDetailsPage.tsx";
 import {CreateEventPage} from "./features/events/CreateEventPage.tsx";
+import { ManageGuildTilesPage } from './features/guilds/ManageGuildTilesPage.tsx';
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
             path: ":guildId/events/create",
             Component: CreateEventPage
           },
+          {
+            path: ":guildId/tiles",
+            Component: ManageGuildTilesPage
+          }
         ]
       },
       {

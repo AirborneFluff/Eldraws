@@ -25,7 +25,8 @@ export function GuildEventsList() {
   return (
     <PageView
       buttons={[
-        <Button onClick={() => navigate("events/create")}>Create Event</Button>
+        <Button onClick={() => navigate("events/create")}>Create Event</Button>,
+        <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
       ]}>
       <List
         size='large'

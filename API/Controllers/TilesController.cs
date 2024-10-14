@@ -23,7 +23,23 @@ public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService
         unitOfWork.TileRepository.Add(newTile);
 
         if (await unitOfWork.Complete()) return Ok(mapper.Map<TileDto>(newTile));
-        return BadRequest();
+        return BadRequest("There was an error creating the tile");
+    }
+    
+    [HttpPut("{tileId}")]
+    public async Task<ActionResult> UpdateTile(string tileId, [FromBody] TileUpdateDto tileDto)
+    {
+        var tile = await unitOfWork.TileRepository.GetTileById(tileId);
+        if (tile is null) return NotFound("Tile not found");
+        if (tile.GuildId is null) return Unauthorized("You cannot update this tile");
+        
+        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(tile.GuildId, User.GetUserId());
+        if (!isGuildOwner) return Unauthorized("Only the guild owner can do this action");
+        
+        mapper.Map(tileDto, tile);
+
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<TileDto>(tile));
+        return BadRequest("There was an error updating the tile");
     }
 
     [HttpGet("images")]

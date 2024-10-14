@@ -8,6 +8,6 @@ public class TileDto
 
     public required string Task { get; set; }
     public required string Description { get; set; }
-    public required string Conditions { get; set; }
+    public string? Conditions { get; set; }
     public required string ImagePath { get; set; }
 }
