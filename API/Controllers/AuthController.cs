@@ -76,7 +76,11 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
         mapper.Map(dto, user);
 
         var result = await userManager.UpdateAsync(user);
-        if (result.Succeeded) return Ok(mapper.Map<UserDto>(user));
+        if (result.Succeeded)
+        {
+            await HttpSignin(user);
+            return Ok(mapper.Map<UserDto>(user));
+        }
         
         var errorMsg = result.Errors.FirstOrDefault()?.Description;
         return BadRequest(errorMsg ?? "Issue updating user");
