@@ -8,6 +8,9 @@ public class AutoMapperProfiles : Profile
 {
     public AutoMapperProfiles()
     {
+        CreateMap<UserUpdateDto, AppUser>();
+        CreateMap<AppUser, UserDto>();
+        
         CreateMap<NewGuildDto, Guild>();
         CreateMap<Guild, GuildDto>();
 
