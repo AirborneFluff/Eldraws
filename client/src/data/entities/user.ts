@@ -1,4 +1,9 @@
 export interface User {
   id: string,
-  userName: string
+  userName: string,
+  gamertag: string
+}
+
+export interface UserUpdateModel {
+  gamertag: string
 }

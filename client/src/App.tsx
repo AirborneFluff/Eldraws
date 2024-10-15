@@ -13,6 +13,7 @@ import { GuildDetailsPage } from './features/guilds/GuildDetailsPage.tsx';
 import {EventDetailsPage} from "./features/events/EventDetailsPage.tsx";
 import {CreateEventPage} from "./features/events/CreateEventPage.tsx";
 import { ManageGuildTilesPage } from './features/guilds/ManageGuildTilesPage.tsx';
+import { AccountDetailsPage } from './features/account/AccountDetailsPage.tsx';
 
 const logoutAction = async () => {
   const dispatch = store.dispatch;
@@ -22,6 +23,28 @@ const logoutAction = async () => {
   return redirect('/');
 };
 
+const checkUserSetupLoader = async () => {
+  const dispatch: AppDispatch = store.dispatch;
+  try {
+    await dispatch(loginUser());
+    const user = store.getState().user.user;
+
+    if (user == null) {
+      return redirect("/login");
+    }
+
+    if (user.gamertag === '') {
+      console.log("Going to setup")
+      return redirect("/account-setup");
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error checking user:", error);
+    return redirect("/");
+  }
+};
+
 const checkUserLoader = async () => {
   const dispatch: AppDispatch = store.dispatch;
   try {
@@ -29,8 +52,13 @@ const checkUserLoader = async () => {
     const user = store.getState().user.user;
 
     if (user == null) {
-      return redirect("/");
+      return redirect("/login");
     }
+
+    if (user.gamertag !== '') {
+      return redirect("/app");
+    }
+
     return null;
   } catch (error) {
     console.error("Error checking user:", error);
@@ -40,12 +68,21 @@ const checkUserLoader = async () => {
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    index: true,
+    loader: () => redirect('/app')
+  },
+  {
+    path: "/login",
     Component: LoginPage
   },
   {
-    path: "/app",
+    path: "/account-setup",
     loader: checkUserLoader,
+    Component: AccountDetailsPage
+  },
+  {
+    path: "/app",
+    loader: checkUserSetupLoader,
     Component: AppLayout,
     children: [
       {
