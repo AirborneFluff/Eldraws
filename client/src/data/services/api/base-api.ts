@@ -35,5 +35,6 @@ const baseQueryWithErrorTransform: BaseQueryFn<string | FetchArgs, unknown, Cust
 
 export const baseApi = createApi({
   baseQuery: baseQueryWithErrorTransform,
+  tagTypes: ['User'],
   endpoints: () => ({}),
 });

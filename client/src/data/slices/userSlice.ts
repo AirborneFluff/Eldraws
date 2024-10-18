@@ -27,7 +27,6 @@ export const loginUser = () => async (dispatch: AppDispatch) => {
   try {
     const loginResult = await dispatch(authApi.endpoints.getUser.initiate()).unwrap() as User;
     dispatch(setUser(loginResult));
-    console.log("res:", loginResult)
   } catch (error) {
     console.error('Login failed', error);
   }

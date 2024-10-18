@@ -9,6 +9,8 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/getUser',
         method: 'GET',
       }),
+      providesTags: ['User'],
+      keepUnusedDataFor: 0,
     }),
     logout: builder.mutation<void, void>({
       query: () => ({
@@ -16,12 +18,13 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
-    updateUser: builder.mutation<void, UserUpdateModel>({
+    updateUser: builder.mutation<User, UserUpdateModel>({
       query: (user) => ({
         url: '/auth',
         method: 'PUT',
         body: user,
       }),
+      invalidatesTags: ['User'],
     }),
   }),
   overrideExisting: false,
