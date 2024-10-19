@@ -97,7 +97,7 @@ export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSucces
         <Form.Item label="Submission" name='submissionId'>
           <Select>
             {submissions.map((item) =>
-              <Select.Option key={item.id} value={item.id}>{item.userName}</Select.Option>
+              <Select.Option key={item.id} value={item.id}>{item.gamertag}</Select.Option>
             )}
           </Select>
         </Form.Item>

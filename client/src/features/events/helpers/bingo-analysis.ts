@@ -3,7 +3,7 @@ import { TileSubmission } from '../../../data/entities/tile-submission.ts';
 
 export interface BingoPlayerAnalysis {
   appUserId: string;
-  userName: string;
+  gamertag: string;
   lines: number;
   completedCount: number;
   isFullHouse: boolean;
@@ -30,7 +30,7 @@ export function analyzeUserBingoTiles(bingoTiles: BingoBoardTile[], cardSize = 5
       )?.position
     )).filter(pos => pos !== undefined) as GridPosition[];
 
-    const userName = submissions[0]?.userName || '';
+    const gamertag = submissions[0]?.gamertag || '';
 
     const rowCount = Array(cardSize).fill(0);
     const colCount = Array(cardSize).fill(0);
@@ -53,7 +53,7 @@ export function analyzeUserBingoTiles(bingoTiles: BingoBoardTile[], cardSize = 5
 
     return {
       appUserId,
-      userName,
+      gamertag,
       lines,
       completedCount: filledCount,
       isFullHouse
