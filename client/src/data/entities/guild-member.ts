@@ -5,5 +5,6 @@ export interface GuildMember {
   appUserId: string,
   roleId: string,
   userName: string,
+  gamertag: string,
   roleName: GuildRole
 }

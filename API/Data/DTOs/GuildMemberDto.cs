@@ -6,6 +6,7 @@ public class GuildMemberDto
     public required string AppUserId { get; set; }
     
     public required string UserName { get; set; }
+    public string? Gamertag { get; set; }
     
     public required string RoleId { get; set; }
     public required string RoleName { get; set; }

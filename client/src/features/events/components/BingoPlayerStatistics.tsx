@@ -9,9 +9,9 @@ export function BingoPlayerStatistics() {
 
   const columns = [
     {
-      title: 'UserName',
-      dataIndex: 'userName',
-      key: 'userName',
+      title: 'Gamertag',
+      dataIndex: 'gamertag',
+      key: 'gamertag',
     },
     {
       title: 'Lines',

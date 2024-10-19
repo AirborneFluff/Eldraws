@@ -39,6 +39,7 @@ export function GuildMemberDetailsModal({onSuccess, onDismiss, member}: {
       {member &&
         <Descriptions layout='horizontal' bordered column={1}>
           <Descriptions.Item label='Username'>{member.userName}</Descriptions.Item>
+          <Descriptions.Item label='Gamertag'>{member.gamertag}</Descriptions.Item>
         </Descriptions>
       }
       <Space className='mt-4'>

@@ -2,6 +2,7 @@ export interface TileSubmission {
   id: string,
   appUserId: string,
   userName: string,
+  gamertag: string,
   submittedAt: string,
   evidenceSubmittedAt: string,
   judgeId: string,

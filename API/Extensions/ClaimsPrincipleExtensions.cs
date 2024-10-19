@@ -13,4 +13,9 @@ public static class ClaimsPrincipleExtensions
     {
         return user.Claims.Single(claim => claim.Type == ClaimTypes.Name).Value;
     }
+
+    public static string GetGamertag(this ClaimsPrincipal user)
+    {
+        return user.Claims.Single(claim => claim.Type == ClaimTypes.GivenName).Value;
+    }
 }

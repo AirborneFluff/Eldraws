@@ -1,5 +1,5 @@
 import { baseApi } from './base-api.ts';
-import { User } from '../../entities/user.ts';
+import { User, UserUpdateModel } from '../../entities/user.ts';
 import { AppDispatch } from '../../store.ts';
 
 export const authApi = baseApi.injectEndpoints({
@@ -9,6 +9,7 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/getUser',
         method: 'GET',
       }),
+      providesTags: ['User'],
       keepUnusedDataFor: 0,
     }),
     logout: builder.mutation<void, void>({
@@ -17,9 +18,21 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    updateUser: builder.mutation<User, UserUpdateModel>({
+      query: (user) => ({
+        url: '/auth',
+        method: 'PUT',
+        body: user,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
   overrideExisting: false,
 });
+
+export const {
+  useUpdateUserMutation
+} = authApi;
 
 export const performLogout = (dispatch: AppDispatch) => async () => {
   try {
