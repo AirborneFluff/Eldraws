@@ -1,4 +1,4 @@
-import { Button, Descriptions, List, Space } from 'antd';
+import { Button, Descriptions, List } from 'antd';
 import { CheckOutlined, StopOutlined, CloseOutlined } from '@ant-design/icons';
 import { GuildApplication } from '../../../data/entities/guild-application.ts';
 import {
@@ -63,26 +63,28 @@ interface ListItemProps {
 function ListItem({item, onResponse, isLoading}: ListItemProps) {
   return (
     <List.Item className='!block'>
-      <Descriptions layout='vertical' bordered size='small' title={item.userName}>
+      <Descriptions layout='vertical' size='small'>
+        <Descriptions.Item label='Username'>{item.userName}</Descriptions.Item>
+        <Descriptions.Item label='Gamertag'>{item.gamertag}</Descriptions.Item>
         <Descriptions.Item label='Actions'>
-          <Space>
+          <div className='flex gap-1'>
             <Button
               disabled={isLoading}
               shape='circle'
-              icon={<CheckOutlined />}
-              onClick={() => onResponse(item, 'accept')} />
+              icon={<CheckOutlined/>}
+              onClick={() => onResponse(item, 'accept')}/>
             <Button
               disabled={isLoading}
               shape='circle'
-              icon={<CloseOutlined />}
-              onClick={() => onResponse(item, 'reject')} />
+              icon={<CloseOutlined/>}
+              onClick={() => onResponse(item, 'reject')}/>
             <Button
               disabled={isLoading}
               danger
               shape='circle'
-              icon={<StopOutlined />}
-              onClick={() => onResponse(item, 'blacklist')} />
-          </Space>
+              icon={<StopOutlined/>}
+              onClick={() => onResponse(item, 'blacklist')}/>
+          </div>
         </Descriptions.Item>
       </Descriptions>
     </List.Item>

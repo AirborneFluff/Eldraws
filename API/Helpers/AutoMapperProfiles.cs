@@ -17,13 +17,16 @@ public class AutoMapperProfiles : Profile
         CreateMap<GuildMembership, GuildMemberDto>()
             .ForMember(dest => dest.UserName, opt =>
                 opt.MapFrom(src => src.AppUser!.UserName))
+            .ForMember(dest => dest.Gamertag, opt =>
+                opt.MapFrom(src => src.AppUser!.Gamertag))
             .ForMember(dest => dest.RoleName, opt =>
                 opt.MapFrom(src => src.Role!.Name));
 
         CreateMap<GuildBlacklist, BlacklistedUserDto>();
 
         CreateMap<GuildApplication, GuildApplicationDto>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName))
+            .ForMember(dest => dest.Gamertag, opt => opt.MapFrom(src => src.AppUser!.Gamertag));
 
         CreateMap<NewEventDto, Event>();
         CreateMap<Event, EventDto>();
@@ -37,6 +40,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<BingoBoardTile, BingoBoardTileDto>();
         CreateMap<BingoBoardTile, BingoBoardTilePeakDto>();
         CreateMap<TileSubmission, TileSubmissionDto>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName));
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.AppUser!.UserName))
+            .ForMember(dest => dest.Gamertag, opt => opt.MapFrom(src => src.AppUser!.Gamertag));
     }
 }

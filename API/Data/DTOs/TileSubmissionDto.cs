@@ -6,6 +6,7 @@ public class TileSubmissionDto
     
     public required string AppUserId { get; set; }
     public string? UserName { get; set; }
+    public string? Gamertag { get; set; }
     
     public DateTime SubmittedAt { get; set; }
     public DateTime EvidenceSubmittedAt { get; set; }

@@ -54,6 +54,7 @@ function ListItem({item, onClick}: ListItemProps) {
     <List.Item className='hover:bg-gray-200 cursor-pointer !block' onClick={() => onClick(item)}>
       <Descriptions layout='vertical' size='small'>
         <Descriptions.Item label='Username'>{item.userName}</Descriptions.Item>
+        <Descriptions.Item label='Gamertag'>{item.gamertag}</Descriptions.Item>
       </Descriptions>
     </List.Item>
   )
