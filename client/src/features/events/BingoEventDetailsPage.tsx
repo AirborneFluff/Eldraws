@@ -21,6 +21,7 @@ import generateBlankBingoBoard, { replaceTiles } from '../../data/helpers/bingo-
 import useTimer from '../../core/hooks/useTimer.ts';
 import { TileSubmissionResponseModal } from './modals/TileSubmissionResponseModal.tsx';
 import { ConfirmModal } from '../../core/modals/ConfirmModal.tsx';
+import { useBreakpoints } from '../../core/hooks/useBreakpoints.ts';
 
 export enum BoardViewType {
   Play,
@@ -32,6 +33,7 @@ export function BingoEventDetailsPage() {
   const trigger = useTimer();
   const {event, refetch: refetchEvent} = useEventDetails();
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
+  const {floatButtonInset} = useBreakpoints();
 
   const [getTiles, {data: fullTiles, isFetching: fetchingFullTiles}] = useLazyGetBingoBoardTilesQuery();
   const [getTilesPeak, {data: peakTiles, isFetching: fetchingPeakTile}] = useLazyGetBingoBoardTilesPeakQuery();
@@ -208,7 +210,7 @@ export function BingoEventDetailsPage() {
         <FloatButton.Group
           trigger="hover"
           type="primary"
-          style={{ insetInlineEnd: 94 }}
+          style={{ insetInlineEnd: floatButtonInset }}
           icon={<MenuOutlined />}
         >
           {hostView && (
