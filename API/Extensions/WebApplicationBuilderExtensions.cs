@@ -70,6 +70,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<ValidateGuildOwner>();
         builder.Services.AddScoped<ValidateGuildMember>();
         builder.Services.AddScoped<ValidateEventExists>();
+        builder.Services.AddScoped<ValidateEventHost>();
         builder.Services.AddScoped<ValidateBingoEventExists>();
         builder.Services.AddScoped<ValidateBingoEventHost>();
     }

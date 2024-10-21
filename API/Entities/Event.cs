@@ -12,7 +12,8 @@ public class Event
 
     public required string HostId { get; set; }
     public AppUser? Host { get; set; }
-    
+
+    public bool Started { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
