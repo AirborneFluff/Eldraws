@@ -10,6 +10,7 @@ export interface Event {
   endDate: string,
   entryOpenDate: string,
   entryCloseDate: string,
+  started: boolean,
   type: EventType
 }
 

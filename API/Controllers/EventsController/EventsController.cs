@@ -42,6 +42,6 @@ public partial class EventsController(UnitOfWork unitOfWork, IMapper mapper) : B
         guildEvent.Started = true;
         
         if (await unitOfWork.Complete()) return Ok();
-        return BadRequest();
+        return BadRequest("There was an issue starting the event");
     }
 }

@@ -9,15 +9,17 @@ import { BingoEventDetailsPage } from './BingoEventDetailsPage.tsx';
 
 interface EventDetailsContextProps {
   event: Event | null;
+  refetch: () => void;
 }
 
 const EventDetailsContext = createContext<EventDetailsContextProps | undefined>(undefined);
 
 export const EventDetailsProvider: React.FC<{
   children: React.ReactNode,
-  event: Event | null
-}> = ({children, event}) => (
-  <EventDetailsContext.Provider value={{event}}>
+  event: Event | null,
+  refetch: () => void
+}> = ({children, event, refetch}) => (
+  <EventDetailsContext.Provider value={{event, refetch}}>
     {children}
   </EventDetailsContext.Provider>
 );
@@ -31,7 +33,7 @@ export const useEventDetails = (): EventDetailsContextProps => {
 export function EventDetailsPage() {
   const {eventId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
-  const {data: event, isLoading: eventLoading} = useGetEventQuery(eventId);
+  const {data: event, isLoading: eventLoading, refetch} = useGetEventQuery(eventId);
 
   useEffect(() => {
     setHeaderContent({
@@ -52,13 +54,13 @@ export function EventDetailsPage() {
     setLoading(eventLoading);
   }, [eventLoading]);
 
-  const eventDetails =
+  const renderPage =
     event?.type === EventType.Bingo ? (<BingoEventDetailsPage />) :
     event?.type === EventType.TileRace ? (<></>) : null;
 
   return (
-    <EventDetailsProvider event={event}>
-      {eventDetails}
+    <EventDetailsProvider event={event} refetch={refetch}>
+      {renderPage}
     </EventDetailsProvider>
   )
 }

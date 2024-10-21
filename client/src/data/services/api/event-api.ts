@@ -17,6 +17,12 @@ const eventApi = baseApi.injectEndpoints({
         url: `/events/${eventId}`
       })
     }),
+    startEvent: builder.mutation<void, string>({
+      query: (eventId) => ({
+        url: `/events/${eventId}/start`,
+        method: 'POST'
+      })
+    }),
     getBingoBoardTiles: builder.query<BingoBoardTile[], string>({
       query: (eventId) => ({
         url: `/events/${eventId}/bingo`,
@@ -72,6 +78,7 @@ const eventApi = baseApi.injectEndpoints({
 export const {
   useCreateEventMutation,
   useGetEventQuery,
+  useStartEventMutation,
   useBingoBoardTileMutation,
   useLazyGetBingoBoardTilesQuery,
   useGetBingoBoardTilesQuery,

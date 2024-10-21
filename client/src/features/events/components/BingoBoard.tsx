@@ -16,14 +16,13 @@ interface BingoBoardProps {
 export function BingoBoard({tiles, onTileClick, viewType, refresh, isLoading}: BingoBoardProps) {
   const {event} = useEventDetails();
   const {breakpoints} = useBreakpoints();
-  const eventStarted = event?.startDate ? Date.parse(event.startDate) < Date.now() : false;
 
   return (
     <>
       <Card
         title='Board'
         bordered
-        extra={<Button disabled={isLoading || !eventStarted} onClick={refresh}>Refresh</Button >}
+        extra={<Button disabled={isLoading || !event.started} onClick={refresh}>Refresh</Button >}
       >
         {breakpoints.md ? (
           <DesktopView
