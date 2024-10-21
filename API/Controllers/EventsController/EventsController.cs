@@ -33,4 +33,15 @@ public partial class EventsController(UnitOfWork unitOfWork, IMapper mapper) : B
         var guildEvent = await unitOfWork.EventRepository.GetById(eventId);
         return Ok(mapper.Map<EventDto>(guildEvent));
     }
+    
+    [HttpPost("{eventId}/start")]
+    [ServiceFilter(typeof(ValidateEventHost))]
+    public async Task<ActionResult> StartEvent(string eventId)
+    {
+        var guildEvent = await unitOfWork.EventRepository.GetById(eventId);
+        guildEvent.Started = true;
+        
+        if (await unitOfWork.Complete()) return Ok();
+        return BadRequest("There was an issue starting the event");
+    }
 }

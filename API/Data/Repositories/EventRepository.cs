@@ -60,6 +60,11 @@ public class EventRepository(DataContext context)
         };
     }
 
+    public Task<bool> EventHostById(string eventId, string userId)
+    {
+        return context.Events.AnyAsync(e => e.Id == eventId && e.HostId == userId);
+    }
+
     public Task<Event> GetById(string id)
     {
         return context.Events.FirstAsync(e => e.Id == id);

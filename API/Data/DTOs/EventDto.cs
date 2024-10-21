@@ -11,7 +11,8 @@ public class EventDto
 
     public required string GuildId { get; set; }
     public required string HostId { get; set; }
-    
+
+    public bool Started { get; set; }
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
