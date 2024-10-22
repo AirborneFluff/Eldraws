@@ -11,8 +11,8 @@ public class TileSubmission
     public BingoBoardTile? BingoBoardTile { get; set; }
 
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
-    public DateTime EvidenceSubmittedAt { get; set; }
-    
+    public string? EvidenceUrl { get; set; }
+        
     public string? JudgeId { get; set; }
     public AppUser? Judge { get; set; }
 

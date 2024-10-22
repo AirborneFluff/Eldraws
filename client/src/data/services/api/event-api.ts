@@ -48,13 +48,15 @@ const eventApi = baseApi.injectEndpoints({
       }
     }),
     submitBingoBoardTile: builder.mutation<void, NewTileSubmission>({
-      query: ({eventId, bingoBoardTileId, evidenceSubmittedAt}) => {
+      query: ({eventId, bingoBoardTileId, file}) => {
+        console.log("HEre")
+        const formData = new FormData();
+        formData.append("file", file);
+
         return {
           url: `/events/${eventId}/bingo/${bingoBoardTileId}/submit`,
           method: 'POST',
-          body: {
-            evidenceSubmittedAt
-          }
+          body: formData
         };
       }
     }),

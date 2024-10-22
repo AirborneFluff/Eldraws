@@ -13,7 +13,7 @@ export interface TileSubmission {
 export interface NewTileSubmission {
   eventId: string,
   bingoBoardTileId: string,
-  evidenceSubmittedAt: string
+  file: any
 }
 
 export interface TileSubmissionResponse {

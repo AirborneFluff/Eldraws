@@ -8,6 +8,9 @@ namespace API.Controllers;
 
 public partial class EventsController
 {
+    private readonly string _evidenceBlobContainer = 
+        config.GetSection("Azure")["EvidenceBlobContainer"] ?? throw new Exception("Azure blob storage not configured");
+    
     [HttpPut("{eventId}/bingo")]
     [ServiceFilter(typeof(ValidateBingoEventHost))]
     public async Task<ActionResult> SetBingoTile([FromBody] UpdateBingoTileDto bingoTileDto, string eventId)
@@ -61,7 +64,7 @@ public partial class EventsController
 
     [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
     [ServiceFilter(typeof(ValidateBingoEventExists))]
-    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId, [FromBody]NewTileSubmissionDto dto)
+    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId, [FromForm]NewTileSubmissionDto dto)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
         var bingoTile = bingoEvent.BoardTiles.FirstOrDefault(t => t.Id == bingoTileId);
@@ -70,12 +73,16 @@ public partial class EventsController
         if (bingoTile.Submissions.Any(t => t.AppUserId == User.GetUserId() && t.JudgeId == null))
             return BadRequest("You've already submitted this tile");
 
+        var submissionId = Guid.NewGuid().ToString();
+        var mimeType = dto.File.ContentType;
+        var url = await fileService.UploadFileAsync(dto.File.OpenReadStream(), submissionId, mimeType, _evidenceBlobContainer);
+
         var submission = new TileSubmission
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = submissionId,
             AppUserId = User.GetUserId(),
             BingoBoardTileId = bingoTileId,
-            EvidenceSubmittedAt = dto.EvidenceSubmittedAt
+            EvidenceUrl = url // todo remove this? Submission Id is sufficient file name
         };
         
         bingoTile.Submissions.Add(submission);

@@ -2,5 +2,5 @@
 
 public class NewTileSubmissionDto
 {
-    public DateTime EvidenceSubmittedAt { get; set; }
+    public IFormFile File { get; set; }
 }

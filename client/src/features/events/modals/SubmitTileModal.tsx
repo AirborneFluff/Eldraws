@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Alert, Card, Form, Modal } from 'antd';
+import { useEffect, useState } from 'react';
+import { Alert, Button, Card, Form, GetProp, Modal, Upload, UploadFile, UploadProps } from 'antd';
 import dayjs from 'dayjs';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
@@ -8,10 +8,10 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../data/store.ts";
 import {User} from "../../../data/entities/user.ts";
 import {DateTimePicker} from "../../../core/forms/DateTimePicker";
+import { UploadOutlined } from '@ant-design/icons';
 
 interface FormTileSubmission {
-  evidenceSubmittedAt: string;
-
+  file: any
 }
 
 interface SubmitTileModalProps {
@@ -21,13 +21,26 @@ interface SubmitTileModalProps {
   onSuccess: (bingoBoardTile: BingoBoardTile) => void
 }
 
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+
 export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
-  const [form] = Form.useForm<FormTileSubmission>();
   const {event} = useEventDetails();
 
+  const [file, setFile] = useState<UploadFile>();
+
   const latestUserSubmission = bingoTile?.submissions?.find(s => s.appUserId === user.id);
+
+  const props: UploadProps = {
+    onRemove: () => {
+      setFile(null);
+    },
+    beforeUpload: (uploadFile) => {
+      setFile(uploadFile);
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -37,42 +50,32 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
 
   useEffect(() => {
     if (!open) return;
-    form.resetFields();
   }, [open]);
 
-  function handleOnFinish(form: FormTileSubmission) {
+  function handleOnFinish() {
+    console.log(file)
+
     submitTile({
       eventId: event.id,
       bingoBoardTileId: bingoTile.id,
-      evidenceSubmittedAt: form.evidenceSubmittedAt
+      file: file
     });
   }
-  const currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
 
   return (
     <Modal
       title="Confirm tile completed"
       open={open}
       okText='Confirm'
-      onOk={() => form.submit()}
+      onOk={handleOnFinish}
       onCancel={onCancel}
       loading={isLoading}
     >
-      <Form
-        className='mt-8'
-        form={form}
-        disabled={isLoading}
-        name="submitTile"
-        initialValues={{remember: true}}
-        onFinish={handleOnFinish}
-        autoComplete="off"
-      >
 
-        <Form.Item<string> label='Evidence Submitted At' name='evidenceSubmittedAt' initialValue={dayjs()}>
-          <DateTimePicker max={currentTime} />
-        </Form.Item>
+      <Upload {...props} accept='image/*,video/*' >
+        <Button icon={<UploadOutlined />}>Click to Upload</Button>
+      </Upload>
 
-      </Form>
       {bingoTile?.tile && (
         <Alert
           className='my-4'
