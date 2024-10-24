@@ -2,12 +2,16 @@
 using API.Data.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 public partial class EventsController
 {
+    private readonly string _evidenceBlobContainer = 
+        config.GetSection("Azure")["EvidenceBlobContainer"] ?? throw new Exception("Azure blob storage not configured");
+    
     [HttpPut("{eventId}/bingo")]
     [ServiceFilter(typeof(ValidateBingoEventHost))]
     public async Task<ActionResult> SetBingoTile([FromBody] UpdateBingoTileDto bingoTileDto, string eventId)
@@ -44,7 +48,6 @@ public partial class EventsController
     public async Task<ActionResult> GetBingoTiles(string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
-
         var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
         return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));
     }
@@ -54,14 +57,13 @@ public partial class EventsController
     public async Task<ActionResult> GetBingoTilesPeak(string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
-
         var tiles = await unitOfWork.EventRepository.GetBingoBoardTiles(bingoEvent.Id);
         return Ok(mapper.Map<List<BingoBoardTilePeakDto>>(tiles));
     }
 
     [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
     [ServiceFilter(typeof(ValidateBingoEventExists))]
-    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId, [FromBody]NewTileSubmissionDto dto)
+    public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
         var bingoTile = bingoEvent.BoardTiles.FirstOrDefault(t => t.Id == bingoTileId);
@@ -70,12 +72,24 @@ public partial class EventsController
         if (bingoTile.Submissions.Any(t => t.AppUserId == User.GetUserId() && t.JudgeId == null))
             return BadRequest("You've already submitted this tile");
 
+        var submissionId = Guid.NewGuid().ToString();
+        var files = Request.Form.Files;
+        
+        for (var i = 0; i < files.Count; i++)
+        {
+            var file = files[i];
+            if (file.Length > FileService.MAX_FILE_SIZE) continue;
+            
+            var mimeType = file.ContentType;
+            var fileName = $"{submissionId}_{i}";
+            await fileService.UploadFileAsync(file.OpenReadStream(), fileName, mimeType, _evidenceBlobContainer);
+        }
+
         var submission = new TileSubmission
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = submissionId,
             AppUserId = User.GetUserId(),
-            BingoBoardTileId = bingoTileId,
-            EvidenceSubmittedAt = dto.EvidenceSubmittedAt
+            BingoBoardTileId = bingoTileId
         };
         
         bingoTile.Submissions.Add(submission);
@@ -97,5 +111,20 @@ public partial class EventsController
         
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest();
+    }
+
+    [HttpGet("{eventId}/bingo/submissions/{submissionId}")]
+    [ServiceFilter(typeof(ValidateBingoEventHost))]
+    public async Task<ActionResult> GetSubmissionEvidence(string eventId, string submissionId)
+    {
+        var containerClient = fileService.Client.GetBlobContainerClient(_evidenceBlobContainer);
+        var blobs = await fileService.GetFilesAsync(_evidenceBlobContainer, blob => blob.Name.StartsWith(submissionId));
+        var files = blobs.Select(blobItem => new BlobDto
+        {
+            Url = $"{containerClient.Uri}/{blobItem.Name}",
+            ContentType = blobItem.Properties.ContentType
+        });
+        
+        return Ok(files);
     }
 }

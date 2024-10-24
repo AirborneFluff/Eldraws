@@ -1,18 +1,13 @@
-import { useEffect } from 'react';
-import { Alert, Card, Form, Modal } from 'antd';
-import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { Alert, Button, Card, Modal, Upload, UploadFile, UploadProps } from 'antd';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {useSelector} from "react-redux";
 import {RootState} from "../../../data/store.ts";
 import {User} from "../../../data/entities/user.ts";
-import {DateTimePicker} from "../../../core/forms/DateTimePicker";
-
-interface FormTileSubmission {
-  evidenceSubmittedAt: string;
-
-}
+import { UploadOutlined } from '@ant-design/icons';
+import { MAX_EVIDENCE_SIZE } from '../../../core/constants/blob-storage-limits.ts';
 
 interface SubmitTileModalProps {
   bingoTile: BingoBoardTile,
@@ -24,55 +19,68 @@ interface SubmitTileModalProps {
 export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
-  const [form] = Form.useForm<FormTileSubmission>();
   const {event} = useEventDetails();
 
+  const [files, setFiles] = useState<UploadFile[]>();
+  const [uploadError, setUploadError] = useState<string>(null);
   const latestUserSubmission = bingoTile?.submissions?.find(s => s.appUserId === user.id);
+
+  const props: UploadProps = {
+    onRemove: (item) => {
+      setFiles(curr => curr?.filter(file => file.uid !== item.uid) ?? []);
+    },
+    beforeUpload: (uploadFile, fileList) => {
+      if (uploadFile.size > MAX_EVIDENCE_SIZE) {
+        setUploadError(`Max file size: ${MAX_EVIDENCE_SIZE/1024/1024} MB`)
+        return Upload.LIST_IGNORE;
+      }
+
+      if (fileList?.length + files?.length > 5) {
+        setUploadError("You can only upload 5 files maximum")
+        return Upload.LIST_IGNORE;
+      }
+
+      setFiles(curr => [...(curr ?? []), uploadFile]);
+      setUploadError(null);
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (isSuccess) {
       onSuccess(bingoTile);
+      setFiles([]);
     }
   }, [isSuccess]);
 
   useEffect(() => {
     if (!open) return;
-    form.resetFields();
+    setFiles([]);
   }, [open]);
 
-  function handleOnFinish(form: FormTileSubmission) {
+  function handleOnFinish() {
     submitTile({
       eventId: event.id,
       bingoBoardTileId: bingoTile.id,
-      evidenceSubmittedAt: form.evidenceSubmittedAt
+      files: files
     });
   }
-  const currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
 
   return (
     <Modal
       title="Confirm tile completed"
       open={open}
       okText='Confirm'
-      onOk={() => form.submit()}
+      onOk={handleOnFinish}
       onCancel={onCancel}
       loading={isLoading}
     >
-      <Form
-        className='mt-8'
-        form={form}
-        disabled={isLoading}
-        name="submitTile"
-        initialValues={{remember: true}}
-        onFinish={handleOnFinish}
-        autoComplete="off"
-      >
 
-        <Form.Item<string> label='Evidence Submitted At' name='evidenceSubmittedAt' initialValue={dayjs()}>
-          <DateTimePicker max={currentTime} />
-        </Form.Item>
+      <Upload {...props} accept='image/*,video/*' multiple>
+        <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        {uploadError && <Alert className='mt-2' message={uploadError} type='error' />}
+      </Upload>
 
-      </Form>
       {bingoTile?.tile && (
         <Alert
           className='my-4'

@@ -1,0 +1,1 @@
+export const MAX_EVIDENCE_SIZE = 15 * 1024 * 1024;

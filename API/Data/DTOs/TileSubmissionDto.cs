@@ -9,7 +9,6 @@ public class TileSubmissionDto
     public string? Gamertag { get; set; }
     
     public DateTime SubmittedAt { get; set; }
-    public DateTime EvidenceSubmittedAt { get; set; }
     
     public string? JudgeId { get; set; }
     public bool Accepted { get; set; }

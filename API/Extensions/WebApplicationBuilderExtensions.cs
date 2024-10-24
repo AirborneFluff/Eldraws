@@ -62,6 +62,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
         builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
         builder.Services.AddScoped<ImageService>();
+        builder.Services.AddScoped<FileService>();
     }
 
     private static void AddActionFilters(this WebApplicationBuilder builder)

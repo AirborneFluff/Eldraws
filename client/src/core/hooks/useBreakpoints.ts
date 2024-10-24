@@ -6,6 +6,8 @@ export const BREAKPOINT_LG = 1024;
 export const BREAKPOINT_XL = 1280;
 export const BREAKPOINT_2XL = 1536;
 
+export const FLOAT_INSET = 24;
+
 export function useBreakpoints() {
   const [width, setWidth] = useState(window.innerWidth);
 
@@ -39,10 +41,20 @@ export function useBreakpoints() {
     return 'XS';
   }
 
+  function getFloatButtonInset() {
+    if (xxl) return (width - BREAKPOINT_2XL) / 2 + FLOAT_INSET;
+    if (xl) return (width - BREAKPOINT_XL) / 2 + FLOAT_INSET;
+    if (lg) return (width - BREAKPOINT_LG) / 2 + FLOAT_INSET;
+    if (md) return (width - BREAKPOINT_MD) / 2 + FLOAT_INSET;
+    if (sm) return (width - BREAKPOINT_SM) / 2 + FLOAT_INSET;
+    return FLOAT_INSET;
+  }
+
   return {
     screenWidth: width,
     maxBreakpointWidth: getMaxBreakpointWidth(),
     currentBreakpoint: getLargestActiveBreakpoint(),
+    floatButtonInset: getFloatButtonInset(),
     breakpoints: { sm, md, lg, xl, xxl }
   }
 }
