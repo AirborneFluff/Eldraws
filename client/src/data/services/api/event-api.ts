@@ -2,6 +2,7 @@ import {baseApi} from './base-api.ts';
 import { BingoBoardTile, GridPosition } from '../../entities/bingo-board-tile.ts';
 import { CreateEventModel, Event } from '../../entities/event.ts';
 import { NewTileSubmission, TileSubmissionResponse } from '../../entities/tile-submission.ts';
+import { BlobMedia } from '../../models/blob-media.ts';
 
 const eventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -48,10 +49,14 @@ const eventApi = baseApi.injectEndpoints({
       }
     }),
     submitBingoBoardTile: builder.mutation<void, NewTileSubmission>({
-      query: ({eventId, bingoBoardTileId, file}) => {
-        console.log("HEre")
+      query: ({eventId, bingoBoardTileId, files}) => {
         const formData = new FormData();
-        formData.append("file", file);
+
+        if (files && files.length > 0) {
+          files.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+          });
+        }
 
         return {
           url: `/events/${eventId}/bingo/${bingoBoardTileId}/submit`,
@@ -73,6 +78,12 @@ const eventApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getTileSubmissionEvidence: builder.query<BlobMedia[], { eventId: string, submissionId: string }>({
+      query: ({eventId, submissionId}) => ({
+        url: `/events/${eventId}/bingo/submissions/${submissionId}`,
+        method: 'GET'
+      })
+    }),
   }),
   overrideExisting: false,
 })
@@ -87,4 +98,5 @@ export const {
   useLazyGetBingoBoardTilesPeakQuery,
   useSubmitBingoBoardTileMutation,
   useSendTileSubmissionResponseMutation,
+  useLazyGetTileSubmissionEvidenceQuery
 } = eventApi;

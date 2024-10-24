@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Card, Form, GetProp, Modal, Upload, UploadFile, UploadProps } from 'antd';
-import dayjs from 'dayjs';
+import { Alert, Button, Card, Modal, Upload, UploadFile, UploadProps } from 'antd';
 import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {useSelector} from "react-redux";
 import {RootState} from "../../../data/store.ts";
 import {User} from "../../../data/entities/user.ts";
-import {DateTimePicker} from "../../../core/forms/DateTimePicker";
 import { UploadOutlined } from '@ant-design/icons';
-
-interface FormTileSubmission {
-  file: any
-}
+import { MAX_EVIDENCE_SIZE } from '../../../core/constants/blob-storage-limits.ts';
 
 interface SubmitTileModalProps {
   bingoTile: BingoBoardTile,
@@ -21,23 +16,32 @@ interface SubmitTileModalProps {
   onSuccess: (bingoBoardTile: BingoBoardTile) => void
 }
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
 export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTileModalProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const [submitTile, {isLoading, isSuccess, isError, error}] = useSubmitBingoBoardTileMutation();
   const {event} = useEventDetails();
 
-  const [file, setFile] = useState<UploadFile>();
-
+  const [files, setFiles] = useState<UploadFile[]>();
+  const [uploadError, setUploadError] = useState<string>(null);
   const latestUserSubmission = bingoTile?.submissions?.find(s => s.appUserId === user.id);
 
   const props: UploadProps = {
-    onRemove: () => {
-      setFile(null);
+    onRemove: (item) => {
+      setFiles(curr => curr?.filter(file => file.uid !== item.uid) ?? []);
     },
-    beforeUpload: (uploadFile) => {
-      setFile(uploadFile);
+    beforeUpload: (uploadFile, fileList) => {
+      if (uploadFile.size > MAX_EVIDENCE_SIZE) {
+        setUploadError(`Max file size: ${MAX_EVIDENCE_SIZE/1024/1024} MB`)
+        return Upload.LIST_IGNORE;
+      }
+
+      if (fileList?.length + files?.length > 5) {
+        setUploadError("You can only upload 5 files maximum")
+        return Upload.LIST_IGNORE;
+      }
+
+      setFiles(curr => [...(curr ?? []), uploadFile]);
+      setUploadError(null);
       return false;
     }
   };
@@ -45,20 +49,20 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
   useEffect(() => {
     if (isSuccess) {
       onSuccess(bingoTile);
+      setFiles([]);
     }
   }, [isSuccess]);
 
   useEffect(() => {
     if (!open) return;
+    setFiles([]);
   }, [open]);
 
   function handleOnFinish() {
-    console.log(file)
-
     submitTile({
       eventId: event.id,
       bingoBoardTileId: bingoTile.id,
-      file: file
+      files: files
     });
   }
 
@@ -72,8 +76,9 @@ export function SubmitTileModal({bingoTile, open, onCancel, onSuccess}: SubmitTi
       loading={isLoading}
     >
 
-      <Upload {...props} accept='image/*,video/*' >
+      <Upload {...props} accept='image/*,video/*' multiple>
         <Button icon={<UploadOutlined />}>Click to Upload</Button>
+        {uploadError && <Alert className='mt-2' message={uploadError} type='error' />}
       </Upload>
 
       {bingoTile?.tile && (

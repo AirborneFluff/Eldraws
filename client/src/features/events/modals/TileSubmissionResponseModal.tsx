@@ -2,6 +2,7 @@ import {useEffect} from 'react';
 import {Alert, Button, Form, Input, Modal, Select} from 'antd';
 const { TextArea } = Input;
 import {
+  useLazyGetTileSubmissionEvidenceQuery,
   useSendTileSubmissionResponseMutation
 } from '../../../data/services/api/event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
@@ -9,6 +10,7 @@ import { useEventDetails } from '../EventDetailsPage.tsx';
 import {TileSubmissionResponse} from "../../../data/entities/tile-submission";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from '../../../data/helpers/constants.ts';
+import { MediaTabs } from '../../../core/components/MediaTabs.tsx';
 
 type FormSubmissionResponse = Omit<TileSubmissionResponse, 'eventId'>;
 
@@ -20,14 +22,25 @@ interface TileSubmissionResponseModalProps {
 }
 
 export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSuccess}: TileSubmissionResponseModalProps) {
-  const [submitResponse, {isSuccess, isLoading, isError, error}] = useSendTileSubmissionResponseMutation();
   const {event} = useEventDetails();
   const [form] = Form.useForm<FormSubmissionResponse>();
+
+  const [submitResponse, {isSuccess, isLoading, isError, error}] = useSendTileSubmissionResponseMutation();
+  const [getEvidence, {data: evidence, isFetching: evidenceFetching}] = useLazyGetTileSubmissionEvidenceQuery();
 
   const selectedSubmissionId = Form.useWatch('submissionId', form);
   const submissions = bingoTile?.submissions?.filter(s => s.judgeId == undefined) || [];
   const selectedSubmission = submissions.find(s => s.id === selectedSubmissionId);
-  const evidenceSubmittedAt = selectedSubmission ? dayjs(selectedSubmission.evidenceSubmittedAt).format(DATE_FORMAT) : undefined;
+  const submittedAt = selectedSubmission ? dayjs(selectedSubmission.submittedAt).format(DATE_FORMAT) : undefined;
+
+  useEffect(() => {
+    if (selectedSubmissionId) {
+      getEvidence({
+        eventId: event.id,
+        submissionId: selectedSubmissionId
+      })
+    }
+  }, [selectedSubmissionId]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -83,7 +96,7 @@ export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSucces
       )}
     >
       <Form
-        className='mt-8'
+        className="mt-8"
         form={form}
         disabled={isLoading}
         name="tileSubmission"
@@ -92,9 +105,9 @@ export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSucces
         autoComplete="off"
       >
         <Form.Item name="accepted" hidden>
-          <input type="hidden" />
+          <input type="hidden"/>
         </Form.Item>
-        <Form.Item label="Submission" name='submissionId'>
+        <Form.Item label="Submission" name="submissionId">
           <Select>
             {submissions.map((item) =>
               <Select.Option key={item.id} value={item.id}>{item.gamertag}</Select.Option>
@@ -102,19 +115,21 @@ export function TileSubmissionResponseModal({bingoTile, open, onCancel, onSucces
           </Select>
         </Form.Item>
 
+        <MediaTabs loading={evidenceFetching} content={evidence} />
+
         <Form.Item<string>
           label="Notes"
           name="notes"
         >
-          <TextArea />
+          <TextArea/>
         </Form.Item>
       </Form>
 
       {selectedSubmission && (
         <Alert
-          className='my-4'
-          type='info'
-          description={'This tile was submitted at: ' + evidenceSubmittedAt}/>
+          className="my-4"
+          type="info"
+          description={'This tile was submitted at: ' + submittedAt}/>
       )}
 
       {isError &&

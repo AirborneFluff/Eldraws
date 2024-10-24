@@ -5,6 +5,9 @@ namespace API.Services;
 
 public class FileService(IConfiguration config, BlobServiceClient blobServiceClient)
 {
+    public BlobServiceClient Client => blobServiceClient;
+    public const int MAX_FILE_SIZE = 1024 * 1024 * 15;
+    
     public async Task<string> UploadFileAsync(Stream fileStream, string fileName, string mimeType, string containerName)
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
@@ -30,5 +33,14 @@ public class FileService(IConfiguration config, BlobServiceClient blobServiceCli
             .ToListAsync();
 
         return blobNames;
+    }
+    
+    public async Task<List<BlobItem>> GetFilesAsync(string containerName, Func<BlobItem, bool> predicate)
+    {
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        return await containerClient
+            .GetBlobsAsync()
+            .Where(predicate)
+            .ToListAsync();
     }
 }
