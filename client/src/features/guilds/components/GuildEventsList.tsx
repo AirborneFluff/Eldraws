@@ -1,13 +1,14 @@
 import {Button, Descriptions, List} from "antd";
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {useGetGuildEventsQuery} from "../../../data/services/api/guild-api.ts";
 import {Event} from "../../../data/entities/event.ts";
 import {PageView} from "../../../core/ui/PageView.tsx";
 import { useEffect } from 'react';
+import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildEventsList() {
-  const {guildId} = useParams();
-  const {data, isLoading, refetch} = useGetGuildEventsQuery(guildId);
+  const {guild, isOwner} = useGuildDetails();
+  const {data, isLoading, refetch} = useGetGuildEventsQuery(guild.id);
   const events = data as Event[];
   const navigate = useNavigate();
   const locationState = useLocation().state as GuildEventListNavigationState;
@@ -22,12 +23,14 @@ export function GuildEventsList() {
     navigate(`/app/events/${item.id}`)
   }
 
+  const headerButtons = isOwner ? [
+    <Button onClick={() => navigate("events/create")}>Create Event</Button>,
+    <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
+  ] : [];
+
   return (
     <PageView
-      buttons={[
-        <Button onClick={() => navigate("events/create")}>Create Event</Button>,
-        <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
-      ]}>
+      buttons={headerButtons}>
       <List
         size='large'
         header={<span>Events</span>}

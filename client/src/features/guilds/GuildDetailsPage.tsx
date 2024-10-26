@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
-import {useEffect} from 'react';
+import React, {createContext, useContext, useEffect} from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
 import { Tabs } from 'antd';
 import { TabItem } from '../../data/types/tab-item.ts';
@@ -12,6 +12,30 @@ import {GuildEventsList} from "./components/GuildEventsList.tsx";
 import {GuildMembersList} from "./components/GuildMembersList.tsx";
 import {GuildBlacklistList} from "./components/GuildBlacklistList.tsx";
 import { PageView } from '../../core/ui/PageView.tsx';
+import {Guild} from "../../data/entities/guild.ts";
+
+interface GuildDetailsContextProps {
+  guild: Guild | null;
+  isOwner: boolean;
+}
+
+const GuildDetailsContext = createContext<GuildDetailsContextProps | undefined>(undefined);
+
+export const GuildDetailsProvider: React.FC<{
+  children: React.ReactNode,
+  guild: Guild | null,
+  isOwner: boolean
+}> = ({children, guild, isOwner}) => (
+  <GuildDetailsContext.Provider value={{guild, isOwner}}>
+    {children}
+  </GuildDetailsContext.Provider>
+);
+
+export const useGuildDetails = (): GuildDetailsContextProps => {
+  const context = useContext(GuildDetailsContext);
+  if (context === undefined) throw new Error('useGuildDetails must be used within an GuildDetailsProvider');
+  return context;
+};
 
 export function GuildDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
@@ -66,14 +90,16 @@ export function GuildDetailsPage() {
   ] : [];
 
   return (
-    <PageView
-      loading={guildLoading}>
-      <Tabs
-        destroyInactiveTabPane={true}
-        defaultActiveKey="1"
-        size='small'
-        items={[...tabs, ...adminTabs]}
-      />
-    </PageView>
+    <GuildDetailsProvider guild={guild} isOwner={isGuildOwner}>
+      <PageView
+        loading={guildLoading}>
+        <Tabs
+          destroyInactiveTabPane={true}
+          defaultActiveKey="1"
+          size='small'
+          items={[...tabs, ...adminTabs]}
+        />
+      </PageView>
+    </GuildDetailsProvider>
   )
 }
