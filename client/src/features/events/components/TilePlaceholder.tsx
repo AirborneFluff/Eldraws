@@ -5,6 +5,7 @@ import {RootState} from '../../../data/store.ts';
 import {User} from '../../../data/entities/user.ts';
 import React from 'react';
 import { BoardViewType } from '../BingoEventDetailsPage.tsx';
+import {Badge, Popover} from "antd";
 
 export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlaceholderProps) {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
@@ -12,6 +13,7 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
   const tileSubmissions =  [...(bingoTile?.submissions ?? [])];
   const latestUserSubmission = tileSubmissions.find(s => s.appUserId === user.id);
   const unresolvedSubmissions = tileSubmissions.filter(s => s.judgeId == undefined) ?? [];
+  const confirmedSubmissions = tileSubmissions.filter(s => s.accepted) ?? [];
 
   function handleOnClick() {
     if (!clickEnabled()) return;
@@ -91,6 +93,14 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
 
   const blurTiles = tile?.task == null;
 
+  const getSubmissionPopoverContent = (gamertags: string[]) => (
+    <div>
+      {gamertags.map(item => (
+        <p>{item}</p>
+      ))}
+    </div>
+  );
+
   return (
     <div
       onClick={handleOnClick}
@@ -106,6 +116,30 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
         ) : (
           <div className='flex justify-center items-center gap-2 flex-col rounded p-2 max-md:min-h-32'>
             {viewType == BoardViewType.Create && <PlusCircleOutlined className='text-2xl text-gray-600'/>}
+          </div>
+        )}
+      </div>
+
+      <div className='absolute top-0 left-0 right-0 flex justify-start gap-2 p-2'>
+        {confirmedSubmissions.length > 0 && (
+          <div onClick={e => e.stopPropagation()}>
+            <Popover
+              content={getSubmissionPopoverContent(confirmedSubmissions.map(item => item.gamertag))}
+              title="Confirmed"
+              placement='bottomLeft'>
+              <Badge className='cursor-pointer' count={confirmedSubmissions.length} color="#52c41a" />
+            </Popover>
+          </div>
+        )}
+
+        {unresolvedSubmissions.length > 0 && (
+          <div onClick={e => e.stopPropagation()}>
+            <Popover
+              content={getSubmissionPopoverContent(unresolvedSubmissions.map(item => item.gamertag))}
+              title="Pending"
+              placement='bottomLeft'>
+              <Badge className='cursor-pointer' count={unresolvedSubmissions.length} color="#faad14"/>
+            </Popover>
           </div>
         )}
       </div>
