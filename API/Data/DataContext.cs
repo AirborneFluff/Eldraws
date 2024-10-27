@@ -23,9 +23,9 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Guild>()
-            .HasOne(g => g.Owner)
+            .HasOne(g => g.Creator)
             .WithMany(user => user.OwnedGuilds)
-            .HasForeignKey(g => g.OwnerId)
+            .HasForeignKey(g => g.CreatorId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Guild>()

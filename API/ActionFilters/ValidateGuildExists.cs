@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.ActionFilters;
 
+
+public class ValidateGuildExistsAttribute() : TypeFilterAttribute(typeof(ValidateGuildRole));
 public class ValidateGuildExists(UnitOfWork unitOfWork) : IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

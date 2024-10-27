@@ -10,13 +10,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public partial class EventsController(UnitOfWork unitOfWork, IMapper mapper, IConfiguration config, FileService fileService) : BaseApiController
+public partial class EventsController(UnitOfWork unitOfWork, IMapper mapper, IConfiguration config,
+    FileService fileService, GuildRoleService roleService) : BaseApiController
 {
     [HttpPost]
     public async Task<ActionResult> CreateEvent([FromBody] NewEventDto eventDto)
     {
-        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(eventDto.GuildId, User.GetUserId());
-        if (!isGuildOwner) return NotFound("Only the guild owner can do this action");
+        var hasAdminPermission = await roleService
+            .HasPermissionAsync(eventDto.GuildId, User.GetUserId(), "Owner, Admin");
+
+        if (!hasAdminPermission) return Unauthorized();
 
         var newEvent = mapper.Map<Event>(eventDto);
         newEvent.Id = Guid.NewGuid().ToString();

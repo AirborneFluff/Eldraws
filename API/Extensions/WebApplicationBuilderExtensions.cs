@@ -63,6 +63,7 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
         builder.Services.AddScoped<ImageService>();
         builder.Services.AddScoped<FileService>();
+        builder.Services.AddScoped<GuildRoleService>();
     }
 
     private static void AddActionFilters(this WebApplicationBuilder builder)
