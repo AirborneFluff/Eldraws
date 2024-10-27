@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -63,6 +64,10 @@ public class AuthController(UserManager<AppUser> userManager, DiscordAuthenticat
             Gamertag = User.Claims.Single(claim => claim.Type == ClaimTypes.GivenName).Value
         };
         
+        var userExists = await userManager.Users
+            .AnyAsync(u => u.Id == user.Id);
+        
+        if (!userExists) return Unauthorized();
         return Ok(user);
     }
 
