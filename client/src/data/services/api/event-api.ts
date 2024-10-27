@@ -8,7 +8,7 @@ const eventApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createEvent: builder.mutation<void, CreateEventModel>({
       query: (event: CreateEventModel) => ({
-        url: '/events',
+        url: `/guilds/${event.guildId}/events`,
         method: 'POST',
         body: event
       })

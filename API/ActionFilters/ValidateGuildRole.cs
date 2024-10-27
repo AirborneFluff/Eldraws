@@ -1,11 +1,20 @@
-﻿using API.Data;
 using API.Extensions;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.ActionFilters;
 
-public class ValidateGuildOwner(UnitOfWork unitOfWork) : IAsyncActionFilter
+public class ValidateGuildRoleAttribute : TypeFilterAttribute
+{
+    public ValidateGuildRoleAttribute(string roleName)
+        : base(typeof(ValidateGuildRole))
+    {
+        Arguments = [roleName];
+    }
+}
+
+public class ValidateGuildRole(GuildRoleService roleService, string roles) : IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -15,13 +24,14 @@ public class ValidateGuildOwner(UnitOfWork unitOfWork) : IAsyncActionFilter
         var userId = context.HttpContext.User.GetUserId();
         if (userId == null) throw new Exception("UserId not provided for validation");
         
-        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(guildId, userId);
-        if (!isGuildOwner)
+        var hasRole = await roleService.HasPermissionAsync(guildId, userId, roles);
+    
+        if (!hasRole)
         {
-            context.Result = new UnauthorizedObjectResult("Only the guild owner can do this action");
+            context.Result = new UnauthorizedObjectResult("You are not authorized to perform this action");
             return;
         }
-        
+    
         await next.Invoke();
     }
 }

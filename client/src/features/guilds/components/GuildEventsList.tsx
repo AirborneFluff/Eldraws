@@ -7,11 +7,12 @@ import { useEffect } from 'react';
 import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildEventsList() {
-  const {guild, isOwner} = useGuildDetails();
-  const {data, isLoading, refetch} = useGetGuildEventsQuery(guild.id);
+  const {guild, userRole} = useGuildDetails();
+  const {data, isLoading, refetch} = useGetGuildEventsQuery(guild?.id);
   const events = data as Event[];
   const navigate = useNavigate();
   const locationState = useLocation().state as GuildEventListNavigationState;
+  const hasAdminPermissions = userRole === 'Owner' || userRole === 'Admin';
 
   useEffect(() => {
     if (locationState?.refetch) {
@@ -23,7 +24,7 @@ export function GuildEventsList() {
     navigate(`/app/events/${item.id}`)
   }
 
-  const headerButtons = isOwner ? [
+  const headerButtons = hasAdminPermissions ? [
     <Button onClick={() => navigate("events/create")}>Create Event</Button>,
     <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
   ] : [];

@@ -1,11 +1,9 @@
-﻿using API.ActionFilters;
-using API.Data;
+﻿using API.Data;
 using API.Data.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -15,7 +13,7 @@ public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService
     [HttpPost]
     public async Task<ActionResult> CreateTile([FromBody] NewTileDto tileDto)
     {
-        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(tileDto.GuildId, User.GetUserId());
+        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildCreator(tileDto.GuildId, User.GetUserId());
         if (!isGuildOwner) return Unauthorized("Only the guild owner can do this action");
 
         var newTile = mapper.Map<Tile>(tileDto);
@@ -33,7 +31,7 @@ public class TilesController(UnitOfWork unitOfWork, IMapper mapper, ImageService
         if (tile is null) return NotFound("Tile not found");
         if (tile.GuildId is null) return Unauthorized("You cannot update this tile");
         
-        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildOwner(tile.GuildId, User.GetUserId());
+        var isGuildOwner = await unitOfWork.GuildRepository.IsGuildCreator(tile.GuildId, User.GetUserId());
         if (!isGuildOwner) return Unauthorized("Only the guild owner can do this action");
         
         mapper.Map(tileDto, tile);

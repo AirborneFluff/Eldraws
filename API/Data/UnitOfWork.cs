@@ -4,9 +4,10 @@ namespace API.Data;
 
 public class UnitOfWork(DataContext context)
 {
-    public GuildRepository GuildRepository => new GuildRepository(context);
-    public EventRepository EventRepository => new EventRepository(context);
-    public TileRepository TileRepository => new TileRepository(context);
+    public DataContext Context { get; } = context;
+    public GuildRepository GuildRepository => new GuildRepository(Context);
+    public EventRepository EventRepository => new EventRepository(Context);
+    public TileRepository TileRepository => new TileRepository(Context);
 
     public async Task<bool> Complete()
     {
@@ -16,6 +17,6 @@ public class UnitOfWork(DataContext context)
 
     public bool HasChanges()
     {
-        return context.ChangeTracker.HasChanges();
+        return Context.ChangeTracker.HasChanges();
     }
 }

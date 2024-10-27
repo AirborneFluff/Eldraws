@@ -95,8 +95,8 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
 
   const getSubmissionPopoverContent = (gamertags: string[]) => (
     <div>
-      {gamertags.map(item => (
-        <p>{item}</p>
+      {gamertags.map((item, i) => (
+        <p key={`${item}-${i}`}>{item}</p>
       ))}
     </div>
   );
@@ -110,7 +110,9 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
           <div
             className={`flex justify-center items-center gap-2 flex-col rounded p-2 ${blurTiles ? 'blur-md' : ''}`}>
             <img className="p-0.5" alt="Tile Image" src={tile?.imagePath}/>
-            <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
+            {tile?.task && (
+              <div className="font-bold text-gray-600 text-center text-sm w-full">{tile?.task}</div>
+            )}
             {overlayVisible() && <SubmissionOverlay/>}
           </div>
         ) : (

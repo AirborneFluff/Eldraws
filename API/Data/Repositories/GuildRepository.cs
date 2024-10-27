@@ -12,9 +12,20 @@ public class GuildRepository(DataContext context)
 
     public Task<Guild> GetById(string guildId)
     {
+        // todo, reduce dependency on includes
         return context.Guilds
             .Where(guild => !guild.Archived)
+            .Include(guild => guild.Memberships)
+            .ThenInclude(gm => gm.AppUser)
+            .Include(guild => guild.Memberships)
+            .ThenInclude(gm => gm.Role)
             .FirstAsync(guild => guild.Id == guildId);
+    }
+
+    public Task<Guild?> GetFirstOrDefault(string guildId)
+    {
+        return context.Guilds
+            .FirstOrDefaultAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> ExistsById(string guildId)
@@ -24,11 +35,11 @@ public class GuildRepository(DataContext context)
             .AnyAsync(guild => guild.Id == guildId);
     }
 
-    public Task<bool> IsGuildOwner(string guildId, string userId)
+    public Task<bool> IsGuildCreator(string guildId, string userId)
     {
         return context.Guilds
             .Where(guild => !guild.Archived)
-            .AnyAsync(guild => guild.Id == guildId && guild.OwnerId == userId);
+            .AnyAsync(guild => guild.Id == guildId && guild.CreatorId == userId);
     }
 
     public Task<bool> ExistsByName(string name)

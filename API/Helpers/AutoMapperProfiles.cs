@@ -12,7 +12,8 @@ public class AutoMapperProfiles : Profile
         CreateMap<AppUser, UserDto>();
         
         CreateMap<NewGuildDto, Guild>();
-        CreateMap<Guild, GuildDto>();
+        CreateMap<Guild, GuildDto>()
+            .ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.Memberships));
 
         CreateMap<GuildMembership, GuildMemberDto>()
             .ForMember(dest => dest.UserName, opt =>
@@ -21,6 +22,8 @@ public class AutoMapperProfiles : Profile
                 opt.MapFrom(src => src.AppUser!.Gamertag))
             .ForMember(dest => dest.RoleName, opt =>
                 opt.MapFrom(src => src.Role!.Name));
+
+        CreateMap<GuildRole, GuildRoleDto>();
 
         CreateMap<GuildBlacklist, BlacklistedUserDto>();
 

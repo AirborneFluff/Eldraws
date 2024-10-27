@@ -7,8 +7,6 @@ public class NewEventDto
     public required string Title { get; set; }
     public string? Subtitle { get; set; }
     public string? Description { get; set; }
-
-    public required string GuildId { get; set; }
     
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime? StartDate { get; set; }

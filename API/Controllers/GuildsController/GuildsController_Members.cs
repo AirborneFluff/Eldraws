@@ -2,13 +2,14 @@
 using API.Data.DTOs;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
 public partial class GuildsController
 {
     [HttpGet("{guildId}/members")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin, Moderator")]
     public async Task<ActionResult> GetGuildMembers(string guildId)
     {
         var members = await unitOfWork.GuildRepository.GetGuildMembers(guildId);
@@ -16,7 +17,7 @@ public partial class GuildsController
     }
     
     [HttpGet("{guildId}/blacklist")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin, Moderator")]
     public async Task<ActionResult> GetGuildBlacklist(string guildId)
     {
         var users = await unitOfWork.GuildRepository.GetGuildBlacklist(guildId);
@@ -24,7 +25,7 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/blacklist/{userName}")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> AddUserToBlacklist(string guildId, string userName)
     {
         var userBlacklisted = await unitOfWork.GuildRepository
@@ -51,7 +52,7 @@ public partial class GuildsController
     }
     
     [HttpDelete("{guildId}/blacklist/{userName}")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> RemoveFromBlacklist(string guildId, string userName)
     {
         var blacklistedUser = await unitOfWork.GuildRepository.GetBlacklistByUserName(guildId, userName);
@@ -64,11 +65,11 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/members/{appUserId}/remove")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> RemoveGuildMember(string guildId, string appUserId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        if (guild.OwnerId == appUserId) return BadRequest("You cannot remove the owner from the Guild");
+        if (guild.CreatorId == appUserId) return BadRequest("You cannot remove the owner from the Guild");
         
         var membership = await unitOfWork.GuildRepository.GetMembership(guildId, appUserId);
         if (membership == null) return NotFound("There is no member with that user id");
@@ -80,11 +81,11 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/members/{appUserId}/blacklist")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> BlacklistGuildMember(string guildId, string appUserId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
-        if (guild.OwnerId == appUserId) return BadRequest("You cannot remove the owner from the Guild");
+        if (guild.CreatorId == appUserId) return BadRequest("You cannot remove the owner from the Guild");
         
         var membership = await unitOfWork.GuildRepository.GetMembership(guildId, appUserId);
         if (membership == null) return NotFound("There is no member with that user id");
@@ -105,5 +106,26 @@ public partial class GuildsController
 
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest("Issue blacklisting and removing member from Guild");
+    }
+    
+    [HttpPut("{guildId}/members/{appUserId}/role")]
+    [ValidateGuildRole("Owner")]
+    public async Task<ActionResult> UpdateGuildMemberRole(string guildId, string appUserId, [FromBody] GuildMembershipRoleUpdateDto roleUpdateDto)
+    {
+        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        if (guild.CreatorId == appUserId) return BadRequest("You cannot update the Guild owner");
+        
+        var membership = await unitOfWork.Context.GuildMemberships
+            .Include(gm => gm.Role)
+            .FirstOrDefaultAsync(gm => gm.GuildId == guildId && gm.AppUserId == appUserId);
+        if (membership is null) return BadRequest("No membership between this guild and user");
+        
+        var guildRole = await unitOfWork.Context.GuildRoles
+            .FirstOrDefaultAsync(gr => gr.GuildId == guildId && gr.Name == roleUpdateDto.RoleName);
+        if (guildRole is null) return BadRequest("The role could not be found");
+        
+        membership.Role = guildRole;
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<GuildRoleDto>(guildRole));
+        return BadRequest("Issue updating member role");
     }
 }

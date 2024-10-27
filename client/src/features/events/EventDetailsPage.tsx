@@ -6,10 +6,13 @@ import { Event, EventType } from '../../data/entities/event.ts';
 
 import { createContext, useContext } from 'react';
 import { BingoEventDetailsPage } from './BingoEventDetailsPage.tsx';
+import {GuildRoleName} from "../../data/entities/guild-role.ts";
+import {useLazyGetUserRoleQuery} from "../../data/services/api/guild-api.ts";
 
 interface EventDetailsContextProps {
   event: Event | null;
   refetch: () => void;
+  userRole: GuildRoleName;
 }
 
 const EventDetailsContext = createContext<EventDetailsContextProps | undefined>(undefined);
@@ -17,9 +20,10 @@ const EventDetailsContext = createContext<EventDetailsContextProps | undefined>(
 export const EventDetailsProvider: React.FC<{
   children: React.ReactNode,
   event: Event | null,
+  userRole: GuildRoleName,
   refetch: () => void
-}> = ({children, event, refetch}) => (
-  <EventDetailsContext.Provider value={{event, refetch}}>
+}> = ({children, event, refetch, userRole}) => (
+  <EventDetailsContext.Provider value={{event, refetch, userRole}}>
     {children}
   </EventDetailsContext.Provider>
 );
@@ -34,6 +38,7 @@ export function EventDetailsPage() {
   const {eventId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data: event, isLoading: eventLoading, refetch} = useGetEventQuery(eventId);
+  const [getUserRole, {data: userRole, isLoading: userRoleLoading}] = useLazyGetUserRoleQuery();
 
   useEffect(() => {
     setHeaderContent({
@@ -43,6 +48,7 @@ export function EventDetailsPage() {
     });
 
     if (event) {
+      getUserRole(event.guildId);
       addBreadcrumbOverride({
         match: event.id,
         override: event.title
@@ -51,15 +57,15 @@ export function EventDetailsPage() {
   }, [event]);
 
   useEffect(() => {
-    setLoading(eventLoading);
-  }, [eventLoading]);
+    setLoading(eventLoading || userRoleLoading);
+  }, [eventLoading, userRoleLoading]);
 
   const renderPage =
     event?.type === EventType.Bingo ? (<BingoEventDetailsPage />) :
     event?.type === EventType.TileRace ? (<></>) : null;
 
   return (
-    <EventDetailsProvider event={event} refetch={refetch}>
+    <EventDetailsProvider event={event} refetch={refetch} userRole={userRole?.name}>
       {renderPage}
     </EventDetailsProvider>
   )

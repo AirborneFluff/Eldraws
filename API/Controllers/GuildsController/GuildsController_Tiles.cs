@@ -7,7 +7,7 @@ namespace API.Controllers;
 public partial class GuildsController
 {
     [HttpGet("{guildId}/tiles")]
-    [ServiceFilter(typeof(ValidateGuildMember))]
+    [ValidateGuildRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetAllTiles(string guildId)
     {
         var tiles = await unitOfWork.TileRepository.GetAllTiles(guildId);

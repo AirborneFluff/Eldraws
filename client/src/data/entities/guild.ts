@@ -1,7 +1,10 @@
+import {GuildMember} from "./guild-member.ts";
+
 export interface Guild {
   id: string,
   name: string,
-  ownerId: string
+  creatorId: string,
+  members: GuildMember[]
 }
 
 export interface NewGuild {

@@ -13,7 +13,7 @@ public partial class EventsController
         config.GetSection("Azure")["EvidenceBlobContainer"] ?? throw new Exception("Azure blob storage not configured");
     
     [HttpPut("{eventId}/bingo")]
-    [ServiceFilter(typeof(ValidateBingoEventHost))]
+    [ValidateGuildEventRole("Owner, Admin")]
     public async Task<ActionResult> SetBingoTile([FromBody] UpdateBingoTileDto bingoTileDto, string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
@@ -44,7 +44,7 @@ public partial class EventsController
     }
 
     [HttpGet("{eventId}/bingo")]
-    [ServiceFilter(typeof(ValidateBingoEventExists))]
+    [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetBingoTiles(string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
@@ -53,7 +53,7 @@ public partial class EventsController
     }
 
     [HttpGet("{eventId}/bingo/peak")]
-    [ServiceFilter(typeof(ValidateBingoEventExists))]
+    [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetBingoTilesPeak(string eventId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
@@ -62,7 +62,7 @@ public partial class EventsController
     }
 
     [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
-    [ServiceFilter(typeof(ValidateBingoEventExists))]
+    [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId)
     {
         var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventId(eventId);
@@ -98,7 +98,7 @@ public partial class EventsController
     }
 
     [HttpPut("{eventId}/bingo/submissions/{submissionId}")]
-    [ServiceFilter(typeof(ValidateBingoEventHost))]
+    [ValidateGuildEventRole("Owner, Admin, Moderator")]
     public async Task<ActionResult> SubmissionResponse(string eventId, string submissionId,
         [FromBody] TileSubmissionResponseDto responseDto)
     {
@@ -114,7 +114,7 @@ public partial class EventsController
     }
 
     [HttpGet("{eventId}/bingo/submissions/{submissionId}")]
-    [ServiceFilter(typeof(ValidateBingoEventHost))]
+    [ValidateGuildEventRole("Owner, Admin, Moderator")]
     public async Task<ActionResult> GetSubmissionEvidence(string eventId, string submissionId)
     {
         var containerClient = fileService.Client.GetBlobContainerClient(_evidenceBlobContainer);

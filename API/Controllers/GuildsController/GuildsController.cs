@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -21,27 +22,19 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
         
         var newGuild = mapper.Map<Guild>(guild);
         newGuild.Id = Guid.NewGuid().ToString();
-        newGuild.OwnerId = User.GetUserId();
-        var ownerRole = new GuildRole()
+        newGuild.CreatorId = User.GetUserId();
+
+        var guildRoles = GuildRole
+            .CreateDefaultGuildRoles(newGuild.Id, out var defaultRoleId, out var ownerRoleId);
+        
+        newGuild.DefaultGuildMemberRoleId = defaultRoleId;
+        newGuild.Roles.AddRange(guildRoles);
+        
+        newGuild.Memberships.Add(new GuildMembership
         {
-            Id = Guid.NewGuid().ToString(),
+            AppUserId = User.GetUserId(),
             GuildId = newGuild.Id,
-            Name = "Owner"
-        };
-        var defaultRole = new GuildRole()
-        {
-            Id = Guid.NewGuid().ToString(),
-            GuildId = newGuild.Id,
-            Name = "Member"
-        };
-        newGuild.DefaultGuildMemberRoleId = defaultRole.Id;
-        newGuild.Roles.Add(ownerRole);
-        newGuild.Roles.Add(defaultRole);
-        newGuild.Memberships.Add(new GuildMembership()
-        {
-            AppUserId = newGuild.OwnerId,
-            GuildId = newGuild.Id,
-            RoleId = ownerRole.Id
+            RoleId = ownerRoleId
         });
         
         unitOfWork.GuildRepository.Add(newGuild);
@@ -65,7 +58,7 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
     }
     
     [HttpGet("{guildId}")]
-    [ServiceFilter(typeof(ValidateGuildMember))]
+    [ValidateGuildRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetGuild(string guildId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
@@ -73,7 +66,7 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
     }
     
     [HttpDelete("{guildId}")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner")]
     public async Task<ActionResult> ArchiveGuild(string guildId)
     {
         var guild = await unitOfWork.GuildRepository.GetById(guildId);
@@ -84,10 +77,36 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
     }
 
     [HttpGet("{guildId}/events")]
-    [ServiceFilter(typeof(ValidateGuildMember))]
+    [ValidateGuildRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetGuildEvents(string guildId)
     {
         var events = await unitOfWork.GuildRepository.GetGuildEvents(guildId);
         return Ok(mapper.Map<List<EventDto>>(events));
+    }
+    
+    [HttpPost("{guildId}/events")]
+    [ValidateGuildRole("Owner, Admin")]
+    public async Task<ActionResult> CreateEvent(string guildId, [FromBody] NewEventDto eventDto)
+    {
+        var newEvent = mapper.Map<Event>(eventDto);
+        newEvent.Id = Guid.NewGuid().ToString();
+        newEvent.HostId = User.GetUserId();
+        newEvent.GuildId = guildId;
+        unitOfWork.EventRepository.Add(newEvent);
+
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<EventDto>(newEvent));
+        return BadRequest();
+    }
+
+    [HttpGet("{guildId}/role")]
+    [ValidateGuildRole("Owner, Admin, Moderator, Member")]
+    public async Task<ActionResult> GetGuildMemberRole(string guildId)
+    {
+        var membership = await unitOfWork.Context.GuildMemberships
+            .Include(gm => gm.Role)
+            .FirstOrDefaultAsync(gm => gm.GuildId == guildId && gm.AppUserId == User.GetUserId());
+        if (membership is null) return BadRequest("No membership found");
+        
+        return Ok(mapper.Map<GuildRoleDto>(membership.Role));
     }
 }

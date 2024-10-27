@@ -9,9 +9,11 @@ namespace API.Controllers;
 public partial class GuildsController
 {
     [HttpPost("{guildId}/apply")]
-    [ServiceFilter(typeof(ValidateGuildExists))]
     public async Task<ActionResult> ApplyToGuild(string guildId)
     {
+        var guild = await unitOfWork.GuildRepository.GetFirstOrDefault(guildId);
+        if (guild is null) return NotFound("Guild not found");
+        
         var isUserMember = await unitOfWork.GuildRepository.IsGuildMember(guildId, User.GetUserId());
         if (isUserMember) return BadRequest("You're already a member of this guild");
         
@@ -21,21 +23,20 @@ public partial class GuildsController
         var hasOutstanding = await unitOfWork.GuildRepository
             .HasOutstandingApplication(guildId, User.GetUserId());
         if (hasOutstanding) return BadRequest("You've already applied to this guild");
-
-        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        
         guild.Applications.Add(new GuildApplication
         {
             Id = Guid.NewGuid().ToString(),
             AppUserId = User.GetUserId(),
             GuildId = guildId
-        });
+        }); 
         
         if (await unitOfWork.Complete()) return Ok();
         return BadRequest("There was an issue creating your application.");
     }
     
     [HttpGet("{guildId}/applications")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> GetGuildApplications(string guildId)
     {
         var applications = await unitOfWork.GuildRepository.GetGuildApplications(guildId);
@@ -43,7 +44,7 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/applications/{applicationId}/accept")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> AcceptApplication(string guildId, string applicationId)
     {
         var application = await unitOfWork.GuildRepository.GetApplicationById(applicationId);
@@ -71,7 +72,7 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/applications/{applicationId}/blacklist")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> BlacklistApplication(string guildId, string applicationId)
     {
         var application = await unitOfWork.GuildRepository.GetApplicationById(applicationId);
@@ -99,7 +100,7 @@ public partial class GuildsController
     }
     
     [HttpPost("{guildId}/applications/{applicationId}/reject")]
-    [ServiceFilter(typeof(ValidateGuildOwner))]
+    [ValidateGuildRole("Owner, Admin")]
     public async Task<ActionResult> RejectApplication(string guildId, string applicationId)
     {
         var application = await unitOfWork.GuildRepository.GetApplicationById(applicationId);
