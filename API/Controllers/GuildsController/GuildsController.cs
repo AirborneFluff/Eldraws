@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -81,5 +82,31 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
     {
         var events = await unitOfWork.GuildRepository.GetGuildEvents(guildId);
         return Ok(mapper.Map<List<EventDto>>(events));
+    }
+    
+    [HttpPost("{guildId}/events")]
+    [ValidateGuildRole("Owner, Admin")]
+    public async Task<ActionResult> CreateEvent(string guildId, [FromBody] NewEventDto eventDto)
+    {
+        var newEvent = mapper.Map<Event>(eventDto);
+        newEvent.Id = Guid.NewGuid().ToString();
+        newEvent.HostId = User.GetUserId();
+        newEvent.GuildId = guildId;
+        unitOfWork.EventRepository.Add(newEvent);
+
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<EventDto>(newEvent));
+        return BadRequest();
+    }
+
+    [HttpGet("{guildId}/role")]
+    [ValidateGuildRole("Owner, Admin, Moderator, Member")]
+    public async Task<ActionResult> GetGuildMemberRole(string guildId)
+    {
+        var membership = await unitOfWork.Context.GuildMemberships
+            .Include(gm => gm.Role)
+            .FirstOrDefaultAsync(gm => gm.GuildId == guildId && gm.AppUserId == User.GetUserId());
+        if (membership is null) return BadRequest("No membership found");
+        
+        return Ok(mapper.Map<GuildRoleDto>(membership.Role));
     }
 }

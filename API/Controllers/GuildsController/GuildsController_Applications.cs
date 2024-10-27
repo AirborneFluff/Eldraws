@@ -8,10 +8,12 @@ namespace API.Controllers;
 
 public partial class GuildsController
 {
-    [HttpPost("{guildId}/apply")] 
-    [ValidateGuildExists]
+    [HttpPost("{guildId}/apply")]
     public async Task<ActionResult> ApplyToGuild(string guildId)
     {
+        var guild = await unitOfWork.GuildRepository.GetFirstOrDefault(guildId);
+        if (guild is null) return NotFound("Guild not found");
+        
         var isUserMember = await unitOfWork.GuildRepository.IsGuildMember(guildId, User.GetUserId());
         if (isUserMember) return BadRequest("You're already a member of this guild");
         
@@ -21,8 +23,7 @@ public partial class GuildsController
         var hasOutstanding = await unitOfWork.GuildRepository
             .HasOutstandingApplication(guildId, User.GetUserId());
         if (hasOutstanding) return BadRequest("You've already applied to this guild");
-
-        var guild = await unitOfWork.GuildRepository.GetById(guildId);
+        
         guild.Applications.Add(new GuildApplication
         {
             Id = Guid.NewGuid().ToString(),

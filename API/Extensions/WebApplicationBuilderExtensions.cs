@@ -68,12 +68,5 @@ public static class WebApplicationBuilderExtensions
 
     private static void AddActionFilters(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<ValidateGuildExists>();
-        builder.Services.AddScoped<ValidateGuildOwner>();
-        builder.Services.AddScoped<ValidateGuildMember>();
-        builder.Services.AddScoped<ValidateEventExists>();
-        builder.Services.AddScoped<ValidateEventHost>();
-        builder.Services.AddScoped<ValidateBingoEventExists>();
-        builder.Services.AddScoped<ValidateBingoEventHost>();
     }
 }

@@ -22,6 +22,12 @@ public class GuildRepository(DataContext context)
             .FirstAsync(guild => guild.Id == guildId);
     }
 
+    public Task<Guild?> GetFirstOrDefault(string guildId)
+    {
+        return context.Guilds
+            .FirstOrDefaultAsync(guild => guild.Id == guildId);
+    }
+
     public Task<bool> ExistsById(string guildId)
     {
         return context.Guilds
