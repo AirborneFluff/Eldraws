@@ -6,7 +6,6 @@ import {useEffect, useState} from "react";
 import {GuildRoleName} from "../../../data/entities/guild-role.ts";
 
 export function GuildMemberDetailsModal({onDismiss, member}: {
-  onSuccess: () => void,
   onDismiss: () => void
   member: GuildMember
 }) {

@@ -10,7 +10,7 @@ import {PageView} from "../../core/ui/PageView.tsx";
 export function GuildsPage() {
   const [ showGuildSearchModal, setShowGuildSearchModal ] = useState(false);
   const [ showCreate, setShowCreate ] = useState(false);
-  const {data: guilds, isLoading: guildsLoading, isError: guildsError, refetch} = useGetUserGuildsQuery();
+  const {data: guilds, isFetching, isError, refetch} = useGetUserGuildsQuery();
   const {setHeaderContent} = usePage();
 
   useEffect(() => {
@@ -30,9 +30,10 @@ export function GuildsPage() {
     <PageView
       buttons={[
         <Button onClick={() => setShowCreate(true)}>Create Guild</Button>,
-        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>
+        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>,
+        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
       ]}>
-      <GuildsList guilds={guilds} isLoading={guildsLoading} isError={guildsError} />
+      <GuildsList guilds={guilds} isLoading={isFetching} isError={isError} />
       <JoinGuildModal
         open={showGuildSearchModal}
         onSuccess={() => setShowGuildSearchModal(false)}
