@@ -13,7 +13,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildApplicationsList() {
   const { guild, userRole } = useGuildDetails();
-  const {data: applications, isLoading, refetch} = useGetGuildApplicationsQuery(guild?.id);
+  const {data: applications, isFetching, refetch} = useGetGuildApplicationsQuery(guild?.id);
   const hasActionPermissions = userRole === 'Owner' || userRole === 'Admin';
 
   const [respondToApplication, {
@@ -36,8 +36,12 @@ export function GuildApplicationsList() {
     respondToApplication(body);
   }
 
+  const headerButtons = [
+    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+  ];
+
   return (
-    <PageView>
+    <PageView buttons={headerButtons}>
       <List
         size='large'
         header={<span>Your Applications</span>}
@@ -50,7 +54,7 @@ export function GuildApplicationsList() {
             onResponse={handleResponse}
             hasActionPermissions={hasActionPermissions}
           />}
-        loading={isLoading}
+        loading={isFetching}
       />
     </PageView>
   )

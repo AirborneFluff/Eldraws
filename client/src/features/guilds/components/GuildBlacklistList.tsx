@@ -32,7 +32,8 @@ export function GuildBlacklistList() {
   return (
     <PageView
       buttons={[
-        <Button onClick={() => setModalVisible(true)}>Add User</Button>
+        <Button onClick={() => setModalVisible(true)}>Add User</Button>,
+        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
       ]}>
       <List
         size='large'

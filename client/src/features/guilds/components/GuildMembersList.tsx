@@ -1,7 +1,7 @@
 import {
   useGetGuildMembersQuery
 } from "../../../data/services/api/guild-api.ts";
-import {Descriptions, List} from "antd";
+import {Button, Descriptions, List} from "antd";
 import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
@@ -10,7 +10,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildMembersList() {
   const {guild, userRole} = useGuildDetails();
-  const {data: members, isLoading, refetch} = useGetGuildMembersQuery(guild?.id);
+  const {data: members, isFetching, refetch} = useGetGuildMembersQuery(guild?.id);
   const [selectedMember, setSelectedMember] = useState<GuildMember>(null);
 
   function handleOnClick(item: GuildMember) {
@@ -23,8 +23,12 @@ export function GuildMembersList() {
     refetch();
   }
 
+  const headerButtons = [
+    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+  ];
+
   return (
-    <PageView>
+    <PageView buttons={headerButtons}>
       <List
         size='large'
         header={<span>Members</span>}
@@ -35,12 +39,11 @@ export function GuildMembersList() {
             item={item}
             onClick={handleOnClick}
           />}
-        loading={isLoading}
+        loading={isFetching}
       />
       <GuildMemberDetailsModal
         member={selectedMember}
-        onSuccess={handleMemberUpdate}
-        onDismiss={() => setSelectedMember(null)} />
+        onDismiss={handleMemberUpdate} />
     </PageView>
   )
 }
