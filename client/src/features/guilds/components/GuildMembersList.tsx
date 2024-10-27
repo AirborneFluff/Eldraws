@@ -1,4 +1,3 @@
-import {useParams} from "react-router-dom";
 import {
   useGetGuildMembersQuery
 } from "../../../data/services/api/guild-api.ts";
@@ -7,13 +6,15 @@ import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
 import {PageView} from "../../../core/ui/PageView.tsx";
+import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildMembersList() {
-  const {guildId} = useParams();
-  const {data: members, isLoading, refetch} = useGetGuildMembersQuery(guildId);
+  const {guild, userRole} = useGuildDetails();
+  const {data: members, isLoading, refetch} = useGetGuildMembersQuery(guild?.id);
   const [selectedMember, setSelectedMember] = useState<GuildMember>(null);
 
   function handleOnClick(item: GuildMember) {
+    if (userRole !== 'Owner' || userRole !== 'Owner') return;
     setSelectedMember(item);
   }
 

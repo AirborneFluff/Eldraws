@@ -5,8 +5,9 @@ import {BlacklistedUser} from "../../entities/blacklisted-user.ts";
 import { Tile } from '../../entities/tile.ts';
 import { GuildApplication } from '../../entities/guild-application.ts';
 import { Event } from '../../entities/event.ts';
-import { GuildMember } from '../../entities/guild-member.ts';
+import {GuildMember, GuildMemberUpdate} from '../../entities/guild-member.ts';
 import { ApplicationResponseBody } from '../../models/application-response-body.ts';
+import {GuildRole} from "../../entities/guild-role.ts";
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -141,7 +142,18 @@ const guildApi = baseApi.injectEndpoints({
           method: 'GET'
         }
       }
-    })
+    }),
+    updateGuildMemberRole: builder.mutation<GuildRole, GuildMemberUpdate>({
+      query: ({guildId, appUserId, roleName}) => {
+        return {
+          url: `/guilds/${guildId}/members/${appUserId}/role`,
+          method: 'PUT',
+          body: {
+            roleName
+          }
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -162,5 +174,6 @@ export const {
   useBlacklistUserMutation,
   useArchiveGuildMutation,
   useGetGuildEventsQuery,
-  useGetGuildTilesQuery
+  useGetGuildTilesQuery,
+  useUpdateGuildMemberRoleMutation
 } = guildApi;

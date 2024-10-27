@@ -3,7 +3,6 @@ import { useGetGuildQuery } from '../../data/services/api/guild-api.ts';
 import React, {createContext, useContext, useEffect} from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
 import { Tabs } from 'antd';
-import { TabItem } from '../../data/types/tab-item.ts';
 import { GuildApplicationsList } from './components/GuildApplicationsList.tsx';
 import {useSelector} from "react-redux";
 import {RootState} from "../../data/store.ts";
@@ -13,10 +12,12 @@ import {GuildMembersList} from "./components/GuildMembersList.tsx";
 import {GuildBlacklistList} from "./components/GuildBlacklistList.tsx";
 import { PageView } from '../../core/ui/PageView.tsx';
 import {Guild} from "../../data/entities/guild.ts";
+import {GetTabItems, TabItemExtended} from "../../data/models/tab-item-extended.ts";
+import {GuildRoleName} from "../../data/entities/guild-role.ts";
 
 interface GuildDetailsContextProps {
   guild: Guild | null;
-  isOwner: boolean;
+  userRole: GuildRoleName;
 }
 
 const GuildDetailsContext = createContext<GuildDetailsContextProps | undefined>(undefined);
@@ -24,9 +25,9 @@ const GuildDetailsContext = createContext<GuildDetailsContextProps | undefined>(
 export const GuildDetailsProvider: React.FC<{
   children: React.ReactNode,
   guild: Guild | null,
-  isOwner: boolean
-}> = ({children, guild, isOwner}) => (
-  <GuildDetailsContext.Provider value={{guild, isOwner}}>
+  userRole: GuildRoleName
+}> = ({children, guild, userRole}) => (
+  <GuildDetailsContext.Provider value={{guild, userRole}}>
     {children}
   </GuildDetailsContext.Provider>
 );
@@ -42,7 +43,7 @@ export function GuildDetailsPage() {
   const {guildId} = useParams();
   const {setLoading, setHeaderContent, addBreadcrumbOverride} = usePage();
   const {data: guild, isLoading: guildLoading} = useGetGuildQuery(guildId);
-  const isGuildOwner = guild?.ownerId === user.id;
+  const userRole = guild?.members?.find(m => m.appUserId === user?.id)?.roleName;
 
   useEffect(() => {
     setHeaderContent({
@@ -63,41 +64,41 @@ export function GuildDetailsPage() {
     setLoading(guildLoading);
   }, [guildLoading]);
 
-  const tabs: TabItem[] = [
+  const tabs: TabItemExtended[] = [
     {
       key: 'events',
       label: 'Events',
       children: <GuildEventsList />,
-    }
-  ]
-
-  const adminTabs: TabItem[] = isGuildOwner ? [
+    },
     {
       key: 'applications',
       label: 'Applications',
-      children: <GuildApplicationsList />
+      children: <GuildApplicationsList/>,
+      visible: userRole === 'Admin' || userRole === 'Owner'
     },
     {
       key: 'members',
       label: 'Members',
-      children: <GuildMembersList />
+      children: <GuildMembersList/>,
+      visible: userRole === 'Admin' || userRole === 'Owner' || userRole === 'Moderator',
     },
     {
       key: 'blacklist',
       label: 'Blacklist',
-      children: <GuildBlacklistList />
+      children: <GuildBlacklistList/>,
+      visible: userRole === 'Admin' || userRole === 'Owner'
     }
-  ] : [];
+  ]
 
   return (
-    <GuildDetailsProvider guild={guild} isOwner={isGuildOwner}>
+    <GuildDetailsProvider guild={guild} userRole={userRole}>
       <PageView
         loading={guildLoading}>
         <Tabs
           destroyInactiveTabPane={true}
           defaultActiveKey="1"
           size='small'
-          items={[...tabs, ...adminTabs]}
+          items={GetTabItems(tabs)}
         />
       </PageView>
     </GuildDetailsProvider>
