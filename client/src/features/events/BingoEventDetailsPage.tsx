@@ -31,7 +31,7 @@ export enum BoardViewType {
 
 export function BingoEventDetailsPage() {
   const trigger = useTimer();
-  const {event, refetch: refetchEvent} = useEventDetails();
+  const {event, userRole, refetch: refetchEvent} = useEventDetails();
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const {floatButtonInset} = useBreakpoints();
 
@@ -48,7 +48,7 @@ export function BingoEventDetailsPage() {
   const [hostView, setHostView] = useState<boolean>(event.hostId === user.id);
 
   const isFetching = fetchingFullTiles || fetchingPeakTile;
-  const isEventHost = event.hostId === user.id;
+  const isModerator = userRole === 'Admin' || userRole === 'Owner' || userRole === 'Moderator';
 
   function refetchTiles() {
     if (!hostView && !event.started) {
@@ -206,14 +206,14 @@ export function BingoEventDetailsPage() {
         onConfirm={() => startEvent(event.id)}
         onCancel={() => setShowStartEventModal(false)} />
 
-      {isEventHost && (
+      {isModerator && (
         <FloatButton.Group
           trigger="hover"
           type="primary"
           style={{ insetInlineEnd: floatButtonInset }}
           icon={<MenuOutlined />}
         >
-          {hostView && (
+          {hostView && (userRole === 'Owner' || userRole === 'Admin') && (
             <>
               <FloatButton icon={<EditOutlined />} />
               {!event.started && (

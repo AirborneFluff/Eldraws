@@ -154,6 +154,14 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    getUserRole: builder.query<GuildRole, string>({
+      query: (guildId) => {
+        return {
+          url: `/guilds/${guildId}/role`,
+          method: 'GET'
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -175,5 +183,6 @@ export const {
   useArchiveGuildMutation,
   useGetGuildEventsQuery,
   useGetGuildTilesQuery,
-  useUpdateGuildMemberRoleMutation
+  useUpdateGuildMemberRoleMutation,
+  useLazyGetUserRoleQuery,
 } = guildApi;
