@@ -5,7 +5,6 @@ import { BingoBoard } from './components/BingoBoard.tsx';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../data/store.ts';
 import { User } from '../../data/entities/user.ts';
-import { TabItem } from '../../data/types/tab-item.ts';
 import { EditOutlined, PlayCircleOutlined, MenuOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons'
 
 import { BingoPlayerStatistics } from './components/BingoPlayerStatistics.tsx';
@@ -22,6 +21,7 @@ import useTimer from '../../core/hooks/useTimer.ts';
 import { TileSubmissionResponseModal } from './modals/TileSubmissionResponseModal.tsx';
 import { ConfirmModal } from '../../core/modals/ConfirmModal.tsx';
 import { useBreakpoints } from '../../core/hooks/useBreakpoints.ts';
+import {GetTabItems, TabItemExtended} from "../../data/models/tab-item-extended.ts";
 
 export enum BoardViewType {
   Play,
@@ -48,7 +48,6 @@ export function BingoEventDetailsPage() {
   const [hostView, setHostView] = useState<boolean>(event.hostId === user.id);
 
   const isFetching = fetchingFullTiles || fetchingPeakTile;
-  const isModerator = userRole === 'Admin' || userRole === 'Owner' || userRole === 'Moderator';
 
   function refetchTiles() {
     if (!hostView && !event.started) {
@@ -101,73 +100,58 @@ export function BingoEventDetailsPage() {
     }
   }, [peakTiles, hostView, event.started]);
 
-  const playerBoardTab: TabItem = {
-    key: 'eventBoard',
-    label: event?.title ?? 'Event',
-    children: (
-      <BingoBoard
-        refresh={refetchTiles}
-        isLoading={isFetching}
-        tiles={boardTiles}
-        viewType={BoardViewType.Play}
-        onTileClick={(tile) => handleShowModal(setShowTileSubmission, tile)}
-      />
-    )
-  };
-
-  const manageBoardTab: TabItem = {
-    key: 'manage',
-    label: 'Manage',
-    children: (
-      <BingoBoard
-        refresh={refetchTiles}
-        isLoading={isFetching}
-        tiles={boardTiles}
-        viewType={BoardViewType.Manage}
-        onTileClick={(tile) => handleShowModal(setShowTileSubmissionResponse, tile)}
-      />
-    )
-  };
-
-  const createBoardTab: TabItem = {
-    key: 'create',
-    label: 'Create',
-    children: (
-      <BingoBoard
-        refresh={refetchTiles}
-        isLoading={isFetching}
-        tiles={boardTiles}
-        viewType={BoardViewType.Create}
-        onTileClick={(tile) => handleShowModal(setShowTileSelection, tile)}
-      />
-    )
-  };
-
-  const playerStatisticsTab: TabItem = {
-    key: 'statistics',
-    label: 'Player Statistics',
-    children: (
-      <BingoPlayerStatistics />
-    )
-  };
-
-  const getVisibleTabs = (): TabItem[] => {
-    let tabs: TabItem[] = [];
-
-    if (!hostView) {
-      tabs.push(playerBoardTab)
+  const tabs: TabItemExtended[] = [
+    {
+      key: 'eventBoard',
+      label: event?.title ?? 'Event',
+      visible: !hostView,
+      children: (
+        <BingoBoard
+          refresh={refetchTiles}
+          isLoading={isFetching}
+          tiles={boardTiles}
+          viewType={BoardViewType.Play}
+          onTileClick={(tile) => handleShowModal(setShowTileSubmission, tile)}
+        />
+      )
+    },
+    {
+      key: 'manage',
+      label: 'Manage',
+      visible: hostView && event.started,
+      children: (
+        <BingoBoard
+          refresh={refetchTiles}
+          isLoading={isFetching}
+          tiles={boardTiles}
+          viewType={BoardViewType.Manage}
+          onTileClick={(tile) => handleShowModal(setShowTileSubmissionResponse, tile)}
+        />
+      )
+    },
+    {
+      key: 'create',
+      label: 'Create',
+      visible: hostView && !event.started && userRole !== 'Moderator',
+      children: (
+        <BingoBoard
+          refresh={refetchTiles}
+          isLoading={isFetching}
+          tiles={boardTiles}
+          viewType={BoardViewType.Create}
+          onTileClick={(tile) => handleShowModal(setShowTileSelection, tile)}
+        />
+      )
+    },
+    {
+      key: 'statistics',
+      label: 'Player Statistics',
+      visible: event.started,
+      children: (
+        <BingoPlayerStatistics />
+      )
     }
-
-    if (hostView) {
-      tabs.push(event.started ? manageBoardTab : createBoardTab);
-    }
-
-    if (event.started) {
-      tabs.push(playerStatisticsTab);
-    }
-
-    return tabs;
-  }
+  ];
 
   return (
     <>
@@ -176,7 +160,7 @@ export function BingoEventDetailsPage() {
           destroyInactiveTabPane={true}
           defaultActiveKey="1"
           size='small'
-          items={getVisibleTabs()}
+          items={GetTabItems(tabs)}
         />
         <SubmitTileModal
           bingoTile={selectedTile}
@@ -206,14 +190,14 @@ export function BingoEventDetailsPage() {
         onConfirm={() => startEvent(event.id)}
         onCancel={() => setShowStartEventModal(false)} />
 
-      {isModerator && (
+      {(userRole === 'Admin' || userRole === 'Owner' || (userRole === 'Moderator' && event.started)) && (
         <FloatButton.Group
           trigger="hover"
           type="primary"
           style={{ insetInlineEnd: floatButtonInset }}
           icon={<MenuOutlined />}
         >
-          {hostView && (userRole === 'Owner' || userRole === 'Admin') && (
+          {hostView && (
             <>
               <FloatButton icon={<EditOutlined />} />
               {!event.started && (
@@ -223,6 +207,7 @@ export function BingoEventDetailsPage() {
               )}
             </>
           )}
+
           <FloatButton onClick={() => setHostView(curr => !curr)} icon={hostView ? <EyeOutlined /> : <EyeInvisibleOutlined />} />
         </FloatButton.Group>
       )}
