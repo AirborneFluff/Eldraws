@@ -8,7 +8,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildEventsList() {
   const {guild, userRole} = useGuildDetails();
-  const {data, isLoading, refetch} = useGetGuildEventsQuery(guild?.id);
+  const {data, isFetching, refetch} = useGetGuildEventsQuery(guild?.id);
   const events = data as Event[];
   const navigate = useNavigate();
   const locationState = useLocation().state as GuildEventListNavigationState;
@@ -26,7 +26,8 @@ export function GuildEventsList() {
 
   const headerButtons = hasAdminPermissions ? [
     <Button onClick={() => navigate("events/create")}>Create Event</Button>,
-    <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
+    <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>,
+    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
   ] : [];
 
   return (
@@ -42,7 +43,7 @@ export function GuildEventsList() {
             item={item}
             onClick={handleOnClick}
           />}
-        loading={isLoading}
+        loading={isFetching}
       />
     </PageView>
   )
