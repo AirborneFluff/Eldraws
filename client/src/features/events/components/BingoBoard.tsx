@@ -20,7 +20,7 @@ export function BingoBoard({tiles, onTileClick, viewType, refresh, isLoading}: B
   return (
     <>
       <Card
-        title='Board'
+        title={`Bingo Board - ${BoardViewType[viewType]}`}
         bordered
         extra={<Button disabled={isLoading || !event.started} onClick={refresh}>Refresh</Button >}
       >
