@@ -1,13 +1,14 @@
-import {usePage} from "../../core/ui/AppLayout.tsx";
-import {useEffect} from "react";
-import {useCreateEventMutation} from "../../data/services/api/event-api.ts";
-import {Button, Form, Input, Select} from "antd";
-import { EventType, CreateEventModel } from '../../data/entities/event.ts';
+import { usePage } from '../../core/ui/AppLayout.tsx';
+import { useEffect } from 'react';
+import { useCreateEventMutation } from '../../data/services/api/event-api.ts';
+import { Button, Form, Input, Select } from 'antd';
+import { CreateEventModel, EventType } from '../../data/entities/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GuildEventListNavigationState } from '../guilds/components/GuildEventsList.tsx';
-import {DateTimePicker} from "../../core/forms/DateTimePicker.tsx";
-import dayjs from "dayjs";
-import {LOCAL_DATE_FORMAT} from "../../data/helpers/constants";
+import { DateTimePicker } from '../../core/forms/DateTimePicker.tsx';
+import dayjs from 'dayjs';
+import { LOCAL_DATE_FORMAT } from '../../data/helpers/constants';
+
 const { TextArea } = Input;
 
 export function CreateEventPage() {
@@ -47,6 +48,12 @@ export function CreateEventPage() {
   ]
   const currentTime = dayjs().format(LOCAL_DATE_FORMAT);
 
+  const initialValues: Partial<CreateEventModel> = {
+    type: EventType.Bingo,
+    startDate: dayjs().toISOString(),
+    endDate: dayjs().add(7, 'days').toISOString()
+  }
+
   return (
     <Form
       disabled={isLoading}
@@ -54,8 +61,9 @@ export function CreateEventPage() {
       layout="vertical"
       style={{ maxWidth: 768 }}
       onFinish={handleOnFormFinish}
+      initialValues={initialValues}
     >
-      <Form.Item label='Title' name='title'>
+      <Form.Item label='Title' name='title' required>
         <Input />
       </Form.Item>
       <Form.Item label='Subtitle' name='subtitle'>
@@ -72,31 +80,14 @@ export function CreateEventPage() {
         </Select>
       </Form.Item>
 
-      <Form.Item label='Start Date' name='startDate' initialValue={dayjs()}>
+      <Form.Item label='Start Date' name='startDate'>
         <DateTimePicker min={currentTime} />
       </Form.Item>
 
-      <Form.Item label='End Date' name='endDate' initialValue={dayjs().add(7, 'days')}>
+      <Form.Item label='End Date' name='endDate'>
         <DateTimePicker min={currentTime} />
       </Form.Item>
 
-      {/*<Divider/>
-
-      <Form.Item label="Entry Requires Approval" valuePropName="checked">
-        <Switch />
-      </Form.Item>
-
-      <Form.Item label='Entry Open Date' name='entryOpenDate'>
-        <DatePicker showTime />
-      </Form.Item>
-
-      <Form.Item label='Entry Close Date' name='entryCloseDate'>
-        <DatePicker showTime />
-      </Form.Item>
-
-      <Form.Item label="InputNumber">
-        <InputNumber />
-      </Form.Item>*/}
       <Button htmlType="submit" type='primary'>Create Event</Button>
     </Form>
   )
