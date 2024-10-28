@@ -10,6 +10,7 @@ import {useEffect} from "react";
 import {ApplicationResponseBody} from "../../../data/models/application-response-body.ts";
 import {PageView} from "../../../core/ui/PageView.tsx";
 import {useGuildDetails} from "../GuildDetailsPage.tsx";
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export function GuildApplicationsList() {
   const { guild, userRole } = useGuildDetails();
@@ -36,15 +37,11 @@ export function GuildApplicationsList() {
     respondToApplication(body);
   }
 
-  const headerButtons = [
-    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
-  ];
-
   return (
-    <PageView buttons={headerButtons}>
+    <PageView>
       <List
         size='large'
-        header={<span>Your Applications</span>}
+        header={<ListHeader title='Your Applicatons' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={applications}
         renderItem={(item: GuildApplication) =>

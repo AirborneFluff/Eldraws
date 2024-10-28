@@ -8,6 +8,7 @@ import {CloseOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
 import {PageView} from "../../../core/ui/PageView.tsx";
 import {BlacklistUserModal} from "../modals/BlacklistUserModal.tsx";
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export function GuildBlacklistList() {
   const {guildId} = useParams();
@@ -32,12 +33,11 @@ export function GuildBlacklistList() {
   return (
     <PageView
       buttons={[
-        <Button onClick={() => setModalVisible(true)}>Add User</Button>,
-        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+        <Button onClick={() => setModalVisible(true)}>Add User</Button>
       ]}>
       <List
         size='large'
-        header={<span>Blacklist</span>}
+        header={<ListHeader title='Blacklist' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={blacklistedUsers}
         renderItem={(item: BlacklistedUser) =>

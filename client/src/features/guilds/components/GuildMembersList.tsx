@@ -1,12 +1,13 @@
 import {
   useGetGuildMembersQuery
 } from "../../../data/services/api/guild-api.ts";
-import { Alert, Button, Descriptions, List } from 'antd';
+import { Alert, Descriptions, List } from 'antd';
 import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
 import {PageView} from "../../../core/ui/PageView.tsx";
 import {useGuildDetails} from "../GuildDetailsPage.tsx";
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export function GuildMembersList() {
   const {guild, userRole} = useGuildDetails();
@@ -23,15 +24,11 @@ export function GuildMembersList() {
     refetch();
   }
 
-  const headerButtons = [
-    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
-  ];
-
   return (
-    <PageView buttons={headerButtons}>
+    <PageView>
       <List
         size='large'
-        header={<span>Members</span>}
+        header={<ListHeader title='Members' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={members}
         renderItem={(item: GuildMember) =>

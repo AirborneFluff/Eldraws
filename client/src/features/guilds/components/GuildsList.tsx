@@ -9,6 +9,7 @@ import { JoinGuildModal } from '../modals/JoinGuildModal.tsx';
 import { CreateGuildModal } from '../modals/CreateGuildModal.tsx';
 import { useState } from 'react';
 import { useGetUserGuildsQuery } from '../../../data/services/api/guild-api.ts';
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export default function GuildsList() {
   const {data: guilds, isFetching, isError, refetch} = useGetUserGuildsQuery();
@@ -31,12 +32,11 @@ export default function GuildsList() {
     <PageView
       buttons={[
         <Button onClick={() => setShowCreate(true)}>Create Guild</Button>,
-        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>,
-        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>
       ]}>
       <List
         size='large'
-        header={<span>Your Guilds</span>}
+        header={<ListHeader title='Your Guilds' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={guilds}
         renderItem={(item: Guild) =>

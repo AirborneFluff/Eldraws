@@ -5,6 +5,7 @@ import {Event} from "../../../data/entities/event.ts";
 import {PageView} from "../../../core/ui/PageView.tsx";
 import { useEffect } from 'react';
 import {useGuildDetails} from "../GuildDetailsPage.tsx";
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export function GuildEventsList() {
   const {guild, userRole} = useGuildDetails();
@@ -26,8 +27,7 @@ export function GuildEventsList() {
 
   const headerButtons = hasAdminPermissions ? [
     <Button onClick={() => navigate("events/create")}>Create Event</Button>,
-    <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>,
-    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+    <Button onClick={() => navigate("tiles")}>Manage Event Tiles</Button>
   ] : [];
 
   return (
@@ -35,7 +35,7 @@ export function GuildEventsList() {
       buttons={headerButtons}>
       <List
         size='large'
-        header={<span>Events</span>}
+        header={<ListHeader title='Events' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={events}
         renderItem={(item: Event) =>

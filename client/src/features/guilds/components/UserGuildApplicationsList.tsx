@@ -1,22 +1,19 @@
-import { Alert, Button, Descriptions, List } from 'antd';
+import { Alert, Descriptions, List } from 'antd';
 import { GuildApplication } from '../../../data/entities/guild-application.ts';
 import {
   useGetUserGuildApplicationsQuery
 } from '../../../data/services/api/guild-api.ts';
 import {PageView} from "../../../core/ui/PageView.tsx";
+import { ListHeader } from '../../../core/components/ListHeader.tsx';
 
 export function UserGuildApplicationsList() {
   const {data: userApplications, isFetching, refetch, isError} = useGetUserGuildApplicationsQuery();
 
-  const headerButtons = [
-    <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
-  ];
-
   return (
-    <PageView buttons={headerButtons}>
+    <PageView>
       <List
         size='large'
-        header={<span>Your Applications</span>}
+        header={<ListHeader title='Your Applications' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={userApplications}
         renderItem={(item: GuildApplication) => <ListItem item={item} />}

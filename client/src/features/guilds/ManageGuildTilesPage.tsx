@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { usePage } from '../../core/ui/AppLayout.tsx';
 import { ManageTileModal } from '../events/modals/ManageTileModal.tsx';
+import { ListHeader } from '../../core/components/ListHeader.tsx';
 
 export function ManageGuildTilesPage() {
   const {guildId} = useParams();
@@ -38,8 +39,8 @@ export function ManageGuildTilesPage() {
         <Button onClick={() => openTileModal(null)}>Create Tile</Button>,
       ]}>
       <List
-        size='small'
-        header={<span>Events</span>}
+        size='large'
+        header={<ListHeader title='Guild Tiles' isLoading={isFetching} onRefresh={refetch} />}
         bordered
         dataSource={tiles}
         renderItem={(item: Tile) =>
