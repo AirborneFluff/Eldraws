@@ -59,6 +59,14 @@ const guildApi = baseApi.injectEndpoints({
         };
       }
     }),
+    getUserGuildApplications: builder.query<GuildApplication[], void>({
+      query: () => {
+        return {
+          url: `/guilds/applications`,
+          method: 'GET',
+        };
+      }
+    }),
     getGuildBlacklistedUsers: builder.query<BlacklistedUser[], string>({
       query: (guildId: string) => {
         return {
@@ -185,4 +193,5 @@ export const {
   useGetGuildTilesQuery,
   useUpdateGuildMemberRoleMutation,
   useLazyGetUserRoleQuery,
+  useGetUserGuildApplicationsQuery
 } = guildApi;

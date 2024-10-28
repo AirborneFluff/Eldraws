@@ -104,6 +104,16 @@ public class GuildRepository(DataContext context)
             .ToListAsync();
     }
 
+    public Task<List<GuildApplication>> GetUserGuildApplications(string appUserId)
+    {
+        return context.GuildApplications
+            .Where(ga => ga.AppUserId == appUserId && ga.Accepted == null)
+            .Include(ga => ga.AppUser)
+            .Include(ga => ga.Guild)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public Task<bool> IsGuildMember(string guidId, string appUserId)
     {
         return context.GuildMemberships
