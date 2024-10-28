@@ -1,16 +1,11 @@
-import { Button } from 'antd';
-import { JoinGuildModal } from './modals/JoinGuildModal.tsx';
-import { CreateGuildModal } from './modals/CreateGuildModal.tsx';
-import { useEffect, useState } from 'react';
+import { Tabs } from 'antd';
+import { useEffect } from 'react';
 import GuildsList from './components/GuildsList.tsx';
-import { useGetUserGuildsQuery } from '../../data/services/api/guild-api.ts';
 import { usePage } from '../../core/ui/AppLayout.tsx';
-import {PageView} from "../../core/ui/PageView.tsx";
+import { TabItem } from '../../data/types/tab-item.ts';
+import { UserGuildApplicationsList } from './components/UserGuildApplicationsList.tsx';
 
 export function GuildsPage() {
-  const [ showGuildSearchModal, setShowGuildSearchModal ] = useState(false);
-  const [ showCreate, setShowCreate ] = useState(false);
-  const {data: guilds, isFetching, isError, refetch} = useGetUserGuildsQuery();
   const {setHeaderContent} = usePage();
 
   useEffect(() => {
@@ -21,27 +16,25 @@ export function GuildsPage() {
     })
   }, []);
 
-  function onCreateGuildSuccess() {
-    setShowCreate(false);
-    refetch();
-  }
+  const tabs: TabItem[] = [
+    {
+      key: 'guild',
+      label: 'Guilds',
+      children: <GuildsList />,
+    },
+    {
+      key: 'applications',
+      label: 'Applications',
+      children: <UserGuildApplicationsList />
+    },
+  ]
 
   return (
-    <PageView
-      buttons={[
-        <Button onClick={() => setShowCreate(true)}>Create Guild</Button>,
-        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>,
-        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
-      ]}>
-      <GuildsList guilds={guilds} isLoading={isFetching} isError={isError} />
-      <JoinGuildModal
-        open={showGuildSearchModal}
-        onSuccess={() => setShowGuildSearchModal(false)}
-        onCancel={() => setShowGuildSearchModal(false)} />
-      <CreateGuildModal
-        open={showCreate}
-        onSuccess={onCreateGuildSuccess}
-        onCancel={() => setShowCreate(false)} />
-    </PageView>
+    <Tabs
+      destroyInactiveTabPane={true}
+      defaultActiveKey="1"
+      size='small'
+      items={tabs}
+    />
   )
 }

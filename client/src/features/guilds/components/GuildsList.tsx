@@ -1,36 +1,65 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../data/store.ts';
-import { Alert, List } from 'antd';
+import { Alert, Button, List } from 'antd';
 import { Guild } from '../../../data/entities/guild.ts';
 import { CrownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { PageView } from '../../../core/ui/PageView.tsx';
+import { JoinGuildModal } from '../modals/JoinGuildModal.tsx';
+import { CreateGuildModal } from '../modals/CreateGuildModal.tsx';
+import { useState } from 'react';
+import { useGetUserGuildsQuery } from '../../../data/services/api/guild-api.ts';
 
-export default function GuildsList({guilds, isLoading, isError}) {
+export default function GuildsList() {
+  const {data: guilds, isFetching, isError, refetch} = useGetUserGuildsQuery();
   const {user} = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
+
+  const [ showGuildSearchModal, setShowGuildSearchModal ] = useState(false);
+  const [ showCreate, setShowCreate ] = useState(false);
 
   function handleItemClick(guild: Guild) {
     navigate(guild.id)
   }
 
+  function onCreateGuildSuccess() {
+    setShowCreate(false);
+    refetch();
+  }
+
   return (
-    <List
-      size='large'
-      header={<span>Your Guilds</span>}
-      bordered
-      dataSource={guilds}
-      renderItem={(item: Guild) =>
-        <GuildListItem
-          item={item}
-          userId={user.id}
-          onClick={handleItemClick}
+    <PageView
+      buttons={[
+        <Button onClick={() => setShowCreate(true)}>Create Guild</Button>,
+        <Button onClick={() => setShowGuildSearchModal(true)}>Find Guild</Button>,
+        <Button disabled={isFetching} onClick={refetch}>Refresh</Button>
+      ]}>
+      <List
+        size='large'
+        header={<span>Your Guilds</span>}
+        bordered
+        dataSource={guilds}
+        renderItem={(item: Guild) =>
+          <GuildListItem
+            item={item}
+            userId={user.id}
+            onClick={handleItemClick}
+          />}
+        loading={isFetching}
+        footer={isError && <Alert
+          description='There was a problem contacting the server'
+          type='error'
         />}
-      loading={isLoading}
-      footer={isError && <Alert
-        description='There was a problem contacting the server'
-        type='error'
-      />}
-    />
+      />
+      <JoinGuildModal
+        open={showGuildSearchModal}
+        onSuccess={() => setShowGuildSearchModal(false)}
+        onCancel={() => setShowGuildSearchModal(false)} />
+      <CreateGuildModal
+        open={showCreate}
+        onSuccess={onCreateGuildSuccess}
+        onCancel={() => setShowCreate(false)} />
+    </PageView>
   );
 }
 

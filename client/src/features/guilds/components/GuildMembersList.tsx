@@ -1,7 +1,7 @@
 import {
   useGetGuildMembersQuery
 } from "../../../data/services/api/guild-api.ts";
-import {Button, Descriptions, List} from "antd";
+import { Alert, Button, Descriptions, List } from 'antd';
 import {GuildMember} from "../../../data/entities/guild-member.ts";
 import {GuildMemberDetailsModal} from "../modals/GuildMemberDetailsModal.tsx";
 import {useState} from "react";
@@ -10,7 +10,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildMembersList() {
   const {guild, userRole} = useGuildDetails();
-  const {data: members, isFetching, refetch} = useGetGuildMembersQuery(guild?.id);
+  const {data: members, isFetching, refetch, isError} = useGetGuildMembersQuery(guild?.id);
   const [selectedMember, setSelectedMember] = useState<GuildMember>(null);
 
   function handleOnClick(item: GuildMember) {
@@ -40,6 +40,10 @@ export function GuildMembersList() {
             onClick={handleOnClick}
           />}
         loading={isFetching}
+        footer={isError && <Alert
+          description='There was a problem contacting the server'
+          type='error'
+        />}
       />
       <GuildMemberDetailsModal
         member={selectedMember}

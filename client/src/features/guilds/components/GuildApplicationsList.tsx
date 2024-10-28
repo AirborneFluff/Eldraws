@@ -1,4 +1,4 @@
-import { Button, Descriptions, List } from 'antd';
+import { Alert, Button, Descriptions, List } from 'antd';
 import { CheckOutlined, StopOutlined, CloseOutlined } from '@ant-design/icons';
 import { GuildApplication } from '../../../data/entities/guild-application.ts';
 import {
@@ -13,7 +13,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildApplicationsList() {
   const { guild, userRole } = useGuildDetails();
-  const {data: applications, isFetching, refetch} = useGetGuildApplicationsQuery(guild?.id);
+  const {data: applications, isFetching, refetch, isError} = useGetGuildApplicationsQuery(guild?.id);
   const hasActionPermissions = userRole === 'Owner' || userRole === 'Admin';
 
   const [respondToApplication, {
@@ -55,6 +55,10 @@ export function GuildApplicationsList() {
             hasActionPermissions={hasActionPermissions}
           />}
         loading={isFetching}
+        footer={isError && <Alert
+          description='There was a problem contacting the server'
+          type='error'
+        />}
       />
     </PageView>
   )

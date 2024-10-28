@@ -1,4 +1,4 @@
-import {Button, Descriptions, List} from "antd";
+import { Alert, Button, Descriptions, List } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {useGetGuildEventsQuery} from "../../../data/services/api/guild-api.ts";
 import {Event} from "../../../data/entities/event.ts";
@@ -8,7 +8,7 @@ import {useGuildDetails} from "../GuildDetailsPage.tsx";
 
 export function GuildEventsList() {
   const {guild, userRole} = useGuildDetails();
-  const {data, isFetching, refetch} = useGetGuildEventsQuery(guild?.id);
+  const {data, isFetching, refetch, isError} = useGetGuildEventsQuery(guild?.id);
   const events = data as Event[];
   const navigate = useNavigate();
   const locationState = useLocation().state as GuildEventListNavigationState;
@@ -44,6 +44,10 @@ export function GuildEventsList() {
             onClick={handleOnClick}
           />}
         loading={isFetching}
+        footer={isError && <Alert
+          description='There was a problem contacting the server'
+          type='error'
+        />}
       />
     </PageView>
   )

@@ -8,6 +8,13 @@ namespace API.Controllers;
 
 public partial class GuildsController
 {
+    [HttpGet("applications")]
+    public async Task<ActionResult> GetUserGuildApplications()
+    {
+        var applications = await unitOfWork.GuildRepository.GetUserGuildApplications(User.GetUserId());
+        return Ok(mapper.Map<IEnumerable<GuildApplicationDto>>(applications));
+    }
+    
     [HttpPost("{guildId}/apply")]
     public async Task<ActionResult> ApplyToGuild(string guildId)
     {

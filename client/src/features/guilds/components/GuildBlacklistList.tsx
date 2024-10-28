@@ -2,7 +2,7 @@ import {useParams} from "react-router-dom";
 import {
   useGetGuildBlacklistedUsersQuery, useRemoveBlacklistedUserMutation
 } from "../../../data/services/api/guild-api.ts";
-import {Button, List} from "antd";
+import { Alert, Button, List } from 'antd';
 import {BlacklistedUser} from "../../../data/entities/blacklisted-user.ts";
 import {CloseOutlined} from "@ant-design/icons";
 import {useEffect, useState} from "react";
@@ -12,7 +12,7 @@ import {BlacklistUserModal} from "../modals/BlacklistUserModal.tsx";
 export function GuildBlacklistList() {
   const {guildId} = useParams();
   const [modalVisible, setModalVisible] = useState(false);
-  const {data: blacklistedUsers, isFetching, refetch} = useGetGuildBlacklistedUsersQuery(guildId);
+  const {data: blacklistedUsers, isFetching, refetch, isError} = useGetGuildBlacklistedUsersQuery(guildId);
   const [removeUser, {isLoading: isRemoveLoading, isSuccess}] = useRemoveBlacklistedUserMutation();
 
   useEffect(() => {
@@ -47,6 +47,10 @@ export function GuildBlacklistList() {
             onRemove={onUserRemove}
           />}
         loading={isFetching || isRemoveLoading}
+        footer={isError && <Alert
+          description='There was a problem contacting the server'
+          type='error'
+        />}
       />
 
       <BlacklistUserModal
