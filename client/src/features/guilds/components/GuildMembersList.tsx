@@ -14,7 +14,7 @@ export function GuildMembersList() {
   const [selectedMember, setSelectedMember] = useState<GuildMember>(null);
 
   function handleOnClick(item: GuildMember) {
-    if (userRole !== 'Owner' || userRole !== 'Owner') return;
+    if (userRole !== 'Owner') return;
     setSelectedMember(item);
   }
 
@@ -54,12 +54,27 @@ interface ListItemProps {
 }
 
 function ListItem({item, onClick}: ListItemProps) {
+  const roleColour =
+    item.roleName === 'Owner' ? 'text-[#be4bdb]' :
+    item.roleName === 'Admin' ? 'text-[#7950f2]' :
+    item.roleName === 'Moderator' ? 'text-[#15aabf]' : null;
+  
+  const clickEnabled = item.roleName !== 'Owner';
+
+  function handleOnClick() {
+    if (!clickEnabled) return;
+    onClick(item);
+  }
+
   return (
-    <List.Item className='hover:bg-gray-200 cursor-pointer !block' onClick={() => onClick(item)}>
+    <List.Item
+      onClick={handleOnClick}
+      className={`!flex justify-between ${clickEnabled ? 'hover:bg-gray-200 cursor-pointer' : null}`}>
       <Descriptions layout='vertical' size='small'>
         <Descriptions.Item label='Username'>{item.userName}</Descriptions.Item>
         <Descriptions.Item label='Gamertag'>{item.gamertag}</Descriptions.Item>
       </Descriptions>
+      <div className={`font-semibold tracking-tight ${roleColour}`}>{item.roleName}</div>
     </List.Item>
   )
 }

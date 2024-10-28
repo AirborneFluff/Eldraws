@@ -5,7 +5,6 @@ import { Guild } from '../../../data/entities/guild.ts';
 import { CrownOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-
 export default function GuildsList({guilds, isLoading, isError}) {
   const {user} = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
@@ -35,8 +34,8 @@ export default function GuildsList({guilds, isLoading, isError}) {
   );
 }
 
-function GuildListItem({item, userId, onClick}) {
-  const isOwner = userId === item.ownerId;
+function GuildListItem({item, userId, onClick}: {item: Guild, userId: string, onClick: (guild: Guild) => void}) {
+  const isOwner = userId === item.creatorId;
 
   return (
     <List.Item
