@@ -62,6 +62,14 @@ public class EmbedTable
         
         _rows.Add(sb.ToString());
     }
+
+    public void AddRows(IEnumerable<List<string>> rows)
+    {
+        foreach (var row in rows)  
+        {
+            AddRow(row);
+        }
+    }
     
     private string PadTitle(int i)
     {
