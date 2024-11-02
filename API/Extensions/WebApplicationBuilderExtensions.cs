@@ -4,6 +4,7 @@ using API.Entities;
 using API.Helpers;
 using API.Services;
 using Azure.Storage.Blobs;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,13 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddScoped<ImageService>();
         builder.Services.AddScoped<FileService>();
         builder.Services.AddScoped<GuildRoleService>();
+
+        builder.Services.AddScoped<DiscordService>();
+        builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+        {
+            LogLevel = Discord.LogSeverity.Verbose,
+            MessageCacheSize = 1000
+        }));
     }
 
     private static void AddActionFilters(this WebApplicationBuilder builder)
