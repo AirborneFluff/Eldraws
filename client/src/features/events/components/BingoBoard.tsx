@@ -43,7 +43,10 @@ export function BingoBoard({tiles, onTileClick, viewType, refresh, isLoading}: B
 
 function DesktopView({bingoTiles, onTileClick, viewType}: BoardViewProps) {
   const {bingoDetails} = useBingoDetails();
-  const gridCols = `grid-cols-${bingoDetails?.columnCount ?? 5}`
+  const gridCols =
+    bingoDetails?.columnCount === 4 ? `grid-cols-4` :
+    bingoDetails?.columnCount === 3 ? `grid-cols-3` : `grid-cols-5`;
+
 
   return (
     <div className={`grid gap-2 items-stretch ${gridCols}`}>
