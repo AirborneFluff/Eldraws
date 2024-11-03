@@ -64,7 +64,14 @@ function DesktopView({bingoTiles, onTileClick, viewType}: BoardViewProps) {
 }
 
 function MobileView({bingoTiles, onTileClick, viewType}: BoardViewProps) {
-  const columns = [0, 1, 2, 3, 4].map((colIndex) =>
+  const {bingoDetails} = useBingoDetails();
+
+  const getColumnsArray = (): number[] => {
+    const columnCount = bingoDetails?.columnCount ?? 5;
+    return Array.from({ length: columnCount }, (_, index) => index);
+  };
+
+  const columns = getColumnsArray().map((colIndex) =>
     bingoTiles?.filter(tile => tile.position.column === colIndex)
   );
 
