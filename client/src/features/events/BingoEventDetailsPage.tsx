@@ -10,10 +10,7 @@ import { EditOutlined, PlayCircleOutlined, MenuOutlined, EyeOutlined, EyeInvisib
 import { BingoPlayerStatistics } from './components/BingoPlayerStatistics.tsx';
 import { BingoBoardTile } from '../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from './EventDetailsPage.tsx';
-import {
-  useLazyGetBingoBoardTilesPeakQuery,
-  useLazyGetBingoBoardTilesQuery, useStartEventMutation
-} from '../../data/services/api/event-api.ts';
+import { useStartEventMutation } from '../../data/services/api/event-api.ts';
 import { SubmitTileModal } from './modals/SubmitTileModal.tsx';
 import { SelectTileModal } from './modals/SelectTileModal.tsx';
 import generateBlankBingoBoard, { replaceTiles } from '../../data/helpers/bingo-board-generator.ts';
@@ -22,6 +19,12 @@ import { TileSubmissionResponseModal } from './modals/TileSubmissionResponseModa
 import { ConfirmModal } from '../../core/modals/ConfirmModal.tsx';
 import { useBreakpoints } from '../../core/hooks/useBreakpoints.ts';
 import {GetTabItems, TabItemExtended} from "../../data/models/tab-item-extended.ts";
+import {
+  useGetBingoEventDetailsQuery,
+  useLazyGetBingoBoardTilesPeakQuery,
+  useLazyGetBingoBoardTilesQuery
+} from '../../data/services/api/bingo-event-api.ts';
+import { BingoDetailsProvider } from './providers/bingo-details-provider.tsx';
 
 export enum BoardViewType {
   Play,
@@ -35,6 +38,7 @@ export function BingoEventDetailsPage() {
   const {user} = useSelector((state: RootState) => state.user) as { user: User };
   const {floatButtonInset} = useBreakpoints();
 
+  const {data: bingoDetails, isFetching: fetchingBingoDetails, refetch: refetchBingoDetails} = useGetBingoEventDetailsQuery(event.id);
   const [getTiles, {data: fullTiles, isFetching: fetchingFullTiles}] = useLazyGetBingoBoardTilesQuery();
   const [getTilesPeak, {data: peakTiles, isFetching: fetchingPeakTile}] = useLazyGetBingoBoardTilesPeakQuery();
   const [startEvent, {isLoading: startEventLoading, error: startEventError, isSuccess: startEventSuccess}] = useStartEventMutation();
@@ -44,12 +48,15 @@ export function BingoEventDetailsPage() {
   const [showTileSubmission, setShowTileSubmission] = useState(false);
   const [showTileSelection, setShowTileSelection] = useState(false);
   const [selectedTile, setSelectedTile] = useState<BingoBoardTile>();
-  const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>(generateBlankBingoBoard());
+  const [boardTiles, setBoardTiles] = useState<BingoBoardTile[]>([]);
   const [hostView, setHostView] = useState<boolean>(event.hostId === user.id);
 
-  const isFetching = fetchingFullTiles || fetchingPeakTile;
+  const isFetching = fetchingFullTiles || fetchingPeakTile || fetchingBingoDetails;
 
   function refetchTiles() {
+    if (!bingoDetails) return;
+
+    setBoardTiles(generateBlankBingoBoard(bingoDetails.columnCount, bingoDetails.rowCount));
     if (!hostView && !event.started) {
       getTilesPeak(event.id);
       return;
@@ -82,11 +89,7 @@ export function BingoEventDetailsPage() {
 
   useEffect(() => {
     refetchTiles();
-  }, [hostView]);
-
-  useEffect(() => {
-    refetchTiles();
-  }, []);
+  }, [hostView, bingoDetails]);
 
   useEffect(() => {
     if (fullTiles && (hostView || event.started)) {
@@ -154,7 +157,7 @@ export function BingoEventDetailsPage() {
   ];
 
   return (
-    <>
+    <BingoDetailsProvider bingoDetails={bingoDetails} refetch={refetchBingoDetails}>
       <PageView loading={!event}>
         <Tabs
           destroyInactiveTabPane={true}
@@ -211,6 +214,6 @@ export function BingoEventDetailsPage() {
           <FloatButton onClick={() => setHostView(curr => !curr)} icon={hostView ? <EyeOutlined /> : <EyeInvisibleOutlined />} />
         </FloatButton.Group>
       )}
-    </>
+    </BingoDetailsProvider>
   )
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Card, Modal, Upload, UploadFile, UploadProps } from 'antd';
-import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
+import { useSubmitBingoBoardTileMutation } from '../../../data/services/api/bingo-event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {useSelector} from "react-redux";

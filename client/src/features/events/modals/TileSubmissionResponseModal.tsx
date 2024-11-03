@@ -4,7 +4,7 @@ const { TextArea } = Input;
 import {
   useLazyGetTileSubmissionEvidenceQuery,
   useSendTileSubmissionResponseMutation
-} from '../../../data/services/api/event-api.ts';
+} from '../../../data/services/api/bingo-event-api.ts';
 import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import {TileSubmissionResponse} from "../../../data/entities/tile-submission";

@@ -4,6 +4,7 @@ import { BingoBoardTile } from '../../../data/entities/bingo-board-tile.ts';
 import { useBreakpoints } from '../../../core/hooks/useBreakpoints.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import { BoardViewType } from '../BingoEventDetailsPage.tsx';
+import { useBingoDetails } from '../providers/bingo-details-provider.tsx';
 
 interface BingoBoardProps {
   onTileClick: (tile: BingoBoardTile) => void,
@@ -22,18 +23,18 @@ export function BingoBoard({tiles, onTileClick, viewType, refresh, isLoading}: B
       <Card
         title={`Bingo Board - ${BoardViewType[viewType]}`}
         bordered
-        extra={<Button disabled={isLoading || !event.started} onClick={refresh}>Refresh</Button >}
+        extra={<Button disabled={isLoading || !event.started} onClick={refresh}>Refresh</Button>}
       >
         {breakpoints.md ? (
           <DesktopView
             viewType={viewType}
             bingoTiles={tiles}
-            onTileClick={onTileClick} />
+            onTileClick={onTileClick}/>
         ) : (
           <MobileView
             viewType={viewType}
             bingoTiles={tiles}
-            onTileClick={onTileClick} />
+            onTileClick={onTileClick}/>
         )}
       </Card>
     </>
@@ -41,14 +42,19 @@ export function BingoBoard({tiles, onTileClick, viewType, refresh, isLoading}: B
 }
 
 function DesktopView({bingoTiles, onTileClick, viewType}: BoardViewProps) {
+  const {bingoDetails} = useBingoDetails();
+  const gridCols = `grid-cols-${bingoDetails?.columnCount ?? 5}`
+
   return (
-    <div className='grid grid-cols-5 gap-2 items-stretch'>
+    <div className={`grid gap-2 items-stretch ${gridCols}`}>
       {bingoTiles?.map((tile, rowIndex) => (
-        <TilePlaceholder
-          viewType={viewType}
-          key={rowIndex}
-          bingoTile={tile}
-          onTileClick={onTileClick} />
+        <div className="flex justify-center w-full">
+          <TilePlaceholder
+            viewType={viewType}
+            key={rowIndex}
+            bingoTile={tile}
+            onTileClick={onTileClick}/>
+        </div>
       ))}
     </div>
   )
@@ -70,7 +76,7 @@ function MobileView({bingoTiles, onTileClick, viewType}: BoardViewProps) {
                 viewType={viewType}
                 key={index}
                 bingoTile={tile}
-                onTileClick={onTileClick} />
+                onTileClick={onTileClick}/>
             </div>
           ))}
         </div>

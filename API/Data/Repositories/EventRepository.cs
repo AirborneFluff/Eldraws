@@ -1,3 +1,4 @@
+using API.Data.Parameters;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,29 +6,17 @@ namespace API.Data.Repositories;
 
 public class EventRepository(DataContext context)
 {
-    public void Add(Event newEvent)
+    public void AddBingo(Event newEvent, BingoEventParams bingoParams)
     {
+        if (newEvent.Type != Event.EventType.Bingo) throw new Exception("Event type is not Bingo");
         context.Events.Add(newEvent);
-
-        switch (newEvent.Type)
+        context.BingoEvents.Add(new BingoEvent
         {
-            case Event.EventType.TileRace:
-                context.TileRaceEvents.Add(new TileRaceEvent
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    EventId = newEvent.Id
-                });
-                break;
-            case Event.EventType.Bingo:
-                context.BingoEvents.Add(new BingoEvent
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    EventId = newEvent.Id
-                });
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            Id = Guid.NewGuid().ToString(),
+            EventId = newEvent.Id,
+            ColumnCount = bingoParams.ColumnCount,
+            RowCount = bingoParams.RowCount
+        });
     }
     
     public Task<bool> ExistsById(string eventId)
@@ -76,6 +65,12 @@ public class EventRepository(DataContext context)
             .Include(e => e.Event)
             .Include(e => e.BoardTiles)
             .ThenInclude(bt => bt.Submissions)
+            .FirstAsync(e => e.EventId == id);
+    }
+
+    public Task<BingoEvent> GetBingoEventByEventIdMinimal(string id)
+    {
+        return context.BingoEvents
             .FirstAsync(e => e.EventId == id);
     }
 

@@ -12,7 +12,16 @@ public partial class EventsController
     private readonly string _evidenceBlobContainer = 
         config.GetSection("Azure")["EvidenceBlobContainer"] ?? throw new Exception("Azure blob storage not configured");
     
-    [HttpPut("{eventId}/bingo")]
+
+    [HttpGet("{eventId}/bingo")]
+    [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
+    public async Task<ActionResult> GetBingoEventDetails(string eventId)
+    {
+        var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventIdMinimal(eventId);
+        return Ok(mapper.Map<BingoEventDto>(bingoEvent));
+    }
+    
+    [HttpPut("{eventId}/bingo/tiles")]
     [ValidateGuildEventRole("Owner, Admin")]
     public async Task<ActionResult> SetBingoTile([FromBody] UpdateBingoTileDto bingoTileDto, string eventId)
     {
@@ -43,7 +52,7 @@ public partial class EventsController
         return BadRequest();
     }
 
-    [HttpGet("{eventId}/bingo")]
+    [HttpGet("{eventId}/bingo/tiles")]
     [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetBingoTiles(string eventId)
     {
@@ -52,7 +61,7 @@ public partial class EventsController
         return Ok(mapper.Map<List<BingoBoardTileDto>>(tiles));
     }
 
-    [HttpGet("{eventId}/bingo/peak")]
+    [HttpGet("{eventId}/bingo/tiles/peak")]
     [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetBingoTilesPeak(string eventId)
     {
@@ -61,7 +70,7 @@ public partial class EventsController
         return Ok(mapper.Map<List<BingoBoardTilePeakDto>>(tiles));
     }
 
-    [HttpPost("{eventId}/bingo/{bingoTileId}/submit")]
+    [HttpPost("{eventId}/bingo/tiles/{bingoTileId}/submit")]
     [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> SubmitTile(string eventId, string bingoTileId)
     {
