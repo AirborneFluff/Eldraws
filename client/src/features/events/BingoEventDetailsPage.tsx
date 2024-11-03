@@ -55,8 +55,9 @@ export function BingoEventDetailsPage() {
 
   function refetchTiles() {
     if (!bingoDetails) return;
-
-    setBoardTiles(generateBlankBingoBoard(bingoDetails.columnCount, bingoDetails.rowCount));
+    if (boardTiles.length === 0) {
+      setBoardTiles(generateBlankBingoBoard(bingoDetails.columnCount, bingoDetails.rowCount));
+    }
     if (!hostView && !event.started) {
       getTilesPeak(event.id);
       return;
