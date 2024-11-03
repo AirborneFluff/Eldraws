@@ -1,6 +1,5 @@
 import { usePage } from '../../core/ui/AppLayout.tsx';
 import { useEffect } from 'react';
-import { useCreateEventMutation } from '../../data/services/api/event-api.ts';
 import { Button, Form, Input, Select } from 'antd';
 import { CreateEventModel, EventType } from '../../data/entities/event.ts';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -8,11 +7,12 @@ import { GuildEventListNavigationState } from '../guilds/components/GuildEventsL
 import { DateTimePicker } from '../../core/forms/DateTimePicker.tsx';
 import dayjs from 'dayjs';
 import { LOCAL_DATE_FORMAT } from '../../data/helpers/constants';
+import { useCreateBingoEventMutation } from '../../data/services/api/event-api.ts';
 
 const { TextArea } = Input;
 
 export function CreateEventPage() {
-  const [createEvent, {isLoading, isSuccess}] = useCreateEventMutation();
+  const [createBingoEvent, {isLoading, isSuccess}] = useCreateBingoEventMutation();
   const {setHeaderContent} = usePage();
   const navigate = useNavigate();
   const {guildId} = useParams();
@@ -41,6 +41,18 @@ export function CreateEventPage() {
   function handleOnFormFinish(val: CreateEventModel) {
     val.guildId = guildId;
     createEvent(val);
+  }
+
+  function createEvent<T extends CreateEventModel>(event: T) {
+    switch (event.type) {
+      case EventType.Bingo:
+        createBingoEvent({
+          ...event,
+          columnCount: 3,
+          rowCount: 3
+        });
+        break;
+    }
   }
 
   const eventTypes = [

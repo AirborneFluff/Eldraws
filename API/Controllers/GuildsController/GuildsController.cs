@@ -1,6 +1,7 @@
 ﻿using API.ActionFilters;
 using API.Data;
 using API.Data.DTOs;
+using API.Data.Parameters;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
@@ -84,15 +85,18 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
         return Ok(mapper.Map<List<EventDto>>(events));
     }
     
-    [HttpPost("{guildId}/events")]
+    [HttpPost("{guildId}/events/bingo")]
     [ValidateGuildRole("Owner, Admin")]
-    public async Task<ActionResult> CreateEvent(string guildId, [FromBody] NewEventDto eventDto)
+    public async Task<ActionResult> CreateBingoEvent(string guildId, [FromBody] NewBingoEventDto eventDto)
     {
         var newEvent = mapper.Map<Event>(eventDto);
+        var bingoParams = mapper.Map<BingoEventParams>(eventDto);
         newEvent.Id = Guid.NewGuid().ToString();
         newEvent.HostId = User.GetUserId();
         newEvent.GuildId = guildId;
-        unitOfWork.EventRepository.Add(newEvent);
+        newEvent.Type = Event.EventType.Bingo;
+        
+        unitOfWork.EventRepository.AddBingo(newEvent, bingoParams);
 
         if (await unitOfWork.Complete()) return Ok(mapper.Map<EventDto>(newEvent));
         return BadRequest();

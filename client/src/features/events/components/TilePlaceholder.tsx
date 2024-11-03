@@ -104,7 +104,7 @@ export function TilePlaceholder({viewType, bingoTile, onTileClick}: TilePlacehol
   return (
     <div
       onClick={handleOnClick}
-      className={'border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (clickEnabled() ? ' cursor-pointer' : '')}>
+      className={'flex-grow border border-gray-200 rounded-md min-h-32 xl:min-h-48 xl:max-w-48 2xl:min-h-56 2xl:max-w-56 relative' + (clickEnabled() ? ' cursor-pointer' : '')}>
       <div className="flex justify-center items-center h-full">
         {bingoTile.tile ? (
           <div

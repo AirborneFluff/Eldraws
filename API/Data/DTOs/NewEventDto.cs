@@ -1,5 +1,3 @@
-using static API.Entities.Event;
-
 namespace API.Data.DTOs;
 
 public class NewEventDto
@@ -13,6 +11,4 @@ public class NewEventDto
     public DateTime? EndDate { get; set; }
     public DateTime? EntryOpenDate { get; set; }
     public DateTime? EntryCloseDate { get; set; }
-
-    public required EventType Type { get; set; }
 }

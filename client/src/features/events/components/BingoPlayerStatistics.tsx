@@ -1,5 +1,5 @@
 import { Button, Table } from 'antd';
-import { useGetBingoBoardTilesQuery } from '../../../data/services/api/event-api.ts';
+import { useGetBingoBoardTilesQuery } from '../../../data/services/api/bingo-event-api.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 import { analyzeUserBingoTiles } from '../helpers/bingo-analysis.ts';
 

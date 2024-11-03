@@ -1,4 +1,5 @@
 ﻿using API.Data.DTOs;
+using API.Data.Parameters;
 using API.Entities;
 using AutoMapper;
 
@@ -32,7 +33,10 @@ public class AutoMapperProfiles : Profile
             .ForMember(dest => dest.Gamertag, opt => opt.MapFrom(src => src.AppUser!.Gamertag));
 
         CreateMap<NewEventDto, Event>();
+        CreateMap<NewBingoEventDto, Event>();
+        CreateMap<NewBingoEventDto, BingoEventParams>();
         CreateMap<Event, EventDto>();
+        CreateMap<BingoEvent, BingoEventDto>();
         
         CreateMap<NewTileDto, Tile>();
         CreateMap<TileUpdateDto, Tile>();

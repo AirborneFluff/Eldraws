@@ -24,7 +24,6 @@ export interface CreateEventModel {
   endDate: string,
   entryOpenDate: string,
   entryCloseDate: string
-  type: EventType
 }
 
 export enum EventType {

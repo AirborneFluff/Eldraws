@@ -2,7 +2,7 @@ import { Card, Modal, Spin } from 'antd';
 import { useGetGuildTilesQuery } from '../../../data/services/api/guild-api.ts';
 import { Tile } from '../../../data/entities/tile.ts';
 import { useEffect, useState } from 'react';
-import { useBingoBoardTileMutation } from '../../../data/services/api/event-api.ts';
+import { useBingoBoardTileMutation } from '../../../data/services/api/bingo-event-api.ts';
 import { useEventDetails } from '../EventDetailsPage.tsx';
 
 export function SelectTileModal({bingoTile, open, onSuccess, onCancel}) {
