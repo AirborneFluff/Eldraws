@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241105202618_AddedRaffleEntities")]
+    partial class AddedRaffleEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -103,7 +106,7 @@ namespace API.Migrations
 
                     b.HasIndex("TileId");
 
-                    b.ToTable("BingoBoardTiles", (string)null);
+                    b.ToTable("BingoBoardTiles");
                 });
 
             modelBuilder.Entity("API.Entities.BingoEvent", b =>
@@ -125,7 +128,7 @@ namespace API.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("BingoEvents", (string)null);
+                    b.ToTable("BingoEvents");
                 });
 
             modelBuilder.Entity("API.Entities.Event", b =>
@@ -178,7 +181,7 @@ namespace API.Migrations
 
                     b.HasIndex("HostId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("API.Entities.EventParticipant", b =>
@@ -195,7 +198,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventParticipants", (string)null);
+                    b.ToTable("EventParticipants");
                 });
 
             modelBuilder.Entity("API.Entities.Guild", b =>
@@ -224,7 +227,7 @@ namespace API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Guilds", (string)null);
+                    b.ToTable("Guilds");
                 });
 
             modelBuilder.Entity("API.Entities.GuildApplication", b =>
@@ -260,7 +263,7 @@ namespace API.Migrations
 
                     b.HasIndex("ReviewerId");
 
-                    b.ToTable("GuildApplications", (string)null);
+                    b.ToTable("GuildApplications");
                 });
 
             modelBuilder.Entity("API.Entities.GuildBlacklist", b =>
@@ -273,7 +276,7 @@ namespace API.Migrations
 
                     b.HasKey("GuildId", "UserName");
 
-                    b.ToTable("GuildBlacklists", (string)null);
+                    b.ToTable("GuildBlacklists");
                 });
 
             modelBuilder.Entity("API.Entities.GuildMembership", b =>
@@ -302,7 +305,7 @@ namespace API.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("GuildMemberships", (string)null);
+                    b.ToTable("GuildMemberships");
                 });
 
             modelBuilder.Entity("API.Entities.GuildRole", b =>
@@ -322,7 +325,7 @@ namespace API.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("GuildRoles", (string)null);
+                    b.ToTable("GuildRoles");
                 });
 
             modelBuilder.Entity("API.Entities.RaffleEntry", b =>
@@ -362,7 +365,7 @@ namespace API.Migrations
 
                     b.HasIndex("RaffleEventId");
 
-                    b.ToTable("RaffleEntries", (string)null);
+                    b.ToTable("RaffleEntries");
                 });
 
             modelBuilder.Entity("API.Entities.RaffleEvent", b =>
@@ -393,7 +396,7 @@ namespace API.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("RaffleEvents", (string)null);
+                    b.ToTable("RaffleEvents");
                 });
 
             modelBuilder.Entity("API.Entities.RafflePrize", b =>
@@ -429,7 +432,7 @@ namespace API.Migrations
 
                     b.HasIndex("WinnerId");
 
-                    b.ToTable("RafflePrizes", (string)null);
+                    b.ToTable("RafflePrizes");
                 });
 
             modelBuilder.Entity("API.Entities.Tile", b =>
@@ -459,7 +462,7 @@ namespace API.Migrations
 
                     b.HasIndex("GuildId");
 
-                    b.ToTable("Tiles", (string)null);
+                    b.ToTable("Tiles");
                 });
 
             modelBuilder.Entity("API.Entities.TileRaceEvent", b =>
@@ -475,7 +478,7 @@ namespace API.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("TileRaceEvents", (string)null);
+                    b.ToTable("TileRaceEvents");
                 });
 
             modelBuilder.Entity("API.Entities.TileSubmission", b =>
@@ -511,7 +514,7 @@ namespace API.Migrations
 
                     b.HasIndex("JudgeId");
 
-                    b.ToTable("TileSubmissions", (string)null);
+                    b.ToTable("TileSubmissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -656,7 +659,7 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("API.Entities.BingoBoardTile.Position#API.Entities.Position", "Position", b1 =>
+                    b.OwnsOne("API.Entities.Position", "Position", b1 =>
                         {
                             b1.Property<string>("BingoBoardTileId")
                                 .HasColumnType("TEXT");
@@ -669,7 +672,7 @@ namespace API.Migrations
 
                             b1.HasKey("BingoBoardTileId");
 
-                            b1.ToTable("BingoBoardTiles", (string)null);
+                            b1.ToTable("BingoBoardTiles");
 
                             b1.WithOwner()
                                 .HasForeignKey("BingoBoardTileId");

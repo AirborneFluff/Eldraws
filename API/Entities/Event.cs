@@ -25,6 +25,7 @@ public class Event
     public enum EventType
     {
         TileRace,
-        Bingo
+        Bingo,
+        Raffle
     }
 }
