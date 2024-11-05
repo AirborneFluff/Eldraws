@@ -7,18 +7,23 @@ import { GuildEventListNavigationState } from '../guilds/components/GuildEventsL
 import { DateTimePicker } from '../../core/forms/DateTimePicker.tsx';
 import dayjs from 'dayjs';
 import { LOCAL_DATE_FORMAT } from '../../data/helpers/constants';
-import { useCreateBingoEventMutation } from '../../data/services/api/event-api.ts';
+import { useCreateBingoEventMutation, useCreateRaffleEventMutation } from '../../data/services/api/event-api.ts';
 import { BingoEventExtras } from '../../data/entities/bingo-event.ts';
+import { RaffleEventExtras } from '../../data/entities/raffle-event.ts';
 
 const { TextArea } = Input;
 
 export function CreateEventPage() {
-  const [createBingoEvent, {isLoading, isSuccess}] = useCreateBingoEventMutation();
+  const [createBingoEvent, {isLoading: bingoLoading, isSuccess: bingoSuccess}] = useCreateBingoEventMutation();
+  const [createRaffleEvent, {isLoading: raffleLoading, isSuccess: raffleSuccess}] = useCreateRaffleEventMutation();
   const {setHeaderContent} = usePage();
   const navigate = useNavigate();
   const {guildId} = useParams();
   const [form] = Form.useForm<CreateEventModel>();
   const [bingoExtrasForm] = Form.useForm<BingoEventExtras>();
+
+  const isSuccess = bingoSuccess || raffleSuccess;
+  const isLoading = bingoLoading || raffleLoading;
 
   useEffect(() => {
     setHeaderContent({
@@ -48,17 +53,28 @@ export function CreateEventPage() {
   function createEvent<T extends CreateEventModel>(event: T) {
     switch (event.type) {
       case EventType.Bingo:
-        const extras = bingoExtrasForm.getFieldsValue();
+        const bingoExtras = bingoExtrasForm.getFieldsValue();
         createBingoEvent({
           ...event,
-          ...extras
+          ...bingoExtras
+        });
+        break;
+      case EventType.Raffle:
+        const raffleExtras: RaffleEventExtras = {
+          entryCost: 0,
+          prizeDrawDate: '2024-11-06T12:00:00'
+        }
+        createRaffleEvent({
+          ...event,
+          ...raffleExtras
         });
         break;
     }
   }
 
   const eventTypes = [
-    { label: "Bingo", value: EventType.Bingo }
+    { label: "Raffle", value: EventType.Raffle },
+    { label: "Bingo", value: EventType.Bingo },
   ]
   const currentTime = dayjs().format(LOCAL_DATE_FORMAT);
 
@@ -67,6 +83,8 @@ export function CreateEventPage() {
     startDate: dayjs().toISOString(),
     endDate: dayjs().add(7, 'days').toISOString()
   }
+
+  const selectedEventType = form.getFieldValue('type') as EventType;
 
   return (
     <Form
@@ -102,7 +120,7 @@ export function CreateEventPage() {
         <DateTimePicker min={currentTime} />
       </Form.Item>
 
-      {renderBingoExtras(bingoExtrasForm)}
+      {selectedEventType === EventType.Bingo && renderBingoExtras(bingoExtrasForm)}
 
       <Button htmlType="submit" type='primary'>Create Event</Button>
     </Form>

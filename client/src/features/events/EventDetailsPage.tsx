@@ -8,6 +8,7 @@ import { createContext, useContext } from 'react';
 import { BingoEventDetailsPage } from './BingoEventDetailsPage.tsx';
 import {GuildRoleName} from "../../data/entities/guild-role.ts";
 import {useLazyGetUserRoleQuery} from "../../data/services/api/guild-api.ts";
+import { RaffleEventDetailsPage } from './RaffleEventDetailsPage.tsx';
 
 interface EventDetailsContextProps {
   event: Event | null;
@@ -62,7 +63,7 @@ export function EventDetailsPage() {
 
   const renderPage =
     event?.type === EventType.Bingo ? (<BingoEventDetailsPage />) :
-    event?.type === EventType.TileRace ? (<></>) : null;
+    event?.type === EventType.Raffle ? (<RaffleEventDetailsPage />) : null;
 
   return (
     <EventDetailsProvider event={event} refetch={refetch} userRole={userRole?.name}>

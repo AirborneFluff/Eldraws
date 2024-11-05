@@ -39,6 +39,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<BingoEvent, BingoEventDto>();
         CreateMap<NewRaffleEventDto, Event>();
         CreateMap<NewRaffleEventDto, RaffleEventParams>();
+        CreateMap<RaffleEvent, RaffleEventDto>();
         
         CreateMap<NewTileDto, Tile>();
         CreateMap<TileUpdateDto, Tile>();

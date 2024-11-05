@@ -7,12 +7,12 @@ namespace API.Controllers;
 
 public partial class EventsController
 {
-    [HttpGet("{eventId}/bingo")]
+    [HttpGet("{eventId}/raffle")]
     [ValidateGuildEventRole("Owner, Admin, Moderator, Member")]
     public async Task<ActionResult> GetRaffleEventDetails(string eventId)
     {
-        var bingoEvent = await unitOfWork.EventRepository.GetBingoEventByEventIdMinimal(eventId);
-        return Ok(mapper.Map<BingoEventDto>(bingoEvent));
+        var raffle = await unitOfWork.RaffleRepository.GetBingoEventByEventIdMinimal(eventId);
+        return Ok(mapper.Map<RaffleEventDto>(raffle));
     }
     
     [HttpPost("{eventId}/raffle/prizes")]
