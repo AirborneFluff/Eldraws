@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241105202618_AddedRaffleEntities")]
+    partial class AddedRaffleEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -190,19 +193,10 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GuildId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TotalDonations")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("GuildId");
 
                     b.ToTable("EventParticipants");
                 });
@@ -722,17 +716,6 @@ namespace API.Migrations
                     b.Navigation("Host");
                 });
 
-            modelBuilder.Entity("API.Entities.EventParticipant", b =>
-                {
-                    b.HasOne("API.Entities.Guild", "Guild")
-                        .WithMany("Participants")
-                        .HasForeignKey("GuildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Guild");
-                });
-
             modelBuilder.Entity("API.Entities.Guild", b =>
                 {
                     b.HasOne("API.Entities.AppUser", "Creator")
@@ -994,8 +977,6 @@ namespace API.Migrations
                     b.Navigation("Events");
 
                     b.Navigation("Memberships");
-
-                    b.Navigation("Participants");
 
                     b.Navigation("Roles");
                 });

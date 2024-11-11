@@ -8,6 +8,7 @@ import { Event } from '../../entities/event.ts';
 import {GuildMember, GuildMemberUpdate} from '../../entities/guild-member.ts';
 import { ApplicationResponseBody } from '../../models/application-response-body.ts';
 import {GuildRole} from "../../entities/guild-role.ts";
+import { EventParticipant, NewEventParticipant } from '../../entities/event-participant.ts';
 
 const guildApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -170,6 +171,26 @@ const guildApi = baseApi.injectEndpoints({
         }
       }
     }),
+    searchEventParticipants: builder.query<EventParticipant[], { guildId: string, searchTerm: string }>({
+      query: ({guildId, searchTerm}) => {
+        return {
+          url: `/guilds/${guildId}/participants/search`,
+          method: 'GET',
+          params: {
+            searchTerm
+          }
+        }
+      }
+    }),
+    addEventParticipant: builder.mutation<EventParticipant, NewEventParticipant>({
+      query: (dto) => {
+        return {
+          url: `/guilds/${dto.guildId}/participants`,
+          method: 'POST',
+          body: dto
+        }
+      }
+    }),
   }),
   overrideExisting: false,
 });
@@ -193,5 +214,7 @@ export const {
   useGetGuildTilesQuery,
   useUpdateGuildMemberRoleMutation,
   useLazyGetUserRoleQuery,
-  useGetUserGuildApplicationsQuery
+  useGetUserGuildApplicationsQuery,
+  useSearchEventParticipantsQuery,
+  useAddEventParticipantMutation,
 } = guildApi;

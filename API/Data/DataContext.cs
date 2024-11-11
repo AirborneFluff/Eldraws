@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using System.Linq.Expressions;
+using API.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,10 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
     public required DbSet<BingoBoardTile> BingoBoardTiles { get; set; }
     public required DbSet<BingoEvent> BingoEvents { get; set; }
     public required DbSet<TileSubmission> TileSubmissions { get; set; }
+    public required DbSet<EventParticipant> EventParticipants { get; set; }
+    public required DbSet<RaffleEntry> RaffleEntries { get; set; }
+    public required DbSet<RaffleEvent> RaffleEvents { get; set; }
+    public required DbSet<RafflePrize> RafflePrizes { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +48,7 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
         modelBuilder.Entity<BingoBoardTile>()
             .OwnsOne(tile => tile.Position);
         
+        SetSoftDeleteQueryFilters(modelBuilder);
         SetGuildMembershipRelations(modelBuilder);
         SetGuildApplicationRelations(modelBuilder);
         SetGuildApplicationBlacklistRelations(modelBuilder);
@@ -107,5 +113,21 @@ public class DataContext(DbContextOptions<DataContext> options) : IdentityDbCont
             .HasOne(blacklist => blacklist.Guild)
             .WithMany(guild => guild.Blacklist)
             .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    private static void SetSoftDeleteQueryFilters(ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (!typeof(DeletableEntity).IsAssignableFrom(entityType.ClrType)) continue;
+            
+            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var filter = Expression.Lambda(
+                Expression.Equal(
+                    Expression.Property(parameter, nameof(DeletableEntity.IsDeleted)),
+                    Expression.Constant(false)),
+                parameter);
+            entityType.SetQueryFilter(filter);
+        }
     }
 }

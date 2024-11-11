@@ -1,4 +1,6 @@
 ﻿using API.Entities;
+using API.Helpers.Pagination;
+using API.Helpers.Params;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Repositories;
@@ -26,13 +28,6 @@ public class GuildRepository(DataContext context)
     {
         return context.Guilds
             .FirstOrDefaultAsync(guild => guild.Id == guildId);
-    }
-
-    public Task<bool> ExistsById(string guildId)
-    {
-        return context.Guilds
-            .Where(guild => !guild.Archived)
-            .AnyAsync(guild => guild.Id == guildId);
     }
 
     public Task<bool> IsGuildCreator(string guildId, string userId)
@@ -166,5 +161,21 @@ public class GuildRepository(DataContext context)
         return context.GuildBlacklists
             .Where(bl => bl.GuildId == guildId)
             .FirstOrDefaultAsync(gb => gb.UserName.ToLower() == userName.ToLower());
+    }
+
+    public Task<EventParticipant?> GetEventParticipant(string participantId)
+    {
+        return context.EventParticipants
+            .FirstOrDefaultAsync(p => p.Id == participantId);
+    }
+
+    public Task<List<EventParticipant>> SearchParticipantsByGamertag(string guildId, string gamertag)
+    {
+        return context.EventParticipants
+            .Where(p => p.GuildId == guildId && p.Gamertag.ToLower().Contains(gamertag.ToLower()))
+            .OrderBy(p => p.Gamertag)
+            .Take(10)
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

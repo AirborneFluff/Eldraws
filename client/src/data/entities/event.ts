@@ -30,4 +30,5 @@ export interface CreateEventModel {
 export enum EventType {
   TileRace,
   Bingo,
+  Raffle
 }

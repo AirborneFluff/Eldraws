@@ -84,23 +84,6 @@ public partial class GuildsController(UnitOfWork unitOfWork, IMapper mapper, Use
         var events = await unitOfWork.GuildRepository.GetGuildEvents(guildId);
         return Ok(mapper.Map<List<EventDto>>(events));
     }
-    
-    [HttpPost("{guildId}/events/bingo")]
-    [ValidateGuildRole("Owner, Admin")]
-    public async Task<ActionResult> CreateBingoEvent(string guildId, [FromBody] NewBingoEventDto eventDto)
-    {
-        var newEvent = mapper.Map<Event>(eventDto);
-        var bingoParams = mapper.Map<BingoEventParams>(eventDto);
-        newEvent.Id = Guid.NewGuid().ToString();
-        newEvent.HostId = User.GetUserId();
-        newEvent.GuildId = guildId;
-        newEvent.Type = Event.EventType.Bingo;
-        
-        unitOfWork.EventRepository.AddBingo(newEvent, bingoParams);
-
-        if (await unitOfWork.Complete()) return Ok(mapper.Map<EventDto>(newEvent));
-        return BadRequest();
-    }
 
     [HttpGet("{guildId}/role")]
     [ValidateGuildRole("Owner, Admin, Moderator, Member")]
