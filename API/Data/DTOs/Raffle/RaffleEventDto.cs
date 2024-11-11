@@ -1,4 +1,4 @@
-﻿namespace API.Data.DTOs;
+﻿namespace API.Data.DTOs.Raffle;
 
 public class RaffleEventDto
 {

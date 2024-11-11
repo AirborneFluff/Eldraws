@@ -1,13 +1,14 @@
 ﻿using API.Data.Parameters;
 using API.Entities;
 using API.Extensions;
+using API.Helpers.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data.Repositories;
 
 public class RaffleRepository(DataContext context)
 {
-    public Task<RaffleEvent> GetBingoEventByEventIdMinimal(string id)
+    public Task<RaffleEvent> GetRaffleEventByEventIdMinimal(string id)
     {
         return context.RaffleEvents
             .FirstAsync(e => e.EventId == id);
@@ -23,6 +24,16 @@ public class RaffleRepository(DataContext context)
             EventId = newEvent.Id,
             PrizeDrawDate = raffleParams.PrizeDrawDate,
         });
+    }
+
+    public async Task<PagedList<RaffleEntry>> GetPagedEntries(string raffleEventId, PaginationParams paginationParams)
+    {
+        var query = context.RaffleEntries
+            .Include(entry => entry.Participant)
+            .Where(entry => entry.RaffleEventId == raffleEventId)
+            .OrderByDescending(entry => entry.HighTicket);
+
+        return await PagedList<RaffleEntry>.CreateAsync(query, paginationParams.PageNumber, paginationParams.PageSize);
     }
 
     public async Task<int> GetNextAvailableTicket(string raffleEventId)

@@ -1,5 +1,6 @@
 ﻿using API.ActionFilters;
 using API.Data.DTOs;
+using API.Data.DTOs.Raffle;
 using API.Data.Parameters;
 using API.Entities;
 using API.Extensions;

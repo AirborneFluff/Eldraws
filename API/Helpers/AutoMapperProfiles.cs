@@ -1,4 +1,5 @@
 ﻿using API.Data.DTOs;
+using API.Data.DTOs.Raffle;
 using API.Data.Parameters;
 using API.Entities;
 using AutoMapper;
@@ -40,6 +41,12 @@ public class AutoMapperProfiles : Profile
         CreateMap<NewRaffleEventDto, Event>();
         CreateMap<NewRaffleEventDto, RaffleEventParams>();
         CreateMap<RaffleEvent, RaffleEventDto>();
+        CreateMap<NewRaffleEntryDto, RaffleEntry>();
+        CreateMap<RaffleEntry, RaffleEntryDto>();
+
+        CreateMap<NewEventParticipantDto, EventParticipant>();
+        CreateMap<EventParticipant, EventParticipantDto>();
+        CreateMap<EventParticipantDto, EventParticipant>();
         
         CreateMap<NewTileDto, Tile>();
         CreateMap<TileUpdateDto, Tile>();

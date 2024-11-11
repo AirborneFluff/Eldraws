@@ -14,4 +14,5 @@ public class Guild
     public List<GuildRole> Roles { get; set; } = new();
     public List<Event> Events { get; set; } = new();
     public List<Tile> CustomTiles { get; set; } = new();
+    public List<EventParticipant> Participants { get; set; } = new();
 }
