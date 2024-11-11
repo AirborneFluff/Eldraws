@@ -1,10 +1,11 @@
 import { Tabs } from 'antd';
 import { PageView } from '../../core/ui/PageView.tsx';
 
-import { useEventDetails } from './EventDetailsPage.tsx';
+import { useEventDetails } from '../events/EventDetailsPage.tsx';
 import {GetTabItems, TabItemExtended} from "../../data/models/tab-item-extended.ts";
 import { RaffleDetailsProvider } from './providers/raffle-details-provider.tsx';
 import { useGetRaffleEventDetailsQuery } from '../../data/services/api/raffle-event-api.ts';
+import { RaffleEntriesTab } from './RaffleEntriesTab.tsx';
 
 export function RaffleEventDetailsPage() {
   const {event} = useEventDetails();
@@ -13,9 +14,9 @@ export function RaffleEventDetailsPage() {
   const tabs: TabItemExtended[] = [
     {
       key: 'entries',
-      label: event?.title ?? 'Event',
+      label: 'Entries',
       children: (
-        <div>Hello world</div>
+        <RaffleEntriesTab />
       )
     }
   ];
