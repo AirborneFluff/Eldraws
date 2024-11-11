@@ -1,5 +1,5 @@
 import { RaffleEntryForm } from './RaffleEntryForm.tsx';
-import { RaffleEntriesList } from './components/RaffleEntriesList.tsx';
+import { RaffleEntriesList } from './RaffleEntriesList.tsx';
 import { useState } from 'react';
 
 export function RaffleEntriesTab() {

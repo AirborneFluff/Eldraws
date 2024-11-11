@@ -2,11 +2,12 @@ import { Table, TableColumnsType } from 'antd';
 import { useLazyGetRaffleEntriesQuery } from '../../../data/services/api/raffle-event-api.ts';
 import { useEventDetails } from '../../events/EventDetailsPage.tsx';
 import React, { useEffect } from 'react';
+import { formatNumber } from '../../../core/utils/text-utilities.ts';
 
 interface DataType {
   key: React.Key;
   gamertag: string;
-  donation: number;
+  donation: string;
   tickets: string;
 }
 
@@ -38,7 +39,7 @@ export function RaffleEntriesList({reload}: RaffleEntriesListProps) {
   const dataSource: DataType[] = (response?.items ?? []).map(item => ({
     key: item.id,
     gamertag: item.participant.gamertag,
-    donation: item.donation,
+    donation: formatNumber(item.donation),
     tickets: `${item.lowTicket} - ${item.highTicket}`
   }))
 

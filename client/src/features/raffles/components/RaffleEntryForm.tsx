@@ -1,16 +1,16 @@
 import { Button, Divider, Flex, Form, Input, Select, Space, Switch, Typography } from 'antd';
-import { useAddRaffleEntryMutation } from '../../data/services/api/raffle-event-api.ts';
-import { NewRaffleEntry } from '../../data/entities/raffle-entry.ts';
+import { useAddRaffleEntryMutation } from '../../../data/services/api/raffle-event-api.ts';
+import { NewRaffleEntry } from '../../../data/entities/raffle-entry.ts';
 import {
   useAddEventParticipantMutation,
   useSearchEventParticipantsQuery
-} from '../../data/services/api/guild-api.ts';
+} from '../../../data/services/api/guild-api.ts';
 import { useEffect, useState } from 'react';
-import { useEventDetails } from '../events/EventDetailsPage.tsx';
-import useDebounce from '../../core/hooks/useDebounce.ts';
+import { useEventDetails } from '../../events/EventDetailsPage.tsx';
+import useDebounce from '../../../core/hooks/useDebounce.ts';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { useRaffleDetails } from './providers/raffle-details-provider.tsx';
-import { minValidator } from '../../core/forms/validators/min-validator.ts';
+import { useRaffleDetails } from '../providers/raffle-details-provider.tsx';
+import { minValidator } from '../../../core/forms/validators/min-validator.ts';
 const { Text } = Typography;
 
 interface RaffleEntryFormProps {
