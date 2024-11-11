@@ -8,7 +8,7 @@ import { createContext, useContext } from 'react';
 import { BingoEventDetailsPage } from './BingoEventDetailsPage.tsx';
 import {GuildRoleName} from "../../data/entities/guild-role.ts";
 import {useLazyGetUserRoleQuery} from "../../data/services/api/guild-api.ts";
-import { RaffleEventDetailsPage } from './RaffleEventDetailsPage.tsx';
+import { RaffleEventDetailsPage } from '../raffles/RaffleEventDetailsPage.tsx';
 
 interface EventDetailsContextProps {
   event: Event | null;
